@@ -9,14 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< HEAD
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".MusicPlayer">
+=======
+        <activity android:name=".SongListActivity">
+>>>>>>> a47fc55286ca4029316629a073e10f5d9f9c4c70
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Neutral_View"></activity>
     </application>
 
 </manifest>

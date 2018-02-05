@@ -3,7 +3,7 @@
 *.ap_
 
 #manifest
-AndroidManifest.xml
+app/src/main/AndroidManifest.xml
 
 # Files for the ART/Dalvik VM
 *.dex

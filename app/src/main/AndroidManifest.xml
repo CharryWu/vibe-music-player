@@ -9,8 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-        </activity>
         <activity android:name=".MusicPlayer">
         <activity android:name=".SongListActivity">
             <intent-filter>
@@ -18,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Neutral_View"></activity>
-    </application>
+        <activity android:name=".AlbumActivity" />
+        <activity android:name=".PickedAlbumActivity"></activity>
+   </application>
 
 </manifest>

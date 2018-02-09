@@ -2,6 +2,7 @@ package com.example.chadlohrli.myapplication;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,10 +12,10 @@ import java.util.List;
 public class Album {
 
     private String title;
-    private List<String> songs;
+    private ArrayList<SongData> songs;
     private Bitmap album_image;
 
-    public Album(String albumTitle, List<String> songList, Bitmap image) {
+    public Album(String albumTitle, List<SongData> songList, Bitmap image) {
 
         title = albumTitle;
         songs = songList;
@@ -23,7 +24,7 @@ public class Album {
     }
 
     public String getTitle() {return title;}
-    public List<String> getAlbum() {return songs;}
+    public List<SongData> getAlbum() {return songs;}
     public Bitmap getImage() {return album_image;}
 }
 

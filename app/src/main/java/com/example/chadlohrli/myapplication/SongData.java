@@ -7,14 +7,19 @@ package com.example.chadlohrli.myapplication;
 public class SongData {
 
     private int id;
+    private int song_length;
     private String album_title;
     private String song_title;
+    private String song_path;
 
-    public SongData(int songId, String albumTitle, String songTitle) {
+    public SongData(int songId, int songLength, String albumTitle, String songTitle, String songPath) {
 
         id = songId;
+        song_length = songLength;
         album_title = albumTitle;
         song_title = songTitle;
+        song_path = songPath;
+
 
     }
 

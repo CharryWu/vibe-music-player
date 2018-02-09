@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.chadlohrli.myapplication.PickedAlbumActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="117dp"
+        android:layout_marginRight="117dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/album_art_button_picked_album"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/album_art_button_picked_album"
+        app:layout_constraintTop_toTopOf="@+id/album_art_button_picked_album">
+
+        <TextView
+            android:id="@+id/album_name_textview_picked_album"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Album Name"
+            tools:layout_editor_absoluteX="180dp"
+            tools:layout_editor_absoluteY="72dp" />
+
+        <TextView
+            android:id="@+id/artist_name_textview_picked_album"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Artist Name"
+            tools:layout_editor_absoluteX="180dp"
+            tools:layout_editor_absoluteY="109dp" />
+
+        <TextView
+            android:id="@+id/genre_year_textview_picked_album"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="Genre, Year"
+            tools:layout_editor_absoluteX="180dp"
+            tools:layout_editor_absoluteY="152dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/back_button_picked_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="23dp"
+        android:text="Back"
+        app:layout_constraintBottom_toTopOf="@+id/album_art_button_picked_album"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/album_art_button_picked_album"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="340dp"
+        android:layout_marginEnd="51dp"
+        android:layout_marginRight="51dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_button_picked_album" />
+
+    <Button
+        android:id="@+id/song_button_picked_album"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Song"
+        android:gravity="left|center_vertical"/>
+
+
+</android.support.constraint.ConstraintLayout>

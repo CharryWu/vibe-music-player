@@ -40,4 +40,5 @@ public class AlbumActivity extends AppCompatActivity {
         gridAdapter customGrid = new gridAdapter(this, R.layout.row_grid, gridArray);
         gridView.setAdapter(customGrid);
     }
+
 }

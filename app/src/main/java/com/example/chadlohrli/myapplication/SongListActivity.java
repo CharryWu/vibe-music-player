@@ -20,7 +20,6 @@ public class SongListActivity extends AppCompatActivity {
         setContentView(R.layout.songlist);
 
         listView = (ListView) findViewById(R.id.songlist);
-        shuffleButton = (Button) findViewById(R.id.shuffle);
         backButton = (Button) findViewById(R.id.go_back);
 
         //sample array
@@ -53,6 +52,7 @@ public class SongListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(SongListActivity.this, MainActivity.class);
                 SongListActivity.this.startActivity(intent);
+                finish();
             }
         });
 

@@ -15,7 +15,7 @@ public class Album {
     private ArrayList<SongData> songs;
     private Bitmap album_image;
 
-    public Album(String albumTitle, List<SongData> songList, Bitmap image) {
+    public Album(String albumTitle, ArrayList<SongData> songList, Bitmap image) {
 
         title = albumTitle;
         songs = songList;
@@ -24,7 +24,7 @@ public class Album {
     }
 
     public String getTitle() {return title;}
-    public List<SongData> getAlbum() {return songs;}
+    public ArrayList<SongData> getAlbum() {return songs;}
     public Bitmap getImage() {return album_image;}
 }
 

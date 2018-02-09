@@ -3,6 +3,8 @@ package com.example.chadlohrli.myapplication;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class SongParser {
 
         int id;
         int song_length;
-        String album_title;
+        String album_title = null;
         String song_title;
         String song_path;
         Bitmap album_image;
@@ -32,6 +34,7 @@ public class SongParser {
         File[] list = file.listFiles();
 
         for(File f:list){
+            System.out.print(f);
             String path = f.getName();
             mmr.setDataSource(path);
             if(path.endsWith(".mp3")){
@@ -40,8 +43,8 @@ public class SongParser {
                 album_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
                 song_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
                 id = (album_title+song_title).hashCode();
-                song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                SongData song = new SongData(id,album_title,song_title);
+                song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                SongData song = new SongData(id,song_length,album_title,song_title,song_path);
                 songs.add(song);
 
             }
@@ -49,20 +52,10 @@ public class SongParser {
         }
 
         art = mmr.getEmbeddedPicture();
-        Bitmap songImage = BitmapFactory.decodeByteArray(art,0,art.length);
+        album_image = BitmapFactory.decodeByteArray(art,0,art.length);
 
-        Album album = new Album(album_title,songs,song)
-
-
-
-
+        return new Album(album_title,songs,album_image);
 
     }
-
-
-
-
-
-
 
 }

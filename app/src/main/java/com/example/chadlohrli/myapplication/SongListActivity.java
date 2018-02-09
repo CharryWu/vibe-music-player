@@ -9,5 +9,9 @@ public class SongListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.songlist);
+
+        Album album = SongParser.createAlbum("app/src/main/assets/music/albums/iwillnotbeafraid/");
+
+
     }
 }

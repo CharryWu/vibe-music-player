@@ -3,6 +3,7 @@ package com.example.chadlohrli.myapplication;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +41,6 @@ public class SongListActivity extends AppCompatActivity {
 
                 //placeholder
                 Toast toast = Toast.makeText(getApplicationContext(), songAndAlbumAndArtist, Toast.LENGTH_SHORT);
-                toast.setMargin(50,50);
                 toast.show();
 
                 //update song information

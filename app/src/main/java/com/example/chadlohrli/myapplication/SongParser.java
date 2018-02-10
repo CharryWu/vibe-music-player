@@ -1,12 +1,16 @@
 package com.example.chadlohrli.myapplication;
 
+import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +33,19 @@ public class SongParser {
         byte[] art;
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
+        Field[] fields = R.raw.class.getFields();
+        for(int count =0;count < fields.length;count++){
+            Log.i("Raw Asset:",fields[count].getName());
+            try {
+                int resID = fields[count].getInt(fields[count]);
+                Log.i("Raw Asset ID:",String.valueOf(resID));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
-        File file = new File(albumPath);
+        }
+
+        File file = new File("app/src/main");
         File[] list = file.listFiles();
 
         for(File f:list){
@@ -46,6 +61,8 @@ public class SongParser {
                 song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 SongData song = new SongData(id,song_length,album_title,song_title,song_path);
                 songs.add(song);
+
+
 
             }
 

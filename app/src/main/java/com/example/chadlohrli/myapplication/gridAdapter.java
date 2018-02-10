@@ -30,33 +30,32 @@ public class gridAdapter extends ArrayAdapter<gridItem> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        RecordHolder holder = null;
+        Album album = null;
 
         if (row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
-            holder = new RecordHolder();
-            holder.albumTitle = (TextView) row.findViewById(R.id.album_title_textview);
-            holder.artistName = (TextView) row.findViewById(R.id.artist_name_textview);
-            holder.imageItem = (ImageView) row.findViewById(R.id.album_art_imageview);
-            row.setTag(holder);
+            album = new Album();
+            album.albumTitle = (TextView) row.findViewById(R.id.album_title_textview);
+            album.albumArtist = (TextView) row.findViewById(R.id.artist_name_textview);
+            album.albumArt = (ImageView) row.findViewById(R.id.album_art_imageview);
+            row.setTag(album);
         } else {
-            holder = (RecordHolder) row.getTag();
+            album = (Album) row.getTag();
         }
 
         gridItem item = data.get(position);
-        holder.albumTitle.setText(item.getAlbumTitle());
-        holder.artistName.setText(item.getArtistName());
-        holder.imageItem.setImageResource(item.getImage());
+        album.albumTitle.setText(item.getAlbumTitle());
+        album.albumArtist.setText(item.getArtistName());
+        album.albumArt.setImageResource(item.getImage());
         return row;
 
     }
 
-    static class RecordHolder {
+    static class Album {
         TextView albumTitle;
-        TextView artistName;
-        ImageView imageItem;
-
+        TextView albumArtist;
+        ImageView albumArt;
     }
 }

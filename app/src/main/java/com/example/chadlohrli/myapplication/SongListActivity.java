@@ -55,7 +55,7 @@ public class SongListActivity extends AppCompatActivity {
                 SongListActivity.this.startActivity(intent);
                 finish();
             }
-        });g
+        });
 
 
     }

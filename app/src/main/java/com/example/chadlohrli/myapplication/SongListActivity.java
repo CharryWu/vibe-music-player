@@ -51,7 +51,8 @@ public class SongListActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(this,);
+                Intent intent = new Intent(SongListActivity.this, MainActivity.class);
+                SongListActivity.this.startActivity(intent);
             }
         });
 

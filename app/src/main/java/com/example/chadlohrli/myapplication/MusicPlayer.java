@@ -1,10 +1,14 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -12,6 +16,15 @@ import java.util.ArrayList;
 public class MusicPlayer extends AppCompatActivity {
 
     private Button backBtn;
+    private ImageView albumCover;
+    private TextView locationTitle;
+    private TextView songTitle;
+    private TextView artistTitle;
+    private ImageButton playBtn;
+    private ImageButton nextBtn;
+    private ImageButton prevBtn;
+    private ImageButton seekBar;
+    private ImageButton favBtn;
 
     private ArrayList<SongData> songs;
     private int cur_song;
@@ -20,6 +33,17 @@ public class MusicPlayer extends AppCompatActivity {
         cur_song = songIndex;
     }
 
+    public void setupPlayer(SongData song){
+
+        albumCover = (ImageView) findViewById(R.id.albumCover);
+        songTitle = (TextView) findViewById(R.id.songTitle);
+        artistTitle = (TextView) findViewById(R.id.artistTitle);
+
+        //albumCover.setImageBitmap(song.getImage());
+        songTitle.setText(song.getTitle());
+        artistTitle.setText(song.getArtist());
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +59,8 @@ public class MusicPlayer extends AppCompatActivity {
         //display song for now to ensure data has correctly been passed
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
+
+        setupPlayer(songs.get(cur_song));
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override

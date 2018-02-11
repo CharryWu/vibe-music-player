@@ -16,9 +16,9 @@ public class SongData implements Serializable {
     private String song_title;
     private String song_artist;
     private String song_path;
-    private Bitmap album_image;
+    //private Bitmap album_image;
 
-    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath, Bitmap albumImage) {
+    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath /*Bitmap albumImage*/) {
 
         id = songId;
         song_length = songLength;
@@ -26,7 +26,7 @@ public class SongData implements Serializable {
         song_title = songTitle;
         song_artist = songArtist;
         song_path = songPath;
-        album_image = albumImage;
+        //album_image = albumImage;
 
 
     }
@@ -37,6 +37,6 @@ public class SongData implements Serializable {
     public String getAlbum() {return album_title;}
     public String getArtist() {return song_artist;}
     public String getPath() {return song_path;}
-    public Bitmap getImage() {return album_image;}
+    //public Bitmap getImage() {return album_image;}
 
 }

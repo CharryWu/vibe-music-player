@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class SongParser {
 
+
     public static SongData parseSong (String path, String Id, Context context){
 
 
@@ -60,7 +61,7 @@ public class SongParser {
 
                 Log.d("song title:", song_title);
 
-                song = new SongData(id,song_length,album_title,song_title,song_artist,song_path,album_image);
+                song = new SongData(id,song_length,album_title,song_title,song_artist,song_path/*,album_image*/);
 
 
             } catch (Exception e) {

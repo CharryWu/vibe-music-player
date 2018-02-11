@@ -3,24 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:id="@+id/linearLayoutAlbum"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="5dp" >
 
     <ImageView
         android:id="@+id/album_art_imageview"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
         />
 
     <TextView
         android:id="@+id/album_title_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
         android:layout_marginTop="10dp"
         android:text=""
         />
@@ -29,8 +26,6 @@
         android:id="@+id/artist_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
         android:layout_marginTop="15dp"
         android:text=""
         />

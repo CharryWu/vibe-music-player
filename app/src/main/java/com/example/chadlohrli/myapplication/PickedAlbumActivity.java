@@ -1,10 +1,12 @@
 package com.example.chadlohrli.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,7 +18,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picked_album);
 
-        listView = (ListView) findViewById(R.id.songlist);
+        listView = (ListView) findViewById(R.id.songlist_activity_picked_album);
 
         //sample array
         String[] songTitleArray = new String[] {"Song 1", "Song 2", "Song 3", "Song 4","Song 5", "Song 6", "Song 7", "Song 8",
@@ -40,6 +42,16 @@ public class PickedAlbumActivity extends AppCompatActivity {
                 toast.show();
 
                 //update song information
+            }
+        });
+
+        Button backButton = (Button) findViewById(R.id.back_button_picked_album);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PickedAlbumActivity.this, AlbumActivity.class);
+                PickedAlbumActivity.this.startActivity(intent);
+                finish();
             }
         });
 

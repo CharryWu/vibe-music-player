@@ -1,14 +1,30 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+<<<<<<< HEAD
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+=======
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Gravity;
+>>>>>>> baeda0cf921e8391ebc214c5bb7b194289be159e
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+<<<<<<< HEAD
+
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.util.ArrayList;
+=======
+>>>>>>> baeda0cf921e8391ebc214c5bb7b194289be159e
 
 public class SongListActivity extends AppCompatActivity {
     private ListView listView;
@@ -40,12 +56,39 @@ public class SongListActivity extends AppCompatActivity {
 
                 //placeholder
                 Toast toast = Toast.makeText(getApplicationContext(), songAndAlbumAndArtist, Toast.LENGTH_SHORT);
-                toast.setMargin(50,50);
                 toast.show();
 
                 //update song information
             }
         });
+
+        //get id
+        Field[] fields = R.raw.class.getFields();
+        ArrayList<SongData> songs = new ArrayList<SongData>();
+
+        for(int count =0;count < fields.length; count++){
+
+            Log.i("Raw Asset:",fields[count].getName());
+
+            try {
+
+                int resID = fields[count].getInt(fields[count]);
+
+
+                String path = "android.resource://" + getPackageName()+"/raw/";
+                String Id = fields[count].getName();
+
+
+                SongData album = SongParser.createAlbum(path, Id,getApplicationContext());
+
+                Log.i("Raw Asset ID:",String.valueOf(resID));
+
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,5 +100,7 @@ public class SongListActivity extends AppCompatActivity {
         });
 
 
+
     }
 }
+

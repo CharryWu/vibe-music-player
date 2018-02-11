@@ -14,6 +14,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     Button songButton;
     Button albumButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,55 +39,57 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-    SharedPreferences pref = getSharedPreferences("initial_setup", MODE_PRIVATE);
-    Map<String, ?> setup = pref.getAll();
-        if(!(setup.containsKey("completedSetUp"))) {
 
-        SharedPreferences songsList = getSharedPreferences("songslist", MODE_PRIVATE);
-        SharedPreferences.Editor metaEdit = songsList.edit();
+        SharedPreferences pref = getSharedPreferences("initial_setup", MODE_PRIVATE);
+        Map<String, ?> setup = pref.getAll();
+        Boolean v = pref.getAll().containsKey("completedSetUp");
+        if (!v) {
+            SharedPreferences songsList = getSharedPreferences("songslist", MODE_PRIVATE);
+            SharedPreferences.Editor metaEdit = songsList.edit();
 
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
-        int id;
-        int song_length;
-        String album_title;
-        String song_title;
-        String song_path;
+            int id;
+            int song_length;
+            String album_title;
+            String song_title;
+            String song_path;
 
-        File file = new File(albumPath);
-        File[] list = file.listFiles();
+            File file = new File(R.raw.class.toString());
+            File[] list = file.listFiles();
 
-        for(File f:list){
-            String path = f.getName();
-            mmr.setDataSource(path);
-            if(path.endsWith(".mp3")){
-                song_path = f.getAbsolutePath();
+            for (File f : list) {
+                String path = f.getName();
+                mmr.setDataSource(path);
+                if (path.endsWith(".mp3")) {
+                    song_path = f.getAbsolutePath();
 
-                album_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                song_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                id = (album_title+song_title).hashCode();
-                song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                    album_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                    song_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                    id = (album_title + song_title).hashCode();
+                    song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 
-                SharedPreferences newSong = getSharedPreferences(String.valueOf(id), MODE_PRIVATE);
-                SharedPreferences.Editor songadd = newSong.edit();
+                    SharedPreferences newSong = getSharedPreferences(String.valueOf(id), MODE_PRIVATE);
+                    SharedPreferences.Editor songadd = newSong.edit();
 
-                songadd.putFloat("Latitude", 0);
-                songadd.putFloat("Longitude", 0);
-                songadd.putInt("Day", 0);
-                songadd.putInt("Time", 0);
-                songadd.putString("Album Time", album_title);
-                songadd.putInt("Song Length", song_length);
-                songadd.putString("Song path", song_path);
-                songadd.putFloat("Rating", 0);
-                songadd.putInt("Times played", 0);
+                    songadd.putFloat("Latitude", 0);
+                    songadd.putFloat("Longitude", 0);
+                    songadd.putInt("Day", 0);
+                    songadd.putInt("Time", 0);
+                    songadd.putString("Album Time", album_title);
+                    songadd.putInt("Song Length", song_length);
+                    songadd.putString("Song path", song_path);
+                    songadd.putFloat("Rating", 0);
+                    songadd.putInt("Times played", 0);
+                    songadd.putInt("Last played", 0);
 
-                songadd.commit();
+                    songadd.commit();
+                }
+
             }
-
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putString("completedSetUp", "true").apply();
         }
-        SharedPreferences.Editor ed = pref.edit();
-        ed.putString("completedSetUp", "true").apply();
     }
 }
 

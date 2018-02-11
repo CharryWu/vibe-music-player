@@ -51,7 +51,7 @@ public class SongListActivity extends AppCompatActivity {
 
     public void songPicked(View view){
         //mp.setList(songs);
-        //mp.setSong(Integer.parseInt(view.getTag().toString()));
+        //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS",songs);

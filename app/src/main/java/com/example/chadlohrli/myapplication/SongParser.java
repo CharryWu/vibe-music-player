@@ -17,6 +17,33 @@ import java.util.ArrayList;
 public class SongParser {
 
 
+    public static Bitmap albumCover (SongData song, Context context) {
+
+        if (song.getPath() == null)
+                return null;
+
+        Bitmap album_image = null;
+        byte[] art;
+
+        try {
+
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+
+            Uri uri = Uri.parse(song.getPath());
+            mmr.setDataSource(context,uri);
+
+            art = mmr.getEmbeddedPicture();
+            album_image = BitmapFactory.decodeByteArray(art,0,art.length);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return album_image;
+
+    }
+
     public static SongData parseSong (String path, String Id, Context context){
 
 
@@ -26,8 +53,6 @@ public class SongParser {
         String song_title;
         String song_path = null;
         String song_artist;
-        Bitmap album_image;
-        byte[] art;
         SongData song = null;
 
 
@@ -56,8 +81,6 @@ public class SongParser {
                 song_length = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 song_artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
                 id = Id;
-                art = mmr.getEmbeddedPicture();
-                album_image = BitmapFactory.decodeByteArray(art,0,art.length);
 
                 Log.d("song title:", song_title);
 

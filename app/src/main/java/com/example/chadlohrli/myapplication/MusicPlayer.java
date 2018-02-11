@@ -1,6 +1,7 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -39,7 +40,10 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle = (TextView) findViewById(R.id.songTitle);
         artistTitle = (TextView) findViewById(R.id.artistTitle);
 
-        //albumCover.setImageBitmap(song.getImage());
+        Bitmap bp = SongParser.albumCover(song,getApplicationContext());
+        if(bp != null) {
+            albumCover.setImageBitmap(bp);
+        }
         songTitle.setText(song.getTitle());
         artistTitle.setText(song.getArtist());
 
@@ -72,6 +76,18 @@ public class MusicPlayer extends AppCompatActivity {
         });
 
 
-
     }
+
+    /* TODO:
+    1) get location, time of day, and day of week
+    2) save song data in shared preferences
+    3) add all music player functionality (play,stop,seek,next)
+    4) tap to favorite/dislike (changes button state and sharedPreferences
+    5) handle next song and play in background (optional) ?
+
+
+
+
+     */
+
 }

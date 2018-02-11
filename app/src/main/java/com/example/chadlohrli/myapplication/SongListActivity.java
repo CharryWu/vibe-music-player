@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class SongListActivity extends AppCompatActivity {
@@ -33,8 +35,17 @@ public class SongListActivity extends AppCompatActivity {
             String Id = fields[count].getName();
 
             SongData song = SongParser.parseSong(path, Id,getApplicationContext());
+
             songs.add(song);
         }
+
+        //sort songs
+        Collections.sort(songs, new Comparator<SongData>() {
+            @Override
+            public int compare(SongData a, SongData b) {
+                return a.getTitle().compareTo(b.getTitle());
+            }
+        });
 
         return songs;
     }
@@ -80,6 +91,8 @@ public class SongListActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+
 
     }
 }

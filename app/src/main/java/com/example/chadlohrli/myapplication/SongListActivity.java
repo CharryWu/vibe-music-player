@@ -62,14 +62,6 @@ public class SongListActivity extends AppCompatActivity {
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SongListActivity.this, .class);
-                SongListActivity.this.startActivity(intent);
-            }
-        });
-
         //get id
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
@@ -97,7 +89,7 @@ public class SongListActivity extends AppCompatActivity {
             }
 
         }
-=======
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,7 +98,7 @@ public class SongListActivity extends AppCompatActivity {
                 finish();
             }
         });
->>>>>>> baeda0cf921e8391ebc214c5bb7b194289be159e
+
 
 
     }

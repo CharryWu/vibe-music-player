@@ -1,30 +1,18 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-<<<<<<< HEAD
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-=======
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Gravity;
->>>>>>> baeda0cf921e8391ebc214c5bb7b194289be159e
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-<<<<<<< HEAD
-
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
-=======
->>>>>>> baeda0cf921e8391ebc214c5bb7b194289be159e
+
 
 public class SongListActivity extends AppCompatActivity {
     private ListView listView;

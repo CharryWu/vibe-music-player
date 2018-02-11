@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class SongParser {
 
-    public static SongData createAlbum (String path, String Id, Context context){
+    public static SongData parseSong (String path, String Id, Context context){
 
 
         String id;

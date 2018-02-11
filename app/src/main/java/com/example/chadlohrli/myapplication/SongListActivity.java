@@ -16,8 +16,29 @@ import java.util.ArrayList;
 
 public class SongListActivity extends AppCompatActivity {
     private ListView listView;
-    private Button shuffleButton;
     private Button backButton;
+
+    private ArrayList<SongData> songs;
+
+    public ArrayList<SongData> createSongs(){
+
+        Field[] fields = R.raw.class.getFields();
+        ArrayList<SongData> songs = new ArrayList<SongData>();
+
+        for(int count=0;count < fields.length; count++){
+
+            Log.i("Raw Asset:",fields[count].getName());
+
+            String path = "android.resource://" + getPackageName()+"/raw/";
+            String Id = fields[count].getName();
+
+            SongData song = SongParser.parseSong(path, Id,getApplicationContext());
+            songs.add(song);
+        }
+
+        return songs;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +46,8 @@ public class SongListActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.songlist);
         backButton = (Button) findViewById(R.id.go_back);
+
+        songs = createSongs();
 
         //sample array
         String[] songTitleArray = new String[] {"Song 1", "Song 2", "Song 3", "Song 4","Song 5", "Song 6", "Song 7", "Song 8",
@@ -46,37 +69,8 @@ public class SongListActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), songAndAlbumAndArtist, Toast.LENGTH_SHORT);
                 toast.show();
 
-                //update song information
             }
         });
-
-        //get id
-        Field[] fields = R.raw.class.getFields();
-        ArrayList<SongData> songs = new ArrayList<SongData>();
-
-        for(int count =0;count < fields.length; count++){
-
-            Log.i("Raw Asset:",fields[count].getName());
-
-            try {
-
-                int resID = fields[count].getInt(fields[count]);
-
-
-                String path = "android.resource://" + getPackageName()+"/raw/";
-                String Id = fields[count].getName();
-
-
-                SongData album = SongParser.createAlbum(path, Id,getApplicationContext());
-
-                Log.i("Raw Asset ID:",String.valueOf(resID));
-
-
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,8 +80,6 @@ public class SongListActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-
 
     }
 }

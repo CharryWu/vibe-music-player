@@ -1,10 +1,12 @@
 package com.example.chadlohrli.myapplication;
 
+import java.io.Serializable;
+
 /**
  * Created by sungeun on 2/9/18.
  */
 
-public class SongData {
+public class SongData implements Serializable {
 
     private String id;
     private int song_length;

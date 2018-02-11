@@ -20,10 +20,11 @@ public class SongParser {
 
 
         String id;
-        int song_length;
+        String song_length;
         String album_title = null;
         String song_title;
         String song_path = null;
+        String song_artist;
         Bitmap album_image;
         byte[] art;
         SongData song = null;
@@ -44,34 +45,28 @@ public class SongParser {
 
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
-                Uri uri = Uri.parse(path+Id);
-                mmr.setDataSource(context,uri);
-                Log.d("Parse: ", "here");
+                song_path = path+Id;
 
-                //song_path = f.getAbsolutePath();
+                Uri uri = Uri.parse(song_path);
+                mmr.setDataSource(context,uri);
 
                 album_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
                 song_title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-
-                Log.d("song title:", song_title);
-
-                //id = (album_title+song_title).hashCode();
+                song_length = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                song_artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
                 id = Id;
-                song_length = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-
-                song = new SongData(id,song_length,album_title,song_title,song_path);
                 art = mmr.getEmbeddedPicture();
                 album_image = BitmapFactory.decodeByteArray(art,0,art.length);
 
-                //songs.add(song);
+                Log.d("song title:", song_title);
+
+                song = new SongData(id,song_length,album_title,song_title,song_artist,song_path,album_image);
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-                //if(path.endsWith(".mp3")){
-            //}
 
-        //}
         return song;
     }
 

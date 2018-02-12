@@ -38,10 +38,10 @@
 
     <Button
         android:id="@+id/back_button_picked_album"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="23dp"
-        android:text="Back"
+        android:text="\u2039"
         app:layout_constraintBottom_toTopOf="@+id/album_art_picked_album"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

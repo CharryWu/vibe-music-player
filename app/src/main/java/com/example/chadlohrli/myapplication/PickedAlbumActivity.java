@@ -3,48 +3,55 @@ package com.example.chadlohrli.myapplication;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+/**
+ * Previous screen: {@link AlbumActivity}
+ * Next screen: {@link MusicPlayer}
+ * Displays details of a selected album = album cover + album song list
+ */
 public class PickedAlbumActivity extends AppCompatActivity {
 
     private ListView listView;
+    private ImageView albumCover;
+    private TextView albumName;
+    private TextView artistName;
+
+    private ArrayList<Album> albums;
+    private Album cur_album;
+    private ArrayList<SongData> songs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // UI setup
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picked_album);
-
         listView = (ListView) findViewById(R.id.songlist_activity_picked_album);
+        albumCover = (ImageView) findViewById(R.id.album_art_picked_album);
+        albumName = (TextView) findViewById(R.id.album_name_textview_picked_album);
+        artistName = (TextView) findViewById(R.id.artist_name_textview_picked_album);
 
-        //sample array
-        String[] songTitleArray = new String[] {"Song 1", "Song 2", "Song 3", "Song 4","Song 5", "Song 6", "Song 7", "Song 8",
-                "Song 9", "Song 10", "Song 11", "Song 12", "Song 13", "Song 14", "Song 15", "Song 16", "Song 17"};
+        //grab data from intent
+        albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
+        cur_album = albums.get(getIntent().getIntExtra("CUR",0));
+        songs = cur_album.getSongs();
 
-        //adapter for listview
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songTitleArray);
-        //set adapter for listview
-        listView.setAdapter(adapter);
+        //display song for now to ensure data has correctly been passed
+        Toast toast = Toast.makeText(getApplicationContext(), cur_album.getAlbumTitle(), Toast.LENGTH_SHORT);
+        toast.show();
 
-        //when item in list is clicked, song should play
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //get String stored in selected item, later pass to hashtable to retrieve Song object
-                String songAndAlbumAndArtist = (String) listView.getItemAtPosition(i);
+        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
+        albumName.setText(cur_album.getAlbumTitle());
+        artistName.setText(cur_album.getArtistName());
 
-                //placeholder
-                Toast toast = Toast.makeText(getApplicationContext(), songAndAlbumAndArtist, Toast.LENGTH_SHORT);
-                toast.show();
-
-                //update song information
-            }
-        });
-
+        listView.setAdapter(new SongAdapter(this,songs));
         Button backButton = (Button) findViewById(R.id.back_button_picked_album);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,5 +62,16 @@ public class PickedAlbumActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void songPicked(View view){
+        //mp.setList(songs);
+        //mp.setSong(Integer.par seInt(view.getTag().toString()));
+
+        Intent intent = new Intent(this, MusicPlayer.class);
+        intent.putExtra("SONGS",songs);
+        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        this.startActivity(intent);
+        finish();
     }
 }

@@ -4,24 +4,22 @@ package com.example.chadlohrli.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class gridAdapter extends ArrayAdapter<gridItem> {
+public class AlbumAdapter extends ArrayAdapter<Album> {
     Context context;
     int layoutResourceId;
-    ArrayList<gridItem> data = new ArrayList<gridItem>();
+    ArrayList<com.example.chadlohrli.myapplication.Album> data = new ArrayList<com.example.chadlohrli.myapplication.Album>();
 
-    public gridAdapter(Context context, int layoutResourceId,
-                             ArrayList<gridItem> data) {
+    public AlbumAdapter(Context context, int layoutResourceId,
+                        ArrayList<com.example.chadlohrli.myapplication.Album> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -47,7 +45,7 @@ public class gridAdapter extends ArrayAdapter<gridItem> {
             album = (Album) row.getTag();
         }
 
-        gridItem item = data.get(position);
+        com.example.chadlohrli.myapplication.Album item = data.get(position);
         ArrayList<SongData> songs = item.getSongs();
         Bitmap bp = SongParser.albumCover(songs.get(0), this.context);
         album.albumTitle.setText(item.getAlbumTitle());

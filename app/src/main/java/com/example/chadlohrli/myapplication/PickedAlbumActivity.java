@@ -24,8 +24,8 @@ public class PickedAlbumActivity extends AppCompatActivity {
     private TextView albumName;
     private TextView artistName;
 
-    private ArrayList<gridItem> albums;
-    private gridItem cur_album;
+    private ArrayList<Album> albums;
+    private Album cur_album;
     private ArrayList<SongData> songs;
 
     @Override
@@ -39,7 +39,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
         artistName = (TextView) findViewById(R.id.artist_name_textview_picked_album);
 
         //grab data from intent
-        albums = (ArrayList<gridItem>) getIntent().getSerializableExtra("ALBUMS");
+        albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
         cur_album = albums.get(getIntent().getIntExtra("CUR",0));
         songs = cur_album.getSongs();
 

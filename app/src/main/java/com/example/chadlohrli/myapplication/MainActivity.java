@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+/*
 
         SharedPreferences pref = getSharedPreferences("initial_setup", MODE_PRIVATE);
         Map<String, ?> setup = pref.getAll();
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = pref.edit();
             ed.putString("completedSetUp", "true").apply();
         }
-
+*/
     }
 }
 

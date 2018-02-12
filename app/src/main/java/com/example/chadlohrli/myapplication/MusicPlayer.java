@@ -21,6 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
@@ -55,6 +59,8 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private Location lkl;
 
     public void setSong(int songIndex){
         cur_song = songIndex;
@@ -80,7 +86,7 @@ public class MusicPlayer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
-
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         backBtn = (Button) findViewById(R.id.backBtn);
         playBtn = (ImageButton) findViewById(R.id.playBtn);
@@ -180,10 +186,24 @@ public class MusicPlayer extends AppCompatActivity {
 
 
         }
-        LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        /*LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         return location;
-
+        */
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            lkl = location;
+                        } else {
+                        }
+                    }
+                });
+        Log.d("GPS", (lkl.getProvider()));
+        return lkl;
     }
 
     protected int getTimeOfDay() {

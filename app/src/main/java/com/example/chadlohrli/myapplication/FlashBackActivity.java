@@ -20,17 +20,29 @@ import java.util.Calendar;
 
 public class FlashBackActivity extends AppCompatActivity {
 
+    private final int MORNING = 0;
+    private final int AFTERNOON = 1;
+    private final int NIGHT = 2;
+
+    private final int MONDAY = 0;
+    private final int TUESDAY = 1;
+    private final int WEDNESDAY = 2;
+    private final int THURSDAY = 3;
+    private final int FRIDAY = 4;
+    private final int SATURDAY = 5;
+    private final int SUNDAY = 6;
+    Location location;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.flashback);
 
-
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("Chenged", location.toString());
-
+                //Log.d("Chenged", location.toString());
+                location = location;
             }
 
             @Override
@@ -49,17 +61,20 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     100);
-            Log.d("test1","ins");
+            //Log.d("test1", "ins");
             return;
         }
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+
+        //Assuming Location location stores correct location
     }
 }

@@ -26,6 +26,7 @@ public class SharedPrefs {
         songadd.putInt("Rating", rating);
         songadd.putInt("Times played", timesPlayed);
         songadd.putInt("Last played", lastPlayed);
+        songadd.putInt("Fav", 0);
 
         songadd.commit();
 

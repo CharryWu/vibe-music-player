@@ -3,12 +3,11 @@ package com.example.chadlohrli.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-<<<<<<< HEAD
-=======
+
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
->>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
+
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,11 +16,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
-<<<<<<< HEAD
-=======
-import android.support.v4.app.ActivityCompat;
 
->>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -196,8 +192,6 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
-<<<<<<< HEAD
-=======
     public void loadMedia(int id) {
         if(mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
@@ -261,8 +255,6 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
 
-
->>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
 
     /* TODO:
     1) get location, time of day, and day of week

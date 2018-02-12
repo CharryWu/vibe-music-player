@@ -1,8 +1,10 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -77,6 +79,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     }
+
 
     /* TODO:
     1) get location, time of day, and day of week

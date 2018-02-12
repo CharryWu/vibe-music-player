@@ -2,15 +2,12 @@ package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -151,100 +148,6 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     }
-
-    public void loadMedia(int id) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        }
-
-        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(id);
-        try {
-            mediaPlayer.setDataSource(assetFileDescriptor);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
-                }
-            });
-        }
-        catch (Exception e) {
-            Log.d("Exception", e.toString());
-        }
-    }
-
-
-
-    protected Location getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    100);
-            Log.d("test1", "ins");
-            return null;
-
-
-        }
-        /*LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        return location;
-        */
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            lkl = location;
-                        } else {
-                        }
-                    }
-                });
-        Log.d("GPS", (lkl.getProvider()));
-        return lkl;
-    }
-
-    protected int getTimeOfDay() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 && hour <= 5)
-            return NIGHT;
-        else if (hour >= 6 && hour <= 11 )
-            return MORNING;
-        else
-            return AFTERNOON;
-    }
-
-    protected int getDay() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-
-        switch (day) {
-            case 0: return MONDAY;
-            case 1: return TUESDAY;
-            case 2: return WEDNESDAY;
-            case 3: return THURSDAY;
-            case 4: return FRIDAY;
-            case 5: return SATURDAY;
-            default: return SUNDAY;
-
-        }
-
-    }
-
-    protected void saveSongData(Location location, int timeOfDay, int day) {
-        SharedPreferences sharedPreferences = getSharedPreferences(Integer.toString(cur_song), MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString("latitude", Double.toString(location.getLatitude()));
-        editor.putString("longitude", Double.toString(location.getLongitude()));
-        editor.putString("timeOfDay", Integer.toString(timeOfDay));
-        editor.putString("day", Integer.toString(day));
-
-        editor.apply();
-    }
-
 
 
     /* TODO:

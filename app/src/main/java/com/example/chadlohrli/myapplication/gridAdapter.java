@@ -3,6 +3,8 @@ package com.example.chadlohrli.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +32,7 @@ public class gridAdapter extends ArrayAdapter<gridItem> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        Album album = null;
+        Album album;
 
         if (row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -46,9 +48,11 @@ public class gridAdapter extends ArrayAdapter<gridItem> {
         }
 
         gridItem item = data.get(position);
+        ArrayList<SongData> songs = item.getSongs();
+        Bitmap bp = SongParser.albumCover(songs.get(0), this.context);
         album.albumTitle.setText(item.getAlbumTitle());
         album.albumArtist.setText(item.getArtistName());
-        album.albumArt.setImageResource(item.getImage());
+        album.albumArt.setImageBitmap(bp);
         return row;
 
     }

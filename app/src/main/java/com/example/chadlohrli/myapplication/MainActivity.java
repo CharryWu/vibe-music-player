@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+<<<<<<< HEAD
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
             ed.putString("completedSetUp", "true").apply();
         }
     */
+=======
+>>>>>>> ee722e8d560c3b85995ced30b24e0309832e78ed
     }
 }
 

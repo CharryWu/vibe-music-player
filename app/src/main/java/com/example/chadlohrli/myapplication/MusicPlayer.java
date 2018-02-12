@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,6 +15,7 @@ import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.support.v4.app.ActivityCompat;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -126,8 +129,11 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
-
-        loadMedia(R.raw.gottagetoveryou);
+        Resources res = this.getResources();
+        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
+        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
+        Log.d("soundId", Integer.toString(soundId));
+        loadMedia(soundId);
 
         /**Listen for location update */
 
@@ -199,25 +205,6 @@ public class MusicPlayer extends AppCompatActivity {
         }
     }
 
-
-
-    protected Location getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    100);
-            Log.d("test1", "ins");
-            return null;
-
-
-        }
-        LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        return location;
-
-    }
-
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if(hour >= 17 && hour <= 5)
@@ -258,6 +245,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         editor.apply();
     }
+
 
 
 

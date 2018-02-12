@@ -19,7 +19,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.Calendar;
 
 public class FlashBackActivity extends AppCompatActivity {
-    //private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,54 +57,8 @@ public class FlashBackActivity extends AppCompatActivity {
             return;
         }
 
-
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
-
-        /**
-        try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        }
-        catch (SecurityException e) {
-            Log.d("Security Exception", "Security Exception");
-        }
-        */
-
-
-
-
-
-
-
-
-
-
-
-        /**
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(FlashBackActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(FlashBackActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(FlashBackActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-            return;
-        }else{
-            // Write you code here if permission already given.
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                Log.d("kyle", location.toString());
-                            }
-                        }
-
-
-                    });
-        }
-
-         **/
-
-
     }
 }

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import java.io.File;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     Button songButton;
     Button albumButton;
-
+    ImageButton flashBackButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
+        flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
 
         songButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(intent);
             }
         });
-
 
         SharedPreferences pref = getSharedPreferences("initial_setup", MODE_PRIVATE);
         Map<String, ?> setup = pref.getAll();
@@ -90,6 +91,14 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = pref.edit();
             ed.putString("completedSetUp", "true").apply();
         }
+
+        flashBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, FlashBackActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
     }
 }
 

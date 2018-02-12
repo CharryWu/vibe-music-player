@@ -16,9 +16,7 @@ public class SharedPrefs {
 
     public static void saveData(Context context, String id,float latitude,float longitude, int day, int time, int rating, int timesPlayed,int lastPlayed){
 
-
-        SharedPreferences songsList = context.getSharedPreferences("songslist", MODE_PRIVATE);
-        SharedPreferences newSong = context.getSharedPreferences(String.valueOf(id), MODE_PRIVATE);
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
 
         songadd.putFloat("Latitude", latitude);
@@ -35,10 +33,7 @@ public class SharedPrefs {
 
     public static Map<String,?> getData(Context context,String id) {
 
-        MainActivity mp;
-
-        SharedPreferences songsList = context.getSharedPreferences("songslist", MODE_PRIVATE);
-
+        SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);
         return songsList.getAll();
 
     }

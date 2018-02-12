@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 
 public class SongListActivity extends AppCompatActivity {
@@ -67,8 +68,9 @@ public class SongListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.songlist);
 
+        //sharedPrefs Example
         SharedPrefs.saveData(getApplicationContext(),"5",(float)1.2,(float)1.2,5,2,7,3,1);
-
+        Map<String,?> mmap = SharedPrefs.getData(getApplicationContext(),"5");
 
         listView = (ListView) findViewById(R.id.songlist);
         backButton = (Button) findViewById(R.id.go_back);

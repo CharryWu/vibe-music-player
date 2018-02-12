@@ -20,22 +20,17 @@ import java.util.Calendar;
 
 public class FlashBackActivity extends AppCompatActivity {
     //private FusedLocationProviderClient mFusedLocationClient;
-    LocationManager locationManager;
-    LocationListener locationListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.flashback);
 
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        locationListener = new LocationListener() {
+        LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Toast toast = Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT);
-                toast.setMargin(50,50);
-                toast.show();
+                Log.d("Chenged", location.toString());
             }
 
             @Override
@@ -52,9 +47,22 @@ public class FlashBackActivity extends AppCompatActivity {
             public void onProviderDisabled(String s) {
 
             }
-
-
         };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+
 
         /**
         try {
@@ -64,22 +72,6 @@ public class FlashBackActivity extends AppCompatActivity {
             Log.d("Security Exception", "Security Exception");
         }
         */
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    100);
-            Log.d("test1","ins");
-            return;
-
-        }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-
-        //get current day
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
 
 

@@ -1,7 +1,6 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -21,7 +17,7 @@ import java.util.Comparator;
 public class AlbumActivity extends AppCompatActivity {
 
     private ArrayList<SongData> madeSongs;
-    private ArrayList<gridItem> gridArray;
+    private ArrayList<Album> albumArray;
 
     public ArrayList<SongData> createSongs(){
 
@@ -51,37 +47,37 @@ public class AlbumActivity extends AppCompatActivity {
         return songs;
     }
 
-    public ArrayList<gridItem> buildAlbums(ArrayList<SongData> songs) {
-        ArrayList<gridItem> gridItemArrayList = new ArrayList<gridItem>();
-        gridItem obj;
+    public ArrayList<Album> buildAlbums(ArrayList<SongData> songs) {
+        ArrayList<Album> albumArrayList = new ArrayList<Album>();
+        Album obj;
 
         for (int i = 0; i < songs.size(); i++) {
             SongData songToAdd = songs.get(i);
             boolean matchFound = false;
             if (i == 0) {
                 ArrayList<SongData> list = new ArrayList<SongData>();
-                gridItem firstElement = new gridItem(songToAdd.getAlbum(), songToAdd.getArtist(), list);
+                Album firstElement = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                 firstElement.getSongs().add(songToAdd);
-                gridItemArrayList.add(firstElement);
+                albumArrayList.add(firstElement);
             }
             else {
-                for (int j = 0; j < gridItemArrayList.size(); j++) {
-                    if (songToAdd.getAlbum().equals(gridItemArrayList.get(j).getAlbumTitle())) {
-                        obj = gridItemArrayList.get(j);
+                for (int j = 0; j < albumArrayList.size(); j++) {
+                    if (songToAdd.getAlbum().equals(albumArrayList.get(j).getAlbumTitle())) {
+                        obj = albumArrayList.get(j);
                         obj.getSongs().add(songToAdd);
                         matchFound = true;
                     }
                 }
                 if (!matchFound){
                     ArrayList<SongData> list = new ArrayList<SongData>();
-                    gridItem object = new gridItem(songToAdd.getAlbum(), songToAdd.getArtist(), list);
+                    Album object = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                     object.getSongs().add(songToAdd);
-                    gridItemArrayList.add(object);
+                    albumArrayList.add(object);
                 }
             }
 
         }
-        return gridItemArrayList;
+        return albumArrayList;
 
     }
 
@@ -112,17 +108,17 @@ public class AlbumActivity extends AppCompatActivity {
         });
 
         madeSongs = createSongs();
-        gridArray = buildAlbums(madeSongs);
+        albumArray = buildAlbums(madeSongs);
 
         GridView gridView = (GridView) findViewById(R.id.gv);
-        gridAdapter customGrid = new gridAdapter(this, R.layout.row_grid, gridArray);
+        AlbumAdapter customGrid = new AlbumAdapter(this, R.layout.row_grid, albumArray);
         gridView.setAdapter(customGrid);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(AlbumActivity.this, PickedAlbumActivity.class);
-                intent.putExtra("ALBUMS", gridArray);
+                intent.putExtra("ALBUMS", albumArray);
                 intent.putExtra("CUR", view.getTag().toString());
                 AlbumActivity.this.startActivity(intent);
                 finish();

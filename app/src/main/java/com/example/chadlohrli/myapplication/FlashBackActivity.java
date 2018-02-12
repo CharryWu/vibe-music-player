@@ -30,6 +30,7 @@ public class FlashBackActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d("Chenged", location.toString());
+
             }
 
             @Override

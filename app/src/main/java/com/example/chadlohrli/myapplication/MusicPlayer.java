@@ -1,13 +1,27 @@
 package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+<<<<<<< HEAD
+=======
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+
+>>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
+<<<<<<< HEAD
+=======
+import android.support.v4.app.ActivityCompat;
+
+>>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -114,41 +128,141 @@ public class MusicPlayer extends AppCompatActivity {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isPlayingMusic = true) {
-                    mediaPlayer.stop();
+                if (isPlayingMusic == true) {
+                    mediaPlayer.pause();
                     isPlayingMusic = false;
-                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
+                    playBtn.setImageResource(android.R.drawable.ic_media_play);
                 }
                 else {
                     mediaPlayer.start();
                     isPlayingMusic = true;
-                    playBtn.setImageResource(android.R.drawable.ic_media_play);
+                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 }
 
             }
         });
+        Resources res = this.getResources();
+        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
+        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
+        Log.d("soundId", Integer.toString(soundId));
+        loadMedia(soundId);
 
+        /**Listen for location update */
 
-
-        //double check later to see if this is correct if
-        loadMedia(R.raw.gottagetoveryou);
-        //automatically start playing music
-
-
-
-
-
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         //save data in shared preferences
-        Location currentLocation = getCurrentLocation();
-        int timeOfDay = getTimeOfDay();
-        int day = getDay();
+        final LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("Chenged", location.toString());
+                int timeOfDay = getTimeOfDay();
+                int day = getDay();
+                locationManager.removeUpdates(this);
+                saveSongData(location, timeOfDay, day);
+            }
 
-        saveSongData(currentLocation, timeOfDay, day);
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+
+
+
 
 
 
     }
 
+<<<<<<< HEAD
+=======
+    public void loadMedia(int id) {
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+
+        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(id);
+        try {
+            mediaPlayer.setDataSource(assetFileDescriptor);
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.start();
+                }
+            });
+        }
+        catch (Exception e) {
+            Log.d("Exception", e.toString());
+        }
+    }
+
+    protected int getTimeOfDay() {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if(hour >= 17 && hour <= 5)
+            return NIGHT;
+        else if (hour >= 6 && hour <= 10 )
+            return MORNING;
+        else
+            return AFTERNOON;
+    }
+
+    protected int getDay() {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+        switch (day) {
+            case 0: return MONDAY;
+            case 1: return TUESDAY;
+            case 2: return WEDNESDAY;
+            case 3: return THURSDAY;
+            case 4: return FRIDAY;
+            case 5: return SATURDAY;
+            default: return SUNDAY;
+
+        }
+
+    }
+
+    protected void saveSongData(Location location, int timeOfDay, int day) {
+        SharedPreferences sharedPreferences = getSharedPreferences(Integer.toString(cur_song), MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Log.d("latitude", Double.toString(location.getLatitude()));
+        Log.d("longitude", Double.toString(location.getLongitude()));
+        editor.putString("latitude", Double.toString(location.getLatitude()));
+        editor.putString("longitude", Double.toString(location.getLongitude()));
+        editor.putString("timeOfDay", Integer.toString(timeOfDay));
+        editor.putString("day", Integer.toString(day));
+
+        editor.apply();
+    }
+
+
+
+>>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
 
     /* TODO:
     1) get location, time of day, and day of week

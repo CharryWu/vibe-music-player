@@ -1,18 +1,13 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,9 +21,11 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
     private ListView listView;
     private ImageView albumCover;
+    private TextView albumName;
+    private TextView artistName;
 
-    private ArrayList<gridItem> albums;
-    private gridItem cur_album;
+    private ArrayList<Album> albums;
+    private Album cur_album;
     private ArrayList<SongData> songs;
 
     @Override
@@ -38,9 +35,11 @@ public class PickedAlbumActivity extends AppCompatActivity {
         setContentView(R.layout.activity_picked_album);
         listView = (ListView) findViewById(R.id.songlist_activity_picked_album);
         albumCover = (ImageView) findViewById(R.id.album_art_picked_album);
+        albumName = (TextView) findViewById(R.id.album_name_textview_picked_album);
+        artistName = (TextView) findViewById(R.id.artist_name_textview_picked_album);
 
         //grab data from intent
-        albums = (ArrayList<gridItem>) getIntent().getSerializableExtra("ALBUMS");
+        albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
         cur_album = albums.get(getIntent().getIntExtra("CUR",0));
         songs = cur_album.getSongs();
 
@@ -49,6 +48,8 @@ public class PickedAlbumActivity extends AppCompatActivity {
         toast.show();
 
         albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
+        albumName.setText(cur_album.getAlbumTitle());
+        artistName.setText(cur_album.getArtistName());
 
         listView.setAdapter(new SongAdapter(this,songs));
         Button backButton = (Button) findViewById(R.id.back_button_picked_album);

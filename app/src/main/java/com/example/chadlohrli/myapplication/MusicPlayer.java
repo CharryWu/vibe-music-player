@@ -1,8 +1,10 @@
 package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
@@ -14,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +63,10 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
+
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean isBound=false;
 
     public void setSong(int songIndex){
         cur_song = songIndex;
@@ -117,25 +124,28 @@ public class MusicPlayer extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isPlayingMusic == true) {
-                    mediaPlayer.pause();
+                    musicService.pauseSong();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
                 }
                 else {
-                    mediaPlayer.start();
+                    musicService.resumeSong();
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 }
 
             }
         });
+
+        /**
         Resources res = this.getResources();
         int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
         Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
         Log.d("soundId", Integer.toString(soundId));
         loadMedia(soundId);
 
-        /**Listen for location update */
+
+        Listen for location update
 
         final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         //save data in shared preferences
@@ -179,9 +189,45 @@ public class MusicPlayer extends AppCompatActivity {
 
 
 
+        */
 
 
+    }
 
+    private ServiceConnection musicConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+            //get service
+            musicService = binder.getService();
+            //pass list
+            musicService.setSongList(songs);
+            musicService.setCurrentSong(cur_song);
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
     }
 
     public void loadMedia(int id) {

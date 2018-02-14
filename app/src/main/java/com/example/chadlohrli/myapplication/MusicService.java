@@ -72,7 +72,8 @@ MediaPlayer.OnCompletionListener {
 
 
 
-    public void setCurrentSong(int id) {
+    public void setCurrentSong(int cur_song) {
+        this.cur_song = cur_song;
         Resources res = this.getResources();
         cur_song_id = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
 

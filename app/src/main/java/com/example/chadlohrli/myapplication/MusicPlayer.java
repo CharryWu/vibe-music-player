@@ -204,6 +204,7 @@ public class MusicPlayer extends AppCompatActivity {
             //pass list
             musicService.setSongList(songs);
             musicService.setCurrentSong(cur_song);
+            musicService.playSong();
             isBound = true;
         }
 

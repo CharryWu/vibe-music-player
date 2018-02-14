@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.SeekBar;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,8 @@ MediaPlayer.OnCompletionListener {
     private int cur_song = 0;
     private int cur_song_id;
     private final IBinder musicBinder = new MusicBinder();
+
+    private SeekBar sb;
 
 
     public MusicService() {
@@ -64,6 +67,7 @@ MediaPlayer.OnCompletionListener {
     @Override
     public void onCompletion(MediaPlayer mp) {
 
+
     }
 
     public void setSongList(ArrayList<SongData> songList) {
@@ -96,6 +100,10 @@ MediaPlayer.OnCompletionListener {
         }
     }
 
+    public MediaPlayer getPlayer() {
+        return  mediaPlayer;
+    }
+
     public void pauseSong() {
         mediaPlayer.pause();
     }
@@ -103,6 +111,7 @@ MediaPlayer.OnCompletionListener {
     public void resumeSong() {
         mediaPlayer.start();
     }
+
 
     public class MusicBinder extends Binder {
         MusicService getService() {

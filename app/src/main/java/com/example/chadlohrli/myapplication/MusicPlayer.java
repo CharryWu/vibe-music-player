@@ -16,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
@@ -26,11 +27,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
@@ -43,8 +49,10 @@ public class MusicPlayer extends AppCompatActivity {
     private ImageButton playBtn;
     private ImageButton nextBtn;
     private ImageButton prevBtn;
-    private ImageButton seekBar;
+    private SeekBar seekBar;
     private Button favBtn;
+    private TextView startTime;
+    private TextView endTime;
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -68,6 +76,8 @@ public class MusicPlayer extends AppCompatActivity {
     private Intent playIntent;
     private boolean isBound=false;
 
+    final Handler mHandler = new Handler();
+
     public void setSong(int songIndex){
         cur_song = songIndex;
     }
@@ -85,6 +95,26 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle.setText(song.getTitle());
         artistTitle.setText(song.getArtist());
 
+        //set up seeking
+        final MediaPlayer mp = musicService.getPlayer();
+
+        final int dur = mp.getDuration() / 1000;
+        seekBar.setMax(dur);
+        Log.d("DUR",String.valueOf(mp.getDuration()));
+
+        startTime.setText("0");
+        MusicPlayer.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int curPos = mp.getCurrentPosition() / 1000;
+                seekBar.setProgress(curPos);
+                startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
+                mHandler.postDelayed(this,1000);
+
+            }
+
+        });
+
     }
 
     @Override
@@ -99,6 +129,10 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn = (ImageButton) findViewById(R.id.nextBtn);
         favBtn = (Button) findViewById(R.id.favBtn);
         prevBtn = (ImageButton) findViewById(R.id.prevBtn);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        startTime = (TextView) findViewById(R.id.startTime);
+        endTime = (TextView) findViewById(R.id.endTime);
+
 
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
@@ -108,7 +142,6 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
-        setupPlayer(songs.get(cur_song));
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +169,8 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
+
+
 
         /**
         Resources res = this.getResources();
@@ -206,6 +241,8 @@ public class MusicPlayer extends AppCompatActivity {
             musicService.setCurrentSong(cur_song);
             musicService.playSong();
             isBound = true;
+
+            setupPlayer(songs.get(cur_song));
         }
 
         @Override
@@ -221,6 +258,7 @@ public class MusicPlayer extends AppCompatActivity {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
+
         }
     }
 
@@ -231,26 +269,6 @@ public class MusicPlayer extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void loadMedia(int id) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        }
-
-        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(id);
-        try {
-            mediaPlayer.setDataSource(assetFileDescriptor);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
-                }
-            });
-        }
-        catch (Exception e) {
-            Log.d("Exception", e.toString());
-        }
-    }
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);

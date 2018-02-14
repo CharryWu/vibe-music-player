@@ -31,8 +31,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
@@ -47,6 +51,8 @@ public class MusicPlayer extends AppCompatActivity {
     private ImageButton prevBtn;
     private SeekBar seekBar;
     private Button favBtn;
+    private TextView startTime;
+    private TextView endTime;
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -89,19 +95,20 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle.setText(song.getTitle());
         artistTitle.setText(song.getArtist());
 
-
         //set up seeking
-
         final MediaPlayer mp = musicService.getPlayer();
-        seekBar.setMax(mp.getDuration());
+
+        final int dur = mp.getDuration() / 1000;
+        seekBar.setMax(dur);
         Log.d("DUR",String.valueOf(mp.getDuration()));
 
-
+        startTime.setText("0");
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int curPos = mp.getCurrentPosition();
+                int curPos = mp.getCurrentPosition() / 1000;
                 seekBar.setProgress(curPos);
+                startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
                 mHandler.postDelayed(this,1000);
 
             }
@@ -123,6 +130,9 @@ public class MusicPlayer extends AppCompatActivity {
         favBtn = (Button) findViewById(R.id.favBtn);
         prevBtn = (ImageButton) findViewById(R.id.prevBtn);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        startTime = (TextView) findViewById(R.id.startTime);
+        endTime = (TextView) findViewById(R.id.endTime);
+
 
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");

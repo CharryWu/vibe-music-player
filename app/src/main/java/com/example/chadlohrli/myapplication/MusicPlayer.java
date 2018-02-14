@@ -102,14 +102,17 @@ public class MusicPlayer extends AppCompatActivity {
         seekBar.setMax(dur);
         Log.d("DUR",String.valueOf(mp.getDuration()));
 
-        startTime.setText("0");
+        endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
+
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int curPos = mp.getCurrentPosition() / 1000;
-                seekBar.setProgress(curPos);
-                startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
-                mHandler.postDelayed(this,1000);
+                if(musicService != null) {
+                    int curPos = mp.getCurrentPosition() / 1000;
+                    seekBar.setProgress(curPos);
+                    startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
+                    mHandler.postDelayed(this, 1000);
+                }
 
             }
 
@@ -267,6 +270,7 @@ public class MusicPlayer extends AppCompatActivity {
         stopService(playIntent);
         musicService = null;
         super.onDestroy();
+
     }
 
 

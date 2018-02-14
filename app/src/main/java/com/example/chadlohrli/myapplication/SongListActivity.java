@@ -1,10 +1,12 @@
 package com.example.chadlohrli.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -71,6 +73,9 @@ public class SongListActivity extends AppCompatActivity {
         //sharedPrefs Example
         SharedPrefs.saveData(getApplicationContext(),"5",(float)1.2,(float)1.2,5,2,7,3,1);
         Map<String,?> mmap = SharedPrefs.getData(getApplicationContext(),"5");
+
+        //location Example
+        Pair<Double,Double> d = LocationHelper.getLatLong(this.getApplicationContext());
 
         listView = (ListView) findViewById(R.id.songlist);
         backButton = (Button) findViewById(R.id.go_back);

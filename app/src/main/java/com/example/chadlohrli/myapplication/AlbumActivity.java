@@ -81,18 +81,6 @@ public class AlbumActivity extends AppCompatActivity {
 
     }
 
-  /*  public void albumPicked(View view){
-        //mp.setList(songs);
-        //mp.setSong(Integer.parseInt(view.getTag().toString()));
-
-        Intent intent = new Intent(AlbumActivity.this, PickedAlbumActivity.class);
-        intent.putExtra("ALBUM", gridArray);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
-        AlbumActivity.this.startActivity(intent);
-        finish();
-
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +107,7 @@ public class AlbumActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(AlbumActivity.this, PickedAlbumActivity.class);
                 intent.putExtra("ALBUMS", albumArray);
-                intent.putExtra("CUR", view.getTag().toString());
+                intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
                 AlbumActivity.this.startActivity(intent);
                 finish();
             }

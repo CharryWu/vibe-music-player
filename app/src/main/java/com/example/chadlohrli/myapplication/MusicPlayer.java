@@ -16,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
@@ -26,6 +27,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +45,7 @@ public class MusicPlayer extends AppCompatActivity {
     private ImageButton playBtn;
     private ImageButton nextBtn;
     private ImageButton prevBtn;
-    private ImageButton seekBar;
+    private SeekBar seekBar;
     private Button favBtn;
 
     private MediaPlayer mediaPlayer;
@@ -68,6 +70,8 @@ public class MusicPlayer extends AppCompatActivity {
     private Intent playIntent;
     private boolean isBound=false;
 
+    final Handler mHandler = new Handler();
+
     public void setSong(int songIndex){
         cur_song = songIndex;
     }
@@ -85,6 +89,25 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle.setText(song.getTitle());
         artistTitle.setText(song.getArtist());
 
+
+        //set up seeking
+
+        final MediaPlayer mp = musicService.getPlayer();
+        seekBar.setMax(mp.getDuration());
+        Log.d("DUR",String.valueOf(mp.getDuration()));
+
+
+        MusicPlayer.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int curPos = mp.getCurrentPosition();
+                seekBar.setProgress(curPos);
+                mHandler.postDelayed(this,1000);
+
+            }
+
+        });
+
     }
 
     @Override
@@ -99,6 +122,7 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn = (ImageButton) findViewById(R.id.nextBtn);
         favBtn = (Button) findViewById(R.id.favBtn);
         prevBtn = (ImageButton) findViewById(R.id.prevBtn);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
@@ -108,7 +132,6 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
-        setupPlayer(songs.get(cur_song));
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +159,8 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
+
+
 
         /**
         Resources res = this.getResources();
@@ -206,6 +231,8 @@ public class MusicPlayer extends AppCompatActivity {
             musicService.setCurrentSong(cur_song);
             musicService.playSong();
             isBound = true;
+
+            setupPlayer(songs.get(cur_song));
         }
 
         @Override
@@ -221,6 +248,7 @@ public class MusicPlayer extends AppCompatActivity {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
+
         }
     }
 
@@ -231,26 +259,6 @@ public class MusicPlayer extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void loadMedia(int id) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        }
-
-        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(id);
-        try {
-            mediaPlayer.setDataSource(assetFileDescriptor);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
-                }
-            });
-        }
-        catch (Exception e) {
-            Log.d("Exception", e.toString());
-        }
-    }
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);

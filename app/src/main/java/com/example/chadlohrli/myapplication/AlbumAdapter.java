@@ -16,10 +16,11 @@ import java.util.ArrayList;
 public class AlbumAdapter extends ArrayAdapter<Album> {
     Context context;
     int layoutResourceId;
-    ArrayList<com.example.chadlohrli.myapplication.Album> data = new ArrayList<com.example.chadlohrli.myapplication.Album>();
+    private LayoutInflater albumInf;
+    ArrayList<Album> data = new ArrayList<Album>();
 
     public AlbumAdapter(Context context, int layoutResourceId,
-                        ArrayList<com.example.chadlohrli.myapplication.Album> data) {
+                        ArrayList<Album> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -30,34 +31,26 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        Album album;
+        TextView albumTitle;
+        TextView albumArtist;
+        ImageView albumArt;
 
-        if (row == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
+        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+        row = inflater.inflate(layoutResourceId, parent, false);
 
-            album = new Album();
-            album.albumTitle = (TextView) row.findViewById(R.id.album_title_textview);
-            album.albumArtist = (TextView) row.findViewById(R.id.artist_name_textview);
-            album.albumArt = (ImageView) row.findViewById(R.id.album_art_imageview);
-            row.setTag(album);
-        } else {
-            album = (Album) row.getTag();
-        }
+        albumTitle = (TextView) row.findViewById(R.id.album_title_textview);
+        albumArtist = (TextView) row.findViewById(R.id.artist_name_textview);
+        albumArt = (ImageView) row.findViewById(R.id.album_art_imageview);
 
-        com.example.chadlohrli.myapplication.Album item = data.get(position);
+        Album item = data.get(position);
         ArrayList<SongData> songs = item.getSongs();
         Bitmap bp = SongParser.albumCover(songs.get(0), this.context);
-        album.albumTitle.setText(item.getAlbumTitle());
-        album.albumArtist.setText(item.getArtistName());
-        album.albumArt.setImageBitmap(bp);
+        albumTitle.setText(item.getAlbumTitle());
+        albumArtist.setText(item.getArtistName());
+        albumArt.setImageBitmap(bp);
+        row.setTag(position);
         return row;
 
     }
 
-    static class Album {
-        TextView albumTitle;
-        TextView albumArtist;
-        ImageView albumArt;
-    }
 }

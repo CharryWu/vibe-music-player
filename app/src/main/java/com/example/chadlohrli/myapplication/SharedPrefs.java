@@ -31,6 +31,15 @@ public class SharedPrefs {
 
     }
 
+    public static void updateFavorite(Context context, String id,int rating){
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Rating",rating);
+
+        songadd.commit();
+    }
+
     public static Map<String,?> getData(Context context,String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);

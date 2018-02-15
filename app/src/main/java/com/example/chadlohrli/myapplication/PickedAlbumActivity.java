@@ -1,10 +1,13 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -48,6 +51,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), cur_album.getAlbumTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
+        Bitmap bp = SongParser.albumCover(songs.get(0), getApplicationContext());
         albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());

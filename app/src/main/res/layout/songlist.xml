@@ -22,11 +22,12 @@
 
     <Button
         android:id="@+id/go_back"
-        android:layout_width="65dp"
-        android:layout_height="37dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="464dp"
-        android:text="back"
-        android:textSize="15sp"
+        android:text="\u2039"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.012"
         app:layout_constraintLeft_toLeftOf="parent"

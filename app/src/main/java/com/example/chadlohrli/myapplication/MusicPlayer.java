@@ -143,7 +143,7 @@ public class MusicPlayer extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isPlayingMusic) {
-                    mediaPlayer.pause();
+                    musicService.pauseSong();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
                 }
@@ -156,7 +156,6 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
-        /**Listen for location update */
 
 
         /**
@@ -174,9 +173,11 @@ public class MusicPlayer extends AppCompatActivity {
         final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("Chenged", location.toString());
+                Log.i("Chenged", location.toString());
                 int timeOfDay = getTimeOfDay();
                 int day = getDay();
+                //lk = location;
+                //Log.i("location is ", String.valueOf(lk.getLatitude()));
                 locationManager.removeUpdates(this);
                 saveSongData(location, timeOfDay, day);
             }
@@ -208,12 +209,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
-
-
-        */
-
-
+    }*/
     }
 
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -245,7 +241,6 @@ public class MusicPlayer extends AppCompatActivity {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
-
         }
     }
 
@@ -254,7 +249,7 @@ public class MusicPlayer extends AppCompatActivity {
         stopService(playIntent);
         musicService = null;
         super.onDestroy();
-
+        unbindService(musicConnection);
     }
 
 

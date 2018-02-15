@@ -18,19 +18,19 @@ public class AlbumActivity extends AppCompatActivity {
     private ArrayList<SongData> madeSongs;
     private ArrayList<Album> albumArray;
 
-    public ArrayList<SongData> createSongs(){
+    public ArrayList<SongData> createSongs() {
 
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
-        for(int count=0;count < fields.length; count++){
+        for (int count = 0; count < fields.length; count++) {
 
-            Log.i("Raw Asset:",fields[count].getName());
+            Log.i("Raw Asset:", fields[count].getName());
 
-            String path = "android.resource://" + getPackageName()+"/raw/";
+            String path = "android.resource://" + getPackageName() + "/raw/";
             String Id = fields[count].getName();
 
-            SongData song = SongParser.parseSong(path, Id,getApplicationContext());
+            SongData song = SongParser.parseSong(path, Id, getApplicationContext());
 
             songs.add(song);
         }
@@ -58,8 +58,7 @@ public class AlbumActivity extends AppCompatActivity {
                 Album firstElement = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                 firstElement.getSongs().add(songToAdd);
                 albumArrayList.add(firstElement);
-            }
-            else {
+            } else {
                 for (int j = 0; j < albumArrayList.size(); j++) {
                     if (songToAdd.getAlbum().equals(albumArrayList.get(j).getAlbumTitle())) {
                         obj = albumArrayList.get(j);
@@ -67,7 +66,7 @@ public class AlbumActivity extends AppCompatActivity {
                         matchFound = true;
                     }
                 }
-                if (!matchFound){
+                if (!matchFound) {
                     ArrayList<SongData> list = new ArrayList<SongData>();
                     Album object = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                     object.getSongs().add(songToAdd);

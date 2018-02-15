@@ -18,19 +18,19 @@ public class SongListActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<SongData> songs;
 
-    public ArrayList<SongData> createSongs(){
+    public ArrayList<SongData> createSongs() {
 
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
-        for(int count=0;count < fields.length; count++){
+        for (int count = 0; count < fields.length; count++) {
 
-            Log.i("Raw Asset:",fields[count].getName());
+            Log.i("Raw Asset:", fields[count].getName());
 
-            String path = "android.resource://" + getPackageName()+"/raw/";
+            String path = "android.resource://" + getPackageName() + "/raw/";
             String Id = fields[count].getName();
 
-            SongData song = SongParser.parseSong(path, Id,getApplicationContext());
+            SongData song = SongParser.parseSong(path, Id, getApplicationContext());
 
             songs.add(song);
         }
@@ -46,10 +46,10 @@ public class SongListActivity extends AppCompatActivity {
         return songs;
     }
 
-    public void songPicked(View view){
+    public void songPicked(View view) {
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
-        intent.putExtra("SONGS",songs);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", songs);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         SongListActivity.this.startActivity(intent);
     }
 
@@ -65,14 +65,14 @@ public class SongListActivity extends AppCompatActivity {
         setContentView(R.layout.songlist);
 
         //sharedPrefs Example
-        SharedPrefs.saveData(getApplicationContext(),"5",(float)1.2,(float)1.2,5,2,7,3,1);
-        Map<String,?> mmap = SharedPrefs.getData(getApplicationContext(),"5");
+        SharedPrefs.saveData(getApplicationContext(), "5", (float) 1.2, (float) 1.2, 5, 2, 7, 3, 1);
+        Map<String, ?> mmap = SharedPrefs.getData(getApplicationContext(), "5");
 
         listView = (ListView) findViewById(R.id.songlist);
 
         songs = createSongs();
 
-        SongAdapter songadt = new SongAdapter(this,songs);
+        SongAdapter songadt = new SongAdapter(this, songs);
         listView.setAdapter(songadt);
     }
 }

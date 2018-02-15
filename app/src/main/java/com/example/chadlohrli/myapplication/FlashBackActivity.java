@@ -41,13 +41,14 @@ public class FlashBackActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
-    public void songPicked(View view){
+
+    public void songPicked(View view) {
         //mp.setList(songs);
         //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
         Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
-        intent.putExtra("SONGS",flashbackList);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", flashbackList);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
         finish();
 
@@ -89,7 +90,7 @@ public class FlashBackActivity extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
+            if (null != listAddresses && listAddresses.size() > 0) {
                 String loc_name = listAddresses.get(0).getAddressLine(0);
                 location_view.setText("Last Played Location: " + loc_name);
             }
@@ -147,7 +148,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
 
         Field[] fields = R.raw.class.getFields();
-        String path = "android.resource://" + getPackageName()+"/raw/";
+        String path = "android.resource://" + getPackageName() + "/raw/";
         String id = fields[0].getName();
         SongData test = SongParser.parseSong(path, id, getApplicationContext());
         flashbackList.add(test);

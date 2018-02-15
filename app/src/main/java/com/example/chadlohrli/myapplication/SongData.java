@@ -27,12 +27,29 @@ public class SongData implements Serializable {
         //album_image = albumImage;
     }
 
-    public String getID() {return id;}
-    public String getLength() {return song_length;}
-    public String getTitle() {return song_title;}
-    public String getAlbum() {return album_title;}
-    public String getArtist() {return song_artist;}
-    public String getPath() {return song_path;}
+    public String getID() {
+        return id;
+    }
+
+    public String getLength() {
+        return song_length;
+    }
+
+    public String getTitle() {
+        return song_title;
+    }
+
+    public String getAlbum() {
+        return album_title;
+    }
+
+    public String getArtist() {
+        return song_artist;
+    }
+
+    public String getPath() {
+        return song_path;
+    }
     //public Bitmap getImage() {return album_image;}
 
 }

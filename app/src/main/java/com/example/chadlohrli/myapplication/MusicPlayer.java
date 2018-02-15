@@ -38,6 +38,7 @@ public class MusicPlayer extends AppCompatActivity {
     private Button favBtn;
     private TextView startTime;
     private TextView endTime;
+    private ServiceConnection musicConnection;
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -59,22 +60,22 @@ public class MusicPlayer extends AppCompatActivity {
 
     private MusicService musicService;
     private Intent playIntent;
-    private boolean isBound=false;
+    private boolean isBound = false;
 
     final Handler mHandler = new Handler();
 
-    public void setSong(int songIndex){
+    public void setSong(int songIndex) {
         cur_song = songIndex;
     }
 
-    public void setupPlayer(SongData song){
+    public void setupPlayer(SongData song) {
 
         albumCover = (ImageView) findViewById(R.id.albumCover);
         songTitle = (TextView) findViewById(R.id.songTitle);
         artistTitle = (TextView) findViewById(R.id.artistTitle);
 
-        Bitmap bp = SongParser.albumCover(song,getApplicationContext());
-        if(bp != null) {
+        Bitmap bp = SongParser.albumCover(song, getApplicationContext());
+        if (bp != null) {
             albumCover.setImageBitmap(bp);
         }
         songTitle.setText(song.getTitle());
@@ -85,14 +86,14 @@ public class MusicPlayer extends AppCompatActivity {
 
         final int dur = mp.getDuration() / 1000;
         seekBar.setMax(dur);
-        Log.d("DUR",String.valueOf(mp.getDuration()));
+        Log.d("DUR", String.valueOf(mp.getDuration()));
 
         endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
 
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(musicService != null) {
+                if (musicService != null) {
                     int curPos = mp.getCurrentPosition() / 1000;
                     seekBar.setProgress(curPos);
                     startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
@@ -132,7 +133,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
-        cur_song = getIntent().getIntExtra("CUR",0);
+        cur_song = getIntent().getIntExtra("CUR", 0);
 
         //display song for now to ensure data has correctly been passed
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
@@ -146,8 +147,7 @@ public class MusicPlayer extends AppCompatActivity {
                     musicService.pauseSong();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
-                }
-                else {
+                } else {
                     musicService.resumeSong();
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
@@ -156,83 +156,28 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
-
-
-        /**
-        Resources res = this.getResources();
-        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
-        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
-        Log.d("soundId", Integer.toString(soundId));
-        loadMedia(soundId);
-
-
-        Listen for location update
-
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        //save data in shared preferences
-        final LocationListener locationListener = new LocationListener() {
+        musicConnection = new ServiceConnection() {
             @Override
-            public void onLocationChanged(Location location) {
-                Log.i("Chenged", location.toString());
-                int timeOfDay = getTimeOfDay();
-                int day = getDay();
-                //lk = location;
-                //Log.i("location is ", String.valueOf(lk.getLatitude()));
-                locationManager.removeUpdates(this);
-                saveSongData(location, timeOfDay, day);
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+                //get service
+                musicService = binder.getService();
+                //pass list
+                musicService.setSongList(songs);
+                musicService.setCurrentSong(cur_song);
+                musicService.playSong();
+                isBound = true;
+
+                setupPlayer(songs.get(cur_song));
             }
 
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
+            public void onServiceDisconnected(ComponentName name) {
+                isBound = false;
             }
         };
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    100);
-            Log.d("test1","ins");
-            return;
-        }
-
-        String locationProvider = LocationManager.GPS_PROVIDER;
-        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-    }*/
     }
 
-    private ServiceConnection musicConnection = new ServiceConnection(){
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
-            //get service
-            musicService = binder.getService();
-            //pass list
-            musicService.setSongList(songs);
-            musicService.setCurrentSong(cur_song);
-            musicService.playSong();
-            isBound = true;
-
-            setupPlayer(songs.get(cur_song));
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-        }
-    };
 
     @Override
     protected void onStart() {
@@ -255,9 +200,9 @@ public class MusicPlayer extends AppCompatActivity {
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 && hour <= 5)
+        if (hour >= 17 && hour <= 5)
             return NIGHT;
-        else if (hour >= 6 && hour <= 10 )
+        else if (hour >= 6 && hour <= 10)
             return MORNING;
         else
             return AFTERNOON;
@@ -267,13 +212,20 @@ public class MusicPlayer extends AppCompatActivity {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
         switch (day) {
-            case 0: return MONDAY;
-            case 1: return TUESDAY;
-            case 2: return WEDNESDAY;
-            case 3: return THURSDAY;
-            case 4: return FRIDAY;
-            case 5: return SATURDAY;
-            default: return SUNDAY;
+            case 0:
+                return MONDAY;
+            case 1:
+                return TUESDAY;
+            case 2:
+                return WEDNESDAY;
+            case 3:
+                return THURSDAY;
+            case 4:
+                return FRIDAY;
+            case 5:
+                return SATURDAY;
+            default:
+                return SUNDAY;
 
         }
 

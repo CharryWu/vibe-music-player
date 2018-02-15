@@ -40,7 +40,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
         //grab data from intent
         albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
-        cur_album = albums.get(getIntent().getIntExtra("CUR",0));
+        cur_album = albums.get(getIntent().getIntExtra("CUR", 0));
         songs = cur_album.getSongs();
 
         //display song for now to ensure data has correctly been passed
@@ -48,11 +48,11 @@ public class PickedAlbumActivity extends AppCompatActivity {
         toast.show();
 
         Bitmap bp = SongParser.albumCover(songs.get(0), getApplicationContext());
-        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
+        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0), getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());
 
-        listView.setAdapter(new SongAdapter(this,songs));
+        listView.setAdapter(new SongAdapter(this, songs));
     }
 
 
@@ -62,10 +62,10 @@ public class PickedAlbumActivity extends AppCompatActivity {
         return true;
     }
 
-    public void songPicked(View view){
+    public void songPicked(View view) {
         Intent intent = new Intent(this, MusicPlayer.class);
-        intent.putExtra("SONGS",songs);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", songs);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         this.startActivity(intent);
     }
 }

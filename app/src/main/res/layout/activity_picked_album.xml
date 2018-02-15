@@ -20,15 +20,13 @@
             android:id="@+id/album_name_textview_picked_album"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:text="Album Name"
-            />
+            android:text="Album Name" />
 
         <TextView
             android:id="@+id/artist_name_textview_picked_album"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:text="Artist Name"
-            />
+            android:text="Artist Name" />
 
     </LinearLayout>
 
@@ -42,8 +40,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent" />
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/back_button_picked_album" />
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/back_button_picked_album" />
 
     <ListView
         android:id="@+id/songlist_activity_picked_album"

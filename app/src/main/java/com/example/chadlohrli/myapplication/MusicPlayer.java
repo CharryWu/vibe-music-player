@@ -158,49 +158,60 @@ public class MusicPlayer extends AppCompatActivity {
 
         /**Listen for location update */
 
-//        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        //save data in shared preferences
-//        final LocationListener locationListener = new LocationListener() {
-//            @Override
-//            public void onLocationChanged(Location location) {
-//                Log.d("Chenged", location.toString());
-//                int timeOfDay = getTimeOfDay();
-//                int day = getDay();
-//                locationManager.removeUpdates(this);
-//                saveSongData(location, timeOfDay, day);
-//            }
-//
-//            @Override
-//            public void onStatusChanged(String s, int i, Bundle bundle) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderEnabled(String s) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderDisabled(String s) {
-//
-//            }
-//        };
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    100);
-//            Log.d("test1","ins");
-//            return;
-//        }
-//
-//        String locationProvider = LocationManager.GPS_PROVIDER;
-//        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-//
+
+        /**
+        Resources res = this.getResources();
+        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
+        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
+        Log.d("soundId", Integer.toString(soundId));
+        loadMedia(soundId);
+
+
+        Listen for location update
+
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        //save data in shared preferences
+        final LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("Chenged", location.toString());
+                int timeOfDay = getTimeOfDay();
+                int day = getDay();
+                locationManager.removeUpdates(this);
+                saveSongData(location, timeOfDay, day);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
 
 
 
+        */
 
 
     }

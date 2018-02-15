@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chadlohrli.myapplication.SongListActivity">
+    tools:context="com.example.chadlohrli.myapplication.FlashBackActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -20,15 +20,30 @@
         app:layout_constraintVertical_bias="0.033" />
 
     <TextView
-        android:id="@+id/flashback"
-        android:layout_width="330dp"
-        android:layout_height="44dp"
-        android:layout_marginBottom="412dp"
+        android:id="@+id/location"
+        android:layout_width="328dp"
+        android:layout_height="31dp"
+        android:layout_marginBottom="428dp"
         android:background="#808080"
-        android:text="Last Location played "
-        android:textSize="15dp"
+        android:gravity="left|center"
+        android:text="Last Location played: "
         android:textColor="#111111"
-        android:gravity="center_horizontal"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="325dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="392dp"
+        android:background="#808080"
+        android:gravity="left|center"
+        android:text="Last Time Played: "
+        android:textColor="#111111"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -36,7 +51,7 @@
     <ListView
         android:id="@+id/song_list"
         android:layout_width="338dp"
-        android:layout_height="386dp"
+        android:layout_height="362dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

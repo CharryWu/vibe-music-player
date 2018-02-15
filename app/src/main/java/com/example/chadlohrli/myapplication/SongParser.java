@@ -1,14 +1,11 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Log;
-
-import java.util.ArrayList;
 
 /**
  * Created by chadlohrli on 2/9/18.

@@ -1,7 +1,5 @@
 package com.example.chadlohrli.myapplication;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
 /**

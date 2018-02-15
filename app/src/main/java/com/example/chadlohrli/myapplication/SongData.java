@@ -27,8 +27,6 @@ public class SongData implements Serializable {
         song_artist = songArtist;
         song_path = songPath;
         //album_image = albumImage;
-
-
     }
 
     public String getID() {return id;}

@@ -36,34 +36,21 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/back_button_picked_album"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="23dp"
-        android:text="\u2039"
-        app:layout_constraintBottom_toTopOf="@+id/album_art_picked_album"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/album_art_picked_album"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="115dp"
         android:layout_marginBottom="340dp"
         android:layout_marginEnd="51dp"
-        android:layout_marginRight="51dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/back_button_picked_album" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ListView
         android:id="@+id/songlist_activity_picked_album"
         android:layout_width="338dp"
-        android:layout_height="322dp"
+        android:layout_height="323dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -2,23 +2,22 @@ package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.media.MediaPlayer;
-import android.support.v4.app.ActivityCompat;
-
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -28,11 +27,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
 
-    private Button backBtn;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -81,13 +78,21 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
-
-        backBtn = (Button) findViewById(R.id.backBtn);
         playBtn = (ImageButton) findViewById(R.id.playBtn);
         nextBtn = (ImageButton) findViewById(R.id.nextBtn);
         favBtn = (Button) findViewById(R.id.favBtn);
@@ -103,20 +108,10 @@ public class MusicPlayer extends AppCompatActivity {
 
         setupPlayer(songs.get(cur_song));
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MusicPlayer.this, SongListActivity.class);
-                MusicPlayer.this.startActivity(intent);
-                finish();
-            }
-        });
-
-
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isPlayingMusic == true) {
+                if (isPlayingMusic) {
                     mediaPlayer.pause();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
@@ -129,6 +124,7 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
+
         Resources res = this.getResources();
         int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
         Log.d("raw", Integer.toString(R.raw.gottagetoveryou));

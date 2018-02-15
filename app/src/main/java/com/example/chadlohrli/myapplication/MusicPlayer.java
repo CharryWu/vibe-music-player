@@ -60,6 +60,8 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
+    //private Location lk;
+
 
     public void setSong(int songIndex){
         cur_song = songIndex;
@@ -142,9 +144,11 @@ public class MusicPlayer extends AppCompatActivity {
         final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("Chenged", location.toString());
+                Log.i("Chenged", location.toString());
                 int timeOfDay = getTimeOfDay();
                 int day = getDay();
+                //lk = location;
+                //Log.i("location is ", String.valueOf(lk.getLatitude()));
                 locationManager.removeUpdates(this);
                 saveSongData(location, timeOfDay, day);
             }
@@ -177,11 +181,10 @@ public class MusicPlayer extends AppCompatActivity {
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
 
-
-
-
-
-
+        /*String loc = String.valueOf(lk.getLatitude());
+        if (lk == null) {
+            Log.i("location not set", "hi");
+        }*/
     }
 
     public void loadMedia(int id) {

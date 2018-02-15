@@ -20,24 +20,11 @@
         app:layout_constraintVertical_bias="0.033" />
 
 
-    <Button
-        android:id="@+id/go_back"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="464dp"
-        android:text="\u2039"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.012"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
     <ListView
         android:id="@+id/songlist"
         android:layout_width="338dp"
-        android:layout_height="386dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="422dp"
+        android:layout_marginBottom="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">

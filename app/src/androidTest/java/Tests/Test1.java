@@ -12,5 +12,4 @@ import org.junit.Rule;
 public class Test1 {
 
 
-
 }

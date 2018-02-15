@@ -1,27 +1,18 @@
 package com.example.chadlohrli.myapplication;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-
-import android.content.res.AssetFileDescriptor;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.ActivityCompat;
-
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,17 +22,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
 
-    private Button backBtn;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -53,6 +38,7 @@ public class MusicPlayer extends AppCompatActivity {
     private Button favBtn;
     private TextView startTime;
     private TextView endTime;
+    private ServiceConnection musicConnection;
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -71,27 +57,25 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
-    //private Location lk;
-
 
     private MusicService musicService;
     private Intent playIntent;
-    private boolean isBound=false;
+    private boolean isBound = false;
 
     final Handler mHandler = new Handler();
 
-    public void setSong(int songIndex){
+    public void setSong(int songIndex) {
         cur_song = songIndex;
     }
 
-    public void setupPlayer(SongData song){
+    public void setupPlayer(SongData song) {
 
         albumCover = (ImageView) findViewById(R.id.albumCover);
         songTitle = (TextView) findViewById(R.id.songTitle);
         artistTitle = (TextView) findViewById(R.id.artistTitle);
 
-        Bitmap bp = SongParser.albumCover(song,getApplicationContext());
-        if(bp != null) {
+        Bitmap bp = SongParser.albumCover(song, getApplicationContext());
+        if (bp != null) {
             albumCover.setImageBitmap(bp);
         }
         songTitle.setText(song.getTitle());
@@ -102,14 +86,14 @@ public class MusicPlayer extends AppCompatActivity {
 
         final int dur = mp.getDuration() / 1000;
         seekBar.setMax(dur);
-        Log.d("DUR",String.valueOf(mp.getDuration()));
+        Log.d("DUR", String.valueOf(mp.getDuration()));
 
         endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
 
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(musicService != null) {
+                if (musicService != null) {
                     int curPos = mp.getCurrentPosition() / 1000;
                     seekBar.setProgress(curPos);
                     startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
@@ -123,13 +107,21 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
-
-        backBtn = (Button) findViewById(R.id.backBtn);
         playBtn = (ImageButton) findViewById(R.id.playBtn);
         nextBtn = (ImageButton) findViewById(R.id.nextBtn);
         favBtn = (Button) findViewById(R.id.favBtn);
@@ -141,32 +133,21 @@ public class MusicPlayer extends AppCompatActivity {
 
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
-        cur_song = getIntent().getIntExtra("CUR",0);
+        cur_song = getIntent().getIntExtra("CUR", 0);
 
         //display song for now to ensure data has correctly been passed
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MusicPlayer.this, SongListActivity.class);
-                MusicPlayer.this.startActivity(intent);
-                finish();
-            }
-        });
-
-
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isPlayingMusic == true) {
+                if (isPlayingMusic) {
                     musicService.pauseSong();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
-                }
-                else {
+                } else {
                     musicService.resumeSong();
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
@@ -175,48 +156,28 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
-
-
-        /**
-        Resources res = this.getResources();
-        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
-        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
-        Log.d("soundId", Integer.toString(soundId));
-        loadMedia(soundId);
-
-
-        Listen for location update
-
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        //save data in shared preferences
-        final LocationListener locationListener = new LocationListener() {
+        musicConnection = new ServiceConnection() {
             @Override
-            public void onLocationChanged(Location location) {
-                Log.i("Chenged", location.toString());
-                int timeOfDay = getTimeOfDay();
-                int day = getDay();
-                //lk = location;
-                //Log.i("location is ", String.valueOf(lk.getLatitude()));
-                locationManager.removeUpdates(this);
-                saveSongData(location, timeOfDay, day);
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+                //get service
+                musicService = binder.getService();
+                //pass list
+                musicService.setSongList(songs);
+                musicService.setCurrentSong(cur_song);
+                musicService.playSong();
+                isBound = true;
+
+                setupPlayer(songs.get(cur_song));
             }
 
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
+            public void onServiceDisconnected(ComponentName name) {
+                isBound = false;
             }
         };
 
+        /*
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
@@ -231,27 +192,6 @@ public class MusicPlayer extends AppCompatActivity {
         */
     }
 
-    private ServiceConnection musicConnection = new ServiceConnection(){
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
-            //get service
-            musicService = binder.getService();
-            //pass list
-            musicService.setSongList(songs);
-            musicService.setCurrentSong(cur_song);
-            musicService.playSong();
-            isBound = true;
-
-            setupPlayer(songs.get(cur_song));
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-        }
-    };
 
     @Override
     protected void onStart() {
@@ -260,7 +200,6 @@ public class MusicPlayer extends AppCompatActivity {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
-
         }
     }
 
@@ -276,9 +215,9 @@ public class MusicPlayer extends AppCompatActivity {
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 && hour <= 5)
+        if (hour >= 17 && hour <= 5)
             return NIGHT;
-        else if (hour >= 6 && hour <= 10 )
+        else if (hour >= 6 && hour <= 10)
             return MORNING;
         else
             return AFTERNOON;
@@ -288,13 +227,20 @@ public class MusicPlayer extends AppCompatActivity {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
         switch (day) {
-            case 0: return MONDAY;
-            case 1: return TUESDAY;
-            case 2: return WEDNESDAY;
-            case 3: return THURSDAY;
-            case 4: return FRIDAY;
-            case 5: return SATURDAY;
-            default: return SUNDAY;
+            case 0:
+                return MONDAY;
+            case 1:
+                return TUESDAY;
+            case 2:
+                return WEDNESDAY;
+            case 3:
+                return THURSDAY;
+            case 4:
+                return FRIDAY;
+            case 5:
+                return SATURDAY;
+            default:
+                return SUNDAY;
 
         }
 

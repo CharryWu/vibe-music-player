@@ -14,7 +14,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class SharedPrefs {
 
-    public static void saveData(Context context, String id,float latitude,float longitude, int day, int time, int rating, int timesPlayed,int lastPlayed){
+    public static void saveData(Context context, String id, float latitude, float longitude, int day, int time, int rating, int timesPlayed, int lastPlayed) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
@@ -31,16 +31,16 @@ public class SharedPrefs {
 
     }
 
-    public static void updateFavorite(Context context, String id,int rating){
+    public static void updateFavorite(Context context, String id, int rating) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putInt("Rating",rating);
+        songadd.putInt("Rating", rating);
 
         songadd.commit();
     }
 
-    public static Map<String,?> getData(Context context,String id) {
+    public static Map<String, ?> getData(Context context, String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);
         return songsList.getAll();

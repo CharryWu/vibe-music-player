@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -17,23 +16,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import static java.lang.Double.valueOf;
 
 public class FlashBackActivity extends AppCompatActivity {
 
@@ -48,13 +36,19 @@ public class FlashBackActivity extends AppCompatActivity {
     SongParser parser;
     SongData temp;
 
-    public void songPicked(View view){
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    public void songPicked(View view) {
         //mp.setList(songs);
         //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
         Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
-        intent.putExtra("SONGS",flashbackList);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", flashbackList);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
         finish();
 
@@ -66,8 +60,6 @@ public class FlashBackActivity extends AppCompatActivity {
         setContentView(R.layout.flashback);
 
         location_view = (TextView) findViewById(R.id.location);
-
-        backbtn = (Button) findViewById(R.id.go_back);
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -98,7 +90,7 @@ public class FlashBackActivity extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
+            if (null != listAddresses && listAddresses.size() > 0) {
                 String loc_name = listAddresses.get(0).getAddressLine(0);
                 location_view.setText("Last Played Location: " + loc_name);
             }
@@ -156,7 +148,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
 
         Field[] fields = R.raw.class.getFields();
-        String path = "android.resource://" + getPackageName()+"/raw/";
+        String path = "android.resource://" + getPackageName() + "/raw/";
         String id = fields[0].getName();
         SongData test = SongParser.parseSong(path, id, getApplicationContext());
         flashbackList.add(test);

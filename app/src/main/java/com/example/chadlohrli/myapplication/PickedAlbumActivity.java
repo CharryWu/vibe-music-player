@@ -2,11 +2,9 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,7 +40,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
         //grab data from intent
         albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
-        cur_album = albums.get(getIntent().getIntExtra("CUR",0));
+        cur_album = albums.get(getIntent().getIntExtra("CUR", 0));
         songs = cur_album.getSongs();
 
         //display song for now to ensure data has correctly been passed
@@ -50,31 +48,24 @@ public class PickedAlbumActivity extends AppCompatActivity {
         toast.show();
 
         Bitmap bp = SongParser.albumCover(songs.get(0), getApplicationContext());
-        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
+        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0), getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());
 
-        listView.setAdapter(new SongAdapter(this,songs));
-        Button backButton = (Button) findViewById(R.id.back_button_picked_album);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PickedAlbumActivity.this, AlbumActivity.class);
-                PickedAlbumActivity.this.startActivity(intent);
-                finish();
-            }
-        });
-
+        listView.setAdapter(new SongAdapter(this, songs));
     }
 
-    public void songPicked(View view){
-        //mp.setList(songs);
-        //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    public void songPicked(View view) {
         Intent intent = new Intent(this, MusicPlayer.class);
-        intent.putExtra("SONGS",songs);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", songs);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         this.startActivity(intent);
-        finish();
     }
 }

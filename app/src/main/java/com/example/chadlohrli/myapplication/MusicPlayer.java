@@ -228,7 +228,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-    }*/
+        */
     }
 
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -269,6 +269,7 @@ public class MusicPlayer extends AppCompatActivity {
         stopService(playIntent);
         musicService = null;
         super.onDestroy();
+        unbindService(musicConnection);
 
     }
 

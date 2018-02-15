@@ -228,19 +228,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
-<<<<<<< HEAD
-        /*String loc = String.valueOf(lk.getLatitude());
-        if (lk == null) {
-            Log.i("location not set", "hi");
-        }*/
-=======
-
-
-        */
-
-
->>>>>>> d9bb17ccb8f951c135bf96283cb1bcc54d35f0e2
+    }*/
     }
 
     private ServiceConnection musicConnection = new ServiceConnection(){

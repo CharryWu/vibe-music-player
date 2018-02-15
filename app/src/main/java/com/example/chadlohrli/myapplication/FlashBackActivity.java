@@ -48,6 +48,17 @@ public class FlashBackActivity extends AppCompatActivity {
     SongParser parser;
     SongData temp;
 
+    public void songPicked(View view){
+        //mp.setList(songs);
+        //mp.setSong(Integer.par seInt(view.getTag().toString()));
+
+        Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
+        intent.putExtra("SONGS",flashbackList);
+        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        FlashBackActivity.this.startActivity(intent);
+        finish();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

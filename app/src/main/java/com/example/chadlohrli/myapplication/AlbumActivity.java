@@ -75,6 +75,13 @@ public class AlbumActivity extends AppCompatActivity {
             }
 
         }
+        Collections.sort(albumArrayList, new Comparator<Album>() {
+            @Override
+            public int compare(Album a, Album b) {
+                return a.getAlbumTitle().compareTo(b.getAlbumTitle());
+            }
+        });
+
         return albumArrayList;
 
     }

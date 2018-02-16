@@ -190,7 +190,7 @@ public class MusicPlayer extends AppCompatActivity {
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
 
         try {
-            songState = ((Integer) map.get("State")).intValue();
+            //songState = ((Integer) map.get("State")).intValue();
             Log.d("State:", String.valueOf(songState));
         }catch(Error err){
             songState = state.NEUTRAL.ordinal();
@@ -204,7 +204,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        checkSongState(songs.get(cur_song));
+        //checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -270,6 +270,7 @@ public class MusicPlayer extends AppCompatActivity {
         int timesPlayed = ((Integer)map.get("Times played")).intValue();
         timesPlayed++;
 
+
         SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
 
     }
@@ -295,7 +296,7 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        saveSong(song); //save data to shared preferences
+        //saveSong(song); //save data to shared preferences
 
     }
 
@@ -328,6 +329,8 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playNextSong();
             }
         });
@@ -335,6 +338,8 @@ public class MusicPlayer extends AppCompatActivity {
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playPrevSong();
             }
         });

@@ -1,44 +1,53 @@
 package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-
-
-import android.content.res.AssetFileDescriptor;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.media.MediaPlayer;
-
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
 
-    private Button backBtn;
+
+    public static final String SONG_FINISHED = "SONG FINISHED";
+
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -46,11 +55,14 @@ public class MusicPlayer extends AppCompatActivity {
     private ImageButton playBtn;
     private ImageButton nextBtn;
     private ImageButton prevBtn;
-    private ImageButton seekBar;
+    private SeekBar seekBar;
     private Button favBtn;
+    private TextView startTime;
+    private TextView endTime;
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
+
 
     private final int MORNING = 0;
     private final int AFTERNOON = 1;
@@ -64,21 +76,209 @@ public class MusicPlayer extends AppCompatActivity {
     private final int SATURDAY = 5;
     private final int SUNDAY = 6;
 
+    private int timeofday = 0;
+    private int day = 0;
+    private double lat = 0;
+    private double lng = 0;
+
     private ArrayList<SongData> songs;
     private int cur_song;
     private FusedLocationProviderClient mFusedLocationClient;
     private Location lkl;
 
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean isBound = false;
+
+    private Handler mHandler = new Handler();
+    private LocalBroadcastManager bManager;
+    private Location location;
+
+    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    private int songState;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_music_player);
+
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        //grab data from intent
+        songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
+        cur_song = getIntent().getIntExtra("CUR",0);
+
+        //display song for aesthetics
+        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
+        toast.show();
+
+
+        initViews();
+        initListeners();
+        initBroadcast();
+        initLocation();
+
+
+    }
+
+    // -- inner class variables -- //
+    private ServiceConnection musicConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+            musicService = binder.getService();
+            musicService.setSongList(songs);
+            mediaPlayer = musicService.getPlayer();
+            isBound = true;
+
+            playSong();
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
+    };
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(SONG_FINISHED)) {
+
+                String serviceJsonString = intent.getStringExtra("hi");
+                Log.d("Broadcast", serviceJsonString);
+                Log.d("current index",String.valueOf(cur_song));
+
+                playNextSong();
+
+            }
+        }
+    };
+
+    // -- class specific methods -- //
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        bManager.unregisterReceiver(bReceiver);
+        stopService(playIntent);
+        musicService = null;
+        super.onDestroy();
+        unbindService(musicConnection);
+    }
+
+
+    // -- functional methods -- //
+
+    public void checkSongState(SongData song){
+
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+
+        try {
+            songState = ((Integer) map.get("State")).intValue();
+            Log.d("State:", String.valueOf(songState));
+        }catch(Error err){
+            songState = state.NEUTRAL.ordinal();
+        }
+
+    }
+
     public void setSong(int songIndex){
         cur_song = songIndex;
     }
 
+    public void playSong() {
+
+        checkSongState(songs.get(cur_song));
+
+        //This code ensures that no disliked songs will play
+        /*
+        int count = 0;
+        while(songState == state.DISLIKE.ordinal()){
+            if(count >= songs.size())
+                break;
+            playNextSong();
+            checkSongState(songs.get(cur_song));
+            count++;
+        }
+        */
+
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
+    }
+
+    public void playNextSong(){
+
+        if (++cur_song > songs.size()-1)
+            cur_song = 0;
+
+        Log.d("new index",String.valueOf(cur_song));
+
+        playSong();
+
+
+    }
+
+    public void playPrevSong() {
+
+        if(--cur_song < 0)
+            cur_song = songs.size()-1;
+
+        Log.d("new index",String.valueOf(cur_song));
+
+        playSong();
+
+
+    }
+
+    public void trackSong() {
+
+        MusicPlayer.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (musicService != null) {
+                    int curPos = mediaPlayer.getCurrentPosition() / 1000;
+                    seekBar.setProgress(curPos);
+                    startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
+                    mHandler.postDelayed(this, 1000);
+                }
+            }
+        });
+    }
+
+    public void saveSong(SongData song) {
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        int timesPlayed = ((Integer)map.get("Times played")).intValue();
+        timesPlayed++;
+
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
+
+    }
+
+
     public void setupPlayer(SongData song){
 
-        albumCover = (ImageView) findViewById(R.id.albumCover);
-        songTitle = (TextView) findViewById(R.id.songTitle);
-        artistTitle = (TextView) findViewById(R.id.artistTitle);
-
+        //set up song UI
         Bitmap bp = SongParser.albumCover(song,getApplicationContext());
         if(bp != null) {
             albumCover.setImageBitmap(bp);
@@ -86,128 +286,187 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle.setText(song.getTitle());
         artistTitle.setText(song.getArtist());
 
+        //set up seeking UI
+        final int dur = mediaPlayer.getDuration() / 1000;
+        seekBar.setMax(dur);
+        Log.d("DUR", String.valueOf(mediaPlayer.getDuration()));
+        endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
+
+        trackSong(); //thread to update seek bar
+        initLocation(); //refresh lat/long and display location
+        initTimeDay(); //get formatted time and date
+
+        saveSong(song); //save data to shared preferences
+
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_music_player);
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    public void initViews() {
 
-        backBtn = (Button) findViewById(R.id.backBtn);
-        playBtn = (ImageButton) findViewById(R.id.playBtn);
-        nextBtn = (ImageButton) findViewById(R.id.nextBtn);
-        favBtn = (Button) findViewById(R.id.favBtn);
-        prevBtn = (ImageButton) findViewById(R.id.prevBtn);
+        playBtn = findViewById(R.id.playBtn);
+        nextBtn = findViewById(R.id.nextBtn);
+        favBtn = findViewById(R.id.favBtn);
+        prevBtn = findViewById(R.id.prevBtn);
+        favBtn =  findViewById(R.id.favBtn);
+        seekBar =  findViewById(R.id.seekBar);
+        startTime =  findViewById(R.id.startTime);
+        endTime =  findViewById(R.id.endTime);
+        albumCover =  findViewById(R.id.albumCover);
+        songTitle =  findViewById(R.id.songTitle);
+        artistTitle =  findViewById(R.id.artistTitle);
+        locationTitle = findViewById(R.id.locationTitle);
 
-        //grab data from intent
-        songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
-        cur_song = getIntent().getIntExtra("CUR",0);
+    }
 
-        //display song for now to ensure data has correctly been passed
-        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
-        toast.show();
+    @SuppressLint("ClickableViewAccessibility")
+    public void initListeners() {
 
-        setupPlayer(songs.get(cur_song));
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MusicPlayer.this, SongListActivity.class);
-                MusicPlayer.this.startActivity(intent);
-                finish();
+                playNextSong();
             }
         });
 
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPrevSong();
+            }
+        });
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isPlayingMusic == true) {
-                    mediaPlayer.pause();
+                if (isPlayingMusic) {
+                    musicService.pauseSong();
                     isPlayingMusic = false;
                     playBtn.setImageResource(android.R.drawable.ic_media_play);
                 }
                 else {
-                    mediaPlayer.start();
+                    musicService.resumeSong();
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 }
 
             }
         });
-        Resources res = this.getResources();
-        int soundId = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
-        Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
-        Log.d("soundId", Integer.toString(soundId));
-        loadMedia(soundId);
 
-        /**Listen for location update */
 
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        //save data in shared preferences
-        final LocationListener locationListener = new LocationListener() {
+
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onLocationChanged(Location location) {
-                lkl = location;
-                Log.d("Chenged", location.toString());
-                int timeOfDay = getTimeOfDay();
-                int day = getDay();
-                locationManager.removeUpdates(this);
-                saveSongData(location, timeOfDay, day);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if(fromUser) {
+                    seekBar.setMax(mediaPlayer.getDuration() / 1000);
+                    mediaPlayer.seekTo(progress * 1000);
+                }
             }
 
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
             }
 
             @Override
-            public void onProviderEnabled(String s) {
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
+        });
+
+
+        favBtn.setOnTouchListener(new View.OnTouchListener() {
+            private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    Log.d("TEST", "onDoubleTap");
+                    if(songState == state.NEUTRAL.ordinal())
+                        songState = state.DISLIKE.ordinal();
+                    else if(songState == state.DISLIKE.ordinal())
+                        songState = state.NEUTRAL.ordinal();
+
+                    Log.d("STATE", String.valueOf(songState));
+
+                    SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
+
+                    return super.onDoubleTap(e);
+
+                }
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent event) {
+                    Log.d("TEST", "onSingleTap");
+                    if(songState == state.NEUTRAL.ordinal())
+                        songState = state.FAVORITE.ordinal();
+                    else if(songState == state.FAVORITE.ordinal())
+                        songState = state.NEUTRAL.ordinal();
+
+
+                    Log.d("STATE", String.valueOf(songState));
+
+                    SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
+
+                    return false;
+                }
+
+            });
 
             @Override
-            public void onProviderDisabled(String s) {
+            public boolean onTouch(View v, MotionEvent event) {
+
+                gestureDetector.onTouchEvent(event);
+                return true;
 
             }
-        };
+        });
+
+    }
+
+    public void initLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    100);
-            Log.d("test1","ins");
             return;
         }
 
-        String locationProvider = LocationManager.GPS_PROVIDER;
-        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-        Log.d("Loc", String.valueOf(lkl.getLatitude()));
-    }
+        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        lat = location.getLatitude();
+        lng = location.getLongitude();
 
-    public void loadMedia(int id) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        }
-
-        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(id);
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
-            mediaPlayer.setDataSource(assetFileDescriptor);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
-                }
-            });
+            List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
+            if(null!=listAddresses&&listAddresses.size()>0){
+                String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
+                locationTitle.setText(loc_name);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        catch (Exception e) {
-            Log.d("Exception", e.toString());
-        }
+
     }
+
+    public void initTimeDay() {
+        timeofday = getTimeOfDay();
+        day = getDay();
+        Log.i("time of day", String.valueOf(timeofday));
+        Log.i("day", String.valueOf(day));
+
+    }
+
+    public void initBroadcast() {
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SONG_FINISHED);
+        bManager.registerReceiver(bReceiver, intentFilter);
+    }
+
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -234,34 +493,4 @@ public class MusicPlayer extends AppCompatActivity {
         }
 
     }
-
-    protected void saveSongData(Location location, int timeOfDay, int day) {
-        SharedPreferences sharedPreferences = getSharedPreferences(Integer.toString(cur_song), MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        Log.d("latitude", Double.toString(location.getLatitude()));
-        Log.d("longitude", Double.toString(location.getLongitude()));
-        editor.putString("latitude", Double.toString(location.getLatitude()));
-        editor.putString("longitude", Double.toString(location.getLongitude()));
-        editor.putString("timeOfDay", Integer.toString(timeOfDay));
-        editor.putString("day", Integer.toString(day));
-
-        editor.apply();
-    }
-
-
-
-    /* TODO:
-    1) get location, time of day, and day of week
-    2) save song data in shared preferences
-    3) add all music player functionality (play,stop,seek,next)
-    4) tap to favorite/dislike (changes button state and sharedPreferences
-    5) handle next song and play in background (optional) ?
-
-
-
-
-     */
-
 }

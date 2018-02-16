@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Address;
@@ -32,10 +33,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
 
@@ -219,7 +223,13 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void saveSong(SongData song) {
-        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, 0, 0);
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        int timesPlayed = ((Integer)map.get("Times played")).intValue();
+        timesPlayed++;
+
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, timesPlayed, timeStamp);
 
     }
 

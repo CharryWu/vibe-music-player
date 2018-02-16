@@ -52,7 +52,17 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
                 String serviceJsonString = intent.getStringExtra("hi");
                 Log.d("Broadcast", serviceJsonString);
-                setupPlayer(songs.get(cur_song+1));
+
+                Log.d("current index",String.valueOf(cur_song));
+
+                if (++cur_song > songs.size()-1)
+                    cur_song = 0;
+
+                Log.d("new index",String.valueOf(cur_song));
+                musicService.setCurrentSong(cur_song);
+                musicService.playSong();
+                setupPlayer(songs.get(cur_song));
+
             }
         }
     };
@@ -113,11 +123,9 @@ public class MusicPlayer extends AppCompatActivity {
         artistTitle.setText(song.getArtist());
 
         //set up seeking
-        final MediaPlayer mp = musicService.getPlayer();
-
-        final int dur = mp.getDuration() / 1000;
+        final int dur = mediaPlayer.getDuration() / 1000;
         seekBar.setMax(dur);
-        Log.d("DUR",String.valueOf(mp.getDuration()));
+        Log.d("DUR",String.valueOf(mediaPlayer.getDuration()));
 
         endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
 
@@ -125,7 +133,7 @@ public class MusicPlayer extends AppCompatActivity {
             @Override
             public void run() {
                 if(musicService != null) {
-                    int curPos = mp.getCurrentPosition() / 1000;
+                    int curPos = mediaPlayer.getCurrentPosition() / 1000;
                     seekBar.setProgress(curPos);
                     startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
                     mHandler.postDelayed(this, 1000);
@@ -190,13 +198,31 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if(fromUser) {
+                    seekBar.setMax(mediaPlayer.getDuration() / 1000);
+                    mediaPlayer.seekTo(progress * 1000);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         bManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_FINISHED);
         bManager.registerReceiver(bReceiver, intentFilter);
-
-
-
 
 
         /**
@@ -254,6 +280,7 @@ public class MusicPlayer extends AppCompatActivity {
         */
 
 
+
     }
 
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -269,6 +296,7 @@ public class MusicPlayer extends AppCompatActivity {
             musicService.playSong();
             isBound = true;
 
+            mediaPlayer = musicService.getPlayer();
             setupPlayer(songs.get(cur_song));
         }
 

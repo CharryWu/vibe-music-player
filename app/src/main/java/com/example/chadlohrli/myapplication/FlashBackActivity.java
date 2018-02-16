@@ -3,6 +3,7 @@ package com.example.chadlohrli.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -40,6 +41,10 @@ public class FlashBackActivity extends AppCompatActivity {
     private float lng2 = 0;
     double time = 0;
     double day = 0;
+    double lat = 0;
+    double lng = 0;
+    double dist = 0;
+    Location location = new Location("current location");
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -86,6 +91,8 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
+    //TODO make music play on the flashback mode screen and displays the last info
+    //     music needs to be played autumatically
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,13 +116,12 @@ public class FlashBackActivity extends AppCompatActivity {
             return;
         }
 
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         //curr_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         //locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
 
-        double lat = 0;
-        double lng = 0;
+
         Date dp_hour = Calendar.getInstance().getTime();
         time_view.setText("Last Time Played:" + String.valueOf(dp_hour));
 
@@ -145,6 +151,10 @@ public class FlashBackActivity extends AppCompatActivity {
 
             String id = fields[i].getName();
 
+            //clear sharedpref first
+            SharedPreferences sp = getApplicationContext().getSharedPreferences()
+
+
             Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
 
             //location distance
@@ -160,26 +170,32 @@ public class FlashBackActivity extends AppCompatActivity {
 
                 lt = Float.valueOf(latitude.toString());
                 lng2 = Float.valueOf(longitude.toString());
-                time = (int)t;
-                day = (int)d;
-            }
+                time = (int) t;
+                day = (int) d;
 
-            //get song's location
-            Location loc = new Location("Song Location");
-            loc.setLatitude(lt);
-            loc.setLongitude(lng2);
 
-            time = (int) matchTimeOfDay(time);
-            day = (int) matchDay(day);
-            double dist = location.distanceTo(loc);
-            dist = matchLocation(dist);
+                //get song's location
+                Location loc = new Location("Song Location");
+                loc.setLatitude(lt);
+                loc.setLongitude(lng2);
 
-            ratings = time+day+dist;
+                time = (int) matchTimeOfDay(time);
+                day = (int) matchDay(day);
 
-            if (ratings >= 2) {
+                if (loc.getLongitude() != 0 && loc.getLatitude() != 0) {
+                    dist = location.distanceTo(loc);
+                }
 
-                SongData song = SongParser.parseSong(path, id, getApplicationContext());
-                flashbackList.add(song);
+                dist = matchLocation(dist);
+
+
+                ratings = time + day + dist;
+
+                if (ratings >= 2) {
+
+                    SongData song = SongParser.parseSong(path, id, getApplicationContext());
+                    flashbackList.add(song);
+                }
             }
 
         }

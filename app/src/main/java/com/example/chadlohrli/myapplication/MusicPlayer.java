@@ -1,6 +1,7 @@
 package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,6 +25,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -61,6 +64,7 @@ public class MusicPlayer extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
 
+
     private final int MORNING = 0;
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
@@ -88,6 +92,9 @@ public class MusicPlayer extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private LocalBroadcastManager bManager;
     private Location location;
+
+    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    private int songState;
 
 
     @Override
@@ -126,12 +133,11 @@ public class MusicPlayer extends AppCompatActivity {
             MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
             musicService = binder.getService();
             musicService.setSongList(songs);
-            musicService.setCurrentSong(cur_song);
-            musicService.playSong();
+            mediaPlayer = musicService.getPlayer();
             isBound = true;
 
-            mediaPlayer = musicService.getPlayer();
-            setupPlayer(songs.get(cur_song));
+            playSong();
+
         }
 
         @Override
@@ -179,8 +185,43 @@ public class MusicPlayer extends AppCompatActivity {
 
     // -- functional methods -- //
 
+    public void checkSongState(SongData song){
+
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+
+        try {
+            songState = ((Integer) map.get("State")).intValue();
+            Log.d("State:", String.valueOf(songState));
+        }catch(Error err){
+            songState = state.NEUTRAL.ordinal();
+        }
+
+    }
+
     public void setSong(int songIndex){
         cur_song = songIndex;
+    }
+
+    public void playSong() {
+
+        checkSongState(songs.get(cur_song));
+
+        //This code ensures that no disliked songs will play
+        /*
+        int count = 0;
+        while(songState == state.DISLIKE.ordinal()){
+            if(count >= songs.size())
+                break;
+            playNextSong();
+            checkSongState(songs.get(cur_song));
+            count++;
+        }
+        */
+
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
     }
 
     public void playNextSong(){
@@ -189,9 +230,9 @@ public class MusicPlayer extends AppCompatActivity {
             cur_song = 0;
 
         Log.d("new index",String.valueOf(cur_song));
-        musicService.setCurrentSong(cur_song);
-        musicService.playSong();
-        setupPlayer(songs.get(cur_song));
+
+        playSong();
+
 
     }
 
@@ -201,9 +242,9 @@ public class MusicPlayer extends AppCompatActivity {
             cur_song = songs.size()-1;
 
         Log.d("new index",String.valueOf(cur_song));
-        musicService.setCurrentSong(cur_song);
-        musicService.playSong();
-        setupPlayer(songs.get(cur_song));
+
+        playSong();
+
 
     }
 
@@ -229,7 +270,7 @@ public class MusicPlayer extends AppCompatActivity {
         int timesPlayed = ((Integer)map.get("Times played")).intValue();
         timesPlayed++;
 
-        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, timesPlayed, timeStamp);
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
 
     }
 
@@ -281,6 +322,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void initListeners() {
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -314,6 +356,8 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -335,6 +379,51 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+
+
+        favBtn.setOnTouchListener(new View.OnTouchListener() {
+            private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    Log.d("TEST", "onDoubleTap");
+                    if(songState == state.NEUTRAL.ordinal())
+                        songState = state.DISLIKE.ordinal();
+                    else if(songState == state.DISLIKE.ordinal())
+                        songState = state.NEUTRAL.ordinal();
+
+                    Log.d("STATE", String.valueOf(songState));
+
+                    SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
+
+                    return super.onDoubleTap(e);
+
+                }
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent event) {
+                    Log.d("TEST", "onSingleTap");
+                    if(songState == state.NEUTRAL.ordinal())
+                        songState = state.FAVORITE.ordinal();
+                    else if(songState == state.FAVORITE.ordinal())
+                        songState = state.NEUTRAL.ordinal();
+
+
+                    Log.d("STATE", String.valueOf(songState));
+
+                    SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
+
+                    return false;
+                }
+
+            });
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                gestureDetector.onTouchEvent(event);
+                return true;
+
+            }
+        });
 
     }
 

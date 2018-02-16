@@ -28,13 +28,10 @@ public class FlashBackActivity extends AppCompatActivity {
     private Button backbtn;
     private ListView songlist;
     private TextView location_view;
-    private TextView time;
+    private TextView time_view;
     private ArrayList<SongData> flashbackList = new ArrayList<SongData>();
-    private Location curr_location;
 
-    private int ratings;
-    SongParser parser;
-    SongData temp;
+    private double ratings;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -54,12 +51,42 @@ public class FlashBackActivity extends AppCompatActivity {
 
     }
 
+    /*
+    protected double matchTimeOfDay(double songTime) {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (hour == songTime) {
+            return 2;
+        }
+        return 0;
+    }
+
+    protected double matchDay(double songDate) {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        if (songDate == day) {
+            return 2;
+        }
+        return 0;
+    }
+
+    protected double matchLocation(double distance) {
+        double locRating = 0;
+        if (distance <= 304.8) {
+            locRating = 2;
+            double temp = ((304.8 - distance)/304.8);
+            locRating += temp;
+        }
+        return locRating;
+    }
+    */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.flashback);
 
         location_view = (TextView) findViewById(R.id.location);
+        time_view = (TextView) findViewById(R.id.time);
+
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -73,39 +100,31 @@ public class FlashBackActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         //curr_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         //locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
 
-        /*String loc = String.valueOf(curr_location.getLatitude());
-        if (curr_location == null) {
-            Log.i("location not set", "hi");
-        }
-        location.setText(loc);*/
-
         double lat = location.getLatitude();
         double lng = location.getLongitude();
+
 
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if (null != listAddresses && listAddresses.size() > 0) {
-                String loc_name = listAddresses.get(0).getAddressLine(0);
-                location_view.setText("Last Played Location: " + loc_name);
+            if(null!=listAddresses&&listAddresses.size()>0){
+                String loc_name = "Last Played Location: " + listAddresses.get(0).getAddressLine(0);
+                location_view.setText(loc_name);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
-
-
         /*
         //do address thing
         Field[] fields = R.raw.class.getFields();
         String path = "android.resource://" + getPackageName()+"/raw/";
-
         for (int i = 0; i < fields.length; i++) {
 
             String id = fields[i].getName();
@@ -122,20 +141,20 @@ public class FlashBackActivity extends AppCompatActivity {
 
             double lt = Double.valueOf(latitude.toString());
             double lng2 = Double.valueOf(longtitude.toString());
-            int time = Integer.valueOf(t.toString());
-            int day = Integer.valueOf(d.toString());
+            double time = Integer.valueOf(t.toString());
+            double day = Integer.valueOf(d.toString());
 
             Location loc = new Location("Song Location");
             loc.setLatitude(lt);
             loc.setLongitude(lng2);
 
-            time = matchTime(time);
-            day = matchDay(day);
+            time = (int) matchTimeOfDay(time);
+            day = (int) matchDay(day);
             double dist = location.distanceTo(loc);
+            dist = matchLocation(dist);
 
-            //check w/n what range dist is at
-
-            ratings = time+day+(int)dist;
+            time_view.setText("Last Time Played: " + time);
+            ratings = time+day+dist;
 
             if (ratings >= 2) {
 
@@ -146,21 +165,19 @@ public class FlashBackActivity extends AppCompatActivity {
         }
         */
 
-
+        /*
         Field[] fields = R.raw.class.getFields();
         String path = "android.resource://" + getPackageName() + "/raw/";
         String id = fields[0].getName();
         SongData test = SongParser.parseSong(path, id, getApplicationContext());
         flashbackList.add(test);
 
-        Log.d("crashed", "here");
+        Log.d("crashed", "here");*/
 
         songlist = (ListView) findViewById(R.id.song_list);
 
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
-
-        Log.d("crashed", "here1");
 
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override

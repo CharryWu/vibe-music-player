@@ -176,6 +176,20 @@ public class MusicPlayer extends AppCompatActivity {
                 isBound = false;
             }
         };
+
+        /*
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100);
+            Log.d("test1","ins");
+            return;
+        }
+
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+        */
     }
 
 
@@ -195,6 +209,7 @@ public class MusicPlayer extends AppCompatActivity {
         musicService = null;
         super.onDestroy();
         unbindService(musicConnection);
+
     }
 
 

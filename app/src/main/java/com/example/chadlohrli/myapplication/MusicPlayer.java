@@ -1,9 +1,11 @@
 package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,6 +22,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +43,20 @@ import java.util.Date;
 import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
+
+    public static final String SONG_FINISHED = "SONG FINISHED";
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(SONG_FINISHED)) {
+                String serviceJsonString = intent.getStringExtra("hi");
+                Log.d("Broadcast", serviceJsonString);
+                setupPlayer(songs.get(cur_song+1));
+            }
+        }
+    };
+    LocalBroadcastManager bManager;
 
     private Button backBtn;
     private ImageView albumCover;
@@ -173,6 +190,13 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SONG_FINISHED);
+        bManager.registerReceiver(bReceiver, intentFilter);
+
+
+
 
 
         /**
@@ -267,6 +291,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        bManager.unregisterReceiver(bReceiver);
         stopService(playIntent);
         musicService = null;
         super.onDestroy();
@@ -314,7 +339,6 @@ public class MusicPlayer extends AppCompatActivity {
 
         editor.apply();
     }
-
 
 
 

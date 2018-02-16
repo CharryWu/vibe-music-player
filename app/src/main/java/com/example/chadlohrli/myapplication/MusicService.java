@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.SeekBar;
 
@@ -25,6 +26,8 @@ MediaPlayer.OnCompletionListener {
     private SeekBar sb;
 
 
+
+
     public MusicService() {
     }
 
@@ -37,6 +40,7 @@ MediaPlayer.OnCompletionListener {
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
+
 
     }
 
@@ -66,6 +70,9 @@ MediaPlayer.OnCompletionListener {
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Intent RTReturn = new Intent(MusicPlayer.SONG_FINISHED);
+        RTReturn.putExtra("hi", "song finished");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn);
 
 
     }

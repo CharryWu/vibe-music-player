@@ -189,12 +189,12 @@ public class MusicPlayer extends AppCompatActivity {
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
 
-        try {
-            //songState = ((Integer) map.get("State")).intValue();
-            Log.d("State:", String.valueOf(songState));
-        }catch(Error err){
+        if(map.get("State") != null){
+            songState = ((Integer) map.get("State")).intValue();
+        }else{
             songState = state.NEUTRAL.ordinal();
         }
+
 
     }
 

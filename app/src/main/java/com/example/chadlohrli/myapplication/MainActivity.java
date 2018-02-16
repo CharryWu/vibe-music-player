@@ -18,8 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     ImageButton flashBackButton;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-<<<<<<< HEAD
-=======
 
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(intent);
             }
         });
-
 
 /**
         SharedPreferences pref = getSharedPreferences("initial_setup", MODE_PRIVATE);
@@ -109,9 +104,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = pref.edit();
             ed.putString("completedSetUp", "true").apply();
         }
-    */
-
->>>>>>> 24f2f82c4eed91401256a428f98ce1e18087dba3
+    **/
     }
 }
 

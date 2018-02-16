@@ -150,6 +150,7 @@ public class MusicPlayer extends AppCompatActivity {
         final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                lkl = location;
                 Log.d("Chenged", location.toString());
                 int timeOfDay = getTimeOfDay();
                 int day = getDay();
@@ -184,12 +185,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
-
-
-
-
-
+        Log.d("Loc", String.valueOf(lkl.getLatitude()));
     }
 
     public void loadMedia(int id) {

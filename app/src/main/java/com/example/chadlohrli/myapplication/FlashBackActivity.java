@@ -19,19 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.Calendar;
 
 public class FlashBackActivity extends AppCompatActivity {
-
-    private final int MORNING = 0;
-    private final int AFTERNOON = 1;
-    private final int NIGHT = 2;
-
-    private final int MONDAY = 0;
-    private final int TUESDAY = 1;
-    private final int WEDNESDAY = 2;
-    private final int THURSDAY = 3;
-    private final int FRIDAY = 4;
-    private final int SATURDAY = 5;
-    private final int SUNDAY = 6;
-    Location location;
+    Location curLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +30,7 @@ public class FlashBackActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 //Log.d("Chenged", location.toString());
-                location = location;
+                curLocation = location;
             }
 
             @Override
@@ -73,8 +61,53 @@ public class FlashBackActivity extends AppCompatActivity {
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
-        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
+        //curLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        locationManager.requestLocationUpdates(locationProvider, 0, 10, locationListener);
         //Assuming Location location stores correct location
+
     }
+        /**
+        TODO:
+          1. Track last known location
+          2. Use locations distance method to store all songs played in the given radius, track
+             minimum distance
+          3. Get time of day, day of week
+          4. Give ratings to all songs, create arraylist of selected songs (Unfavorated songs
+             should not be considered)
+          5. Location: within 1000 feet: give rating 2 to 3
+          6. Time of Day: Give rating of 2 if it matches
+          7. Day of Week: Give rating of 2 if it matches
+          8. Favorited: tiebreaker
+          Time stamp: tiebreaker
+          9. Add ratings, consider songs with > 2 rating
+          10. Sort by highest ratings to give recommendations
+          11. Handle location changes (automatic),time of day and day of week (manual)
+         **/
+
+        protected double matchTimeOfDay(int songTime) {
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            if (hour == songTime) {
+                return 2;
+            }
+            return 0;
+        }
+
+        protected double matchDay(int songDate) {
+            int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+            if (songDate == day) {
+                return 2;
+            }
+            return 0;
+        }
+
+        protected double matchLocation(Location songLocation) {
+            double distance = curLocation.distanceTo(songLocation);
+            double locRating = 0;
+            if (distance <= 304.8) {
+                locRating = 2;
+                double temp = ((304.8 - distance)/304.8);
+                locRating += temp;
+            }
+            return locRating;
+        }
 }

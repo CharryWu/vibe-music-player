@@ -5,14 +5,14 @@
     android:layout_height="wrap_content"
     android:onClick="songPicked"
     android:orientation="vertical"
-    android:padding="5dp" >
+    android:padding="5dp">
 
     <TextView
         android:id="@+id/song_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
         android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView

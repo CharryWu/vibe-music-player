@@ -1,12 +1,11 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 
 import java.lang.reflect.Field;
@@ -19,19 +18,19 @@ public class AlbumActivity extends AppCompatActivity {
     private ArrayList<SongData> madeSongs;
     private ArrayList<Album> albumArray;
 
-    public ArrayList<SongData> createSongs(){
+    public ArrayList<SongData> createSongs() {
 
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
-        for(int count=0;count < fields.length; count++){
+        for (int count = 0; count < fields.length; count++) {
 
-            Log.i("Raw Asset:",fields[count].getName());
+            Log.i("Raw Asset:", fields[count].getName());
 
-            String path = "android.resource://" + getPackageName()+"/raw/";
+            String path = "android.resource://" + getPackageName() + "/raw/";
             String Id = fields[count].getName();
 
-            SongData song = SongParser.parseSong(path, Id,getApplicationContext());
+            SongData song = SongParser.parseSong(path, Id, getApplicationContext());
 
             songs.add(song);
         }
@@ -59,8 +58,7 @@ public class AlbumActivity extends AppCompatActivity {
                 Album firstElement = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                 firstElement.getSongs().add(songToAdd);
                 albumArrayList.add(firstElement);
-            }
-            else {
+            } else {
                 for (int j = 0; j < albumArrayList.size(); j++) {
                     if (songToAdd.getAlbum().equals(albumArrayList.get(j).getAlbumTitle())) {
                         obj = albumArrayList.get(j);
@@ -68,7 +66,7 @@ public class AlbumActivity extends AppCompatActivity {
                         matchFound = true;
                     }
                 }
-                if (!matchFound){
+                if (!matchFound) {
                     ArrayList<SongData> list = new ArrayList<SongData>();
                     Album object = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                     object.getSongs().add(songToAdd);
@@ -77,35 +75,27 @@ public class AlbumActivity extends AppCompatActivity {
             }
 
         }
+        Collections.sort(albumArrayList, new Comparator<Album>() {
+            @Override
+            public int compare(Album a, Album b) {
+                return a.getAlbumTitle().compareTo(b.getAlbumTitle());
+            }
+        });
+
         return albumArrayList;
 
     }
 
-  /*  public void albumPicked(View view){
-        //mp.setList(songs);
-        //mp.setSong(Integer.parseInt(view.getTag().toString()));
-
-        Intent intent = new Intent(AlbumActivity.this, PickedAlbumActivity.class);
-        intent.putExtra("ALBUM", gridArray);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
-        AlbumActivity.this.startActivity(intent);
-        finish();
-
-    }*/
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
-
-        Button backBtn = (Button) findViewById(R.id.button);
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(AlbumActivity.this, MainActivity.class);
-                AlbumActivity.this.startActivity(intent);
-            }
-        });
 
         madeSongs = createSongs();
         albumArray = buildAlbums(madeSongs);
@@ -119,9 +109,8 @@ public class AlbumActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(AlbumActivity.this, PickedAlbumActivity.class);
                 intent.putExtra("ALBUMS", albumArray);
-                intent.putExtra("CUR", view.getTag().toString());
+                intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
                 AlbumActivity.this.startActivity(intent);
-                finish();
             }
         });
 

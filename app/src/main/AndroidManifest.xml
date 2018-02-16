@@ -10,7 +10,7 @@
     <uses-feature android:name="android.hardware.location.network" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -19,18 +19,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MusicPlayer" />
-        <activity android:name=".SongListActivity">
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AlbumActivity" />
-        <activity android:name=".PickedAlbumActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".FlashBackActivity" />
+        <activity android:name=".MusicPlayer" />
+        <activity
+            android:name=".SongListActivity"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".AlbumActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".PickedAlbumActivity"
+            android:parentActivityName=".AlbumActivity" />
+        <activity
+            android:name=".FlashBackActivity"
+            android:parentActivityName=".MainActivity" />
 
         <service
             android:name=".MusicService"

@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.SeekBar;
 
@@ -26,8 +27,6 @@ MediaPlayer.OnCompletionListener {
     private SeekBar sb;
 
 
-
-
     public MusicService() {
     }
 
@@ -40,7 +39,6 @@ MediaPlayer.OnCompletionListener {
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
-
 
     }
 

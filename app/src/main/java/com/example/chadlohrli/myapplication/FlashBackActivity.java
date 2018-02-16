@@ -20,18 +20,26 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class FlashBackActivity extends AppCompatActivity {
 
-    private Button backbtn;
+    //private Button backbtn;
     private ListView songlist;
     private TextView location_view;
     private TextView time_view;
     private ArrayList<SongData> flashbackList = new ArrayList<SongData>();
 
     private double ratings;
+
+    private float lt = 0;
+    private float lng2 = 0;
+    double time = 0;
+    double day = 0;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -43,7 +51,7 @@ public class FlashBackActivity extends AppCompatActivity {
         //mp.setList(songs);
         //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
-        Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
+        Intent intent = new Intent(FlashBackActivity.this, FlashBackActivity.class);
         intent.putExtra("SONGS", flashbackList);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
@@ -51,7 +59,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
     }
 
-    /*
+
     protected double matchTimeOfDay(double songTime) {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (hour == songTime) {
@@ -77,7 +85,7 @@ public class FlashBackActivity extends AppCompatActivity {
         }
         return locRating;
     }
-    */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,10 +114,18 @@ public class FlashBackActivity extends AppCompatActivity {
         //curr_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         //locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
 
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
+        double lat = 0;
+        double lng = 0;
+        Date dp_hour = Calendar.getInstance().getTime();
+        time_view.setText("Last Time Played:" + String.valueOf(dp_hour));
 
 
+        if (location != null) {
+            lat = location.getLatitude();
+            lng = location.getLongitude();
+        }
+
+        //get location name
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
@@ -121,29 +137,34 @@ public class FlashBackActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        /*
+
         //do address thing
         Field[] fields = R.raw.class.getFields();
         String path = "android.resource://" + getPackageName()+"/raw/";
         for (int i = 0; i < fields.length; i++) {
 
             String id = fields[i].getName();
+
             Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
 
             //location distance
             //double lat;
             //String str = "Latitude";
-            Object latitude = map.get("Latitude");
-            Object longtitude = map.get("Longitude");
-            Object t = map.get("Time");
-            Object d = map.get("Day");
-            Log.i("lat is:", latitude.toString());
+            if (map.size() != 0) {
+                //Float lattt = (Float)map.get("Latitude");
+                //Log.i("Lat",String.valueOf(lattt.floatValue()));
+                Object latitude = map.get("Latitude");
+                Object longitude = map.get("Longitude");
+                Object t = map.get("Time");
+                Object d = map.get("Day");
 
-            double lt = Double.valueOf(latitude.toString());
-            double lng2 = Double.valueOf(longtitude.toString());
-            double time = Integer.valueOf(t.toString());
-            double day = Integer.valueOf(d.toString());
+                lt = Float.valueOf(latitude.toString());
+                lng2 = Float.valueOf(longitude.toString());
+                time = (int)t;
+                day = (int)d;
+            }
 
+            //get song's location
             Location loc = new Location("Song Location");
             loc.setLatitude(lt);
             loc.setLongitude(lng2);
@@ -153,7 +174,6 @@ public class FlashBackActivity extends AppCompatActivity {
             double dist = location.distanceTo(loc);
             dist = matchLocation(dist);
 
-            time_view.setText("Last Time Played: " + time);
             ratings = time+day+dist;
 
             if (ratings >= 2) {
@@ -163,7 +183,7 @@ public class FlashBackActivity extends AppCompatActivity {
             }
 
         }
-        */
+
 
         /*
         Field[] fields = R.raw.class.getFields();

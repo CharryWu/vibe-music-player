@@ -2,6 +2,7 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.Map;
 
@@ -26,6 +27,9 @@ public class SharedPrefs {
         songadd.putInt("Rating", rating);
         songadd.putInt("Times played", timesPlayed);
         songadd.putInt("Last played", lastPlayed);
+
+        Log.i("latitude", Float.toString(latitude));
+        Log.i("longitude", Float.toString(longitude));
 
         songadd.commit();
 

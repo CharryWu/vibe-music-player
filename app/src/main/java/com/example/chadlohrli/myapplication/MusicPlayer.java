@@ -1,16 +1,20 @@
 package com.example.chadlohrli.myapplication;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -55,6 +59,12 @@ public class MusicPlayer extends AppCompatActivity {
     private final int SATURDAY = 5;
     private final int SUNDAY = 6;
 
+    private int timeofday = 0;
+    private int day = 0;
+    private Location location;
+    private double lat = 0;
+    private double lng = 0;
+
     private ArrayList<SongData> songs;
     private int cur_song;
 
@@ -89,6 +99,14 @@ public class MusicPlayer extends AppCompatActivity {
         Log.d("DUR", String.valueOf(mp.getDuration()));
 
         endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
+
+        timeofday = getTimeOfDay();
+        day = getDay();
+
+        Log.i("time of day", String.valueOf(timeofday));
+        Log.i("day", String.valueOf(day));
+
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, 0, 0);
 
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
@@ -139,6 +157,24 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
+        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        //location
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        lat = location.getLatitude();
+        lng = location.getLongitude();
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +226,9 @@ public class MusicPlayer extends AppCompatActivity {
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
         */
+
+
+
     }
 
 
@@ -209,7 +248,6 @@ public class MusicPlayer extends AppCompatActivity {
         musicService = null;
         super.onDestroy();
         unbindService(musicConnection);
-
     }
 
 
@@ -246,8 +284,11 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    /*
     protected void saveSongData(Location location, int timeOfDay, int day) {
+
         SharedPreferences sharedPreferences = getSharedPreferences(Integer.toString(cur_song), MODE_PRIVATE);
+
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -259,7 +300,10 @@ public class MusicPlayer extends AppCompatActivity {
         editor.putString("day", Integer.toString(day));
 
         editor.apply();
-    }
+
+
+        Log.i("data", "saved");
+    }*/
 
 
 

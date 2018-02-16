@@ -52,7 +52,7 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
                 String serviceJsonString = intent.getStringExtra("hi");
                 Log.d("Broadcast", serviceJsonString);
-                setupPlayer(songs.get(cur_song+1));
+                setupPlayer(songs.get(cur_song++));
             }
         }
     };

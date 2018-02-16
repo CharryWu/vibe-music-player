@@ -329,6 +329,8 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playNextSong();
             }
         });
@@ -336,6 +338,8 @@ public class MusicPlayer extends AppCompatActivity {
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playPrevSong();
             }
         });

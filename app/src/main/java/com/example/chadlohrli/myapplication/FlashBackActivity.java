@@ -179,14 +179,6 @@ public class FlashBackActivity extends AppCompatActivity {
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
 
-        backbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(FlashBackActivity.this, MainActivity.class);
-                FlashBackActivity.this.startActivity(intent);
-                finish();
-            }
-        });
 
     }
 }

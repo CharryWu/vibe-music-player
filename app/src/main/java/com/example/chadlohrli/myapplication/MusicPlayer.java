@@ -52,16 +52,7 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
                 String serviceJsonString = intent.getStringExtra("hi");
                 Log.d("Broadcast", serviceJsonString);
-
                 Log.d("current index",String.valueOf(cur_song));
-
-                if (++cur_song > songs.size()-1)
-                    cur_song = 0;
-
-                Log.d("new index",String.valueOf(cur_song));
-                musicService.setCurrentSong(cur_song);
-                musicService.playSong();
-                setupPlayer(songs.get(cur_song));
 
             }
         }
@@ -107,6 +98,30 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void setSong(int songIndex){
         cur_song = songIndex;
+    }
+
+    public void playNextSong(){
+
+        if (++cur_song > songs.size()-1)
+            cur_song = 0;
+
+        Log.d("new index",String.valueOf(cur_song));
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
+    }
+
+    public void playPrevSong() {
+
+        if(--cur_song < 0)
+            cur_song = songs.size()-1;
+
+        Log.d("new index",String.valueOf(cur_song));
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
     }
 
     public void setupPlayer(SongData song){
@@ -169,6 +184,21 @@ public class MusicPlayer extends AppCompatActivity {
         //display song for now to ensure data has correctly been passed
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
+
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playNextSong();
+            }
+        });
+
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPrevSong();
+            }
+        });
 
 
         backBtn.setOnClickListener(new View.OnClickListener() {

@@ -26,7 +26,6 @@ MediaPlayer.OnCompletionListener {
 
     private SeekBar sb;
 
-
     public MusicService() {
     }
 
@@ -58,7 +57,7 @@ MediaPlayer.OnCompletionListener {
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mediaPlayer.start();
+        mp.start();
     }
 
     @Override
@@ -97,7 +96,7 @@ MediaPlayer.OnCompletionListener {
         AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(cur_song_id);
         try {
             mediaPlayer.setDataSource(assetFileDescriptor);
-            mediaPlayer.prepareAsync();
+            mediaPlayer.prepare();
 
         }
         catch (Exception e) {

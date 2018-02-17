@@ -30,6 +30,7 @@ import java.util.Map;
 
 public class FlashBackActivity extends AppCompatActivity {
 
+    private DateHelper dateHelper;
     //private Button backbtn;
     private ListView songlist;
     private TextView location_view;
@@ -65,24 +66,32 @@ public class FlashBackActivity extends AppCompatActivity {
 
     }
 
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
 
-    protected double matchTimeOfDay(double songTime) {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+    public double matchTimeOfDay(double songTime) {
+        //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
+        Log.d("TIME", Integer.toString(hour));
         if (hour == songTime) {
             return 2;
         }
         return 0;
     }
 
-    protected double matchDay(double songDate) {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+    public double matchDay(double songDate) {
+        //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
+        Log.d("DAY", Integer.toString(day));
         if (songDate == day) {
             return 2;
         }
         return 0;
     }
 
-    protected double matchLocation(double distance) {
+    public double matchLocation(double distance) {
         double locRating = 0;
         if (distance <= 304.8) {
             locRating = 2;
@@ -103,6 +112,7 @@ public class FlashBackActivity extends AppCompatActivity {
         location_view = (TextView) findViewById(R.id.location);
         time_view = (TextView) findViewById(R.id.time);
 
+        setDateHelper(new DateHelper());
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 

@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -95,7 +96,6 @@ public class MusicPlayer extends AppCompatActivity {
 
     private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,16 +185,32 @@ public class MusicPlayer extends AppCompatActivity {
 
     // -- functional methods -- //
 
+    public void setStateButton(){
+
+        if(songState == state.NEUTRAL.ordinal()){
+            favBtn.setText("+");
+            favBtn.setBackgroundColor(Color.WHITE);
+        }else if(songState == state.DISLIKE.ordinal()){
+            favBtn.setText("x");
+            favBtn.setBackgroundColor(Color.RED);
+        }else if(songState == state.FAVORITE.ordinal()){
+            favBtn.setText("\u2714");
+            favBtn.setBackgroundColor(Color.GREEN);
+        }
+
+    }
+
     public void checkSongState(SongData song){
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
 
-        try {
-            //songState = ((Integer) map.get("State")).intValue();
-            Log.d("State:", String.valueOf(songState));
-        }catch(Error err){
+        if(map.get("State") != null){
+            songState = ((Integer) map.get("State")).intValue();
+        }else{
             songState = state.NEUTRAL.ordinal();
         }
+
+        setStateButton();
 
     }
 
@@ -204,7 +220,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        //checkSongState(songs.get(cur_song));
+        checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -323,6 +339,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    @SuppressWarnings("ClickableViewAccessibility")
     @SuppressLint("ClickableViewAccessibility")
     public void initListeners() {
 
@@ -385,7 +402,6 @@ public class MusicPlayer extends AppCompatActivity {
         });
 
 
-
         favBtn.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -397,6 +413,8 @@ public class MusicPlayer extends AppCompatActivity {
                         songState = state.NEUTRAL.ordinal();
 
                     Log.d("STATE", String.valueOf(songState));
+
+                    setStateButton();
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
@@ -411,6 +429,7 @@ public class MusicPlayer extends AppCompatActivity {
                     else if(songState == state.FAVORITE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
+                    setStateButton();
 
                     Log.d("STATE", String.valueOf(songState));
 

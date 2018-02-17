@@ -26,7 +26,6 @@ MediaPlayer.OnCompletionListener {
 
     private SeekBar sb;
 
-
     public MusicService() {
     }
 

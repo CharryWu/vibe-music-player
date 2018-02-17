@@ -57,21 +57,8 @@ public class SongListActivityTest {
     public void testCreateSongs() {
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> list = songListActivity.getActivity().createSongs();
-        ArrayList<String> songNames = new ArrayList<>();
-
-        for (SongData item : list) {
-            songNames.add(item.getTitle());
-        }
         assertEquals(fields.length, list.size());
-
-        for (Field field : fields) {
-            assertTrue(songNames.contains(field.getName()));
-        }
+        // Can't compare song file name and song's true name stored in its metadata because they
+        // do not exactly match
     }
-
-    @Test
-    public void testSongPicked() {
-
-    }
-
 }

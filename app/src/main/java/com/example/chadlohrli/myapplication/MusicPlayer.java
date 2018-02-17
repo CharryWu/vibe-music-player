@@ -9,22 +9,18 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-
-import android.content.res.AssetFileDescriptor;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,13 +30,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 public class MusicPlayer extends AppCompatActivity {
 
@@ -52,7 +43,14 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
                 String serviceJsonString = intent.getStringExtra("hi");
                 Log.d("Broadcast", serviceJsonString);
+
                 setupPlayer(songs.get(cur_song++));
+
+                Log.d("current index",String.valueOf(cur_song));
+
+                playNextSong();
+
+
             }
         }
     };
@@ -86,17 +84,47 @@ public class MusicPlayer extends AppCompatActivity {
     private final int SATURDAY = 5;
     private final int SUNDAY = 6;
 
+    private int timeofday = 0;
+    private int day = 0;
+    private Location location;
+    private double lat = 0;
+    private double lng = 0;
+
     private ArrayList<SongData> songs;
     private int cur_song;
 
     private MusicService musicService;
     private Intent playIntent;
-    private boolean isBound=false;
+    private boolean isBound = false;
 
     final Handler mHandler = new Handler();
 
     public void setSong(int songIndex){
         cur_song = songIndex;
+    }
+
+    public void playNextSong(){
+
+        if (++cur_song > songs.size()-1)
+            cur_song = 0;
+
+        Log.d("new index",String.valueOf(cur_song));
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
+    }
+
+    public void playPrevSong() {
+
+        if(--cur_song < 0)
+            cur_song = songs.size()-1;
+
+        Log.d("new index",String.valueOf(cur_song));
+        musicService.setCurrentSong(cur_song);
+        musicService.playSong();
+        setupPlayer(songs.get(cur_song));
+
     }
 
     public void setupPlayer(SongData song){
@@ -117,15 +145,24 @@ public class MusicPlayer extends AppCompatActivity {
 
         final int dur = mp.getDuration() / 1000;
         seekBar.setMax(dur);
-        Log.d("DUR",String.valueOf(mp.getDuration()));
+        Log.d("DUR", String.valueOf(mp.getDuration()));
+        Log.d("DUR",String.valueOf(mediaPlayer.getDuration()));
 
         endTime.setText(String.format("%02d:%02d", (dur % 36000) / 60, (dur % 60)));
+
+        timeofday = getTimeOfDay();
+        day = getDay();
+
+        Log.i("time of day", String.valueOf(timeofday));
+        Log.i("day", String.valueOf(day));
+
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, 0, 0);
 
         MusicPlayer.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(musicService != null) {
-                    int curPos = mp.getCurrentPosition() / 1000;
+                    int curPos = mediaPlayer.getCurrentPosition() / 1000;
                     seekBar.setProgress(curPos);
                     startTime.setText(String.format("%02d:%02d", (curPos % 36000) / 60, (curPos % 60)));
                     mHandler.postDelayed(this, 1000);
@@ -138,13 +175,22 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
 
-        backBtn = (Button) findViewById(R.id.backBtn);
         playBtn = (ImageButton) findViewById(R.id.playBtn);
         nextBtn = (ImageButton) findViewById(R.id.nextBtn);
         favBtn = (Button) findViewById(R.id.favBtn);
@@ -162,15 +208,34 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
+        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MusicPlayer.this, SongListActivity.class);
-                MusicPlayer.this.startActivity(intent);
-                finish();
+                playNextSong();
             }
         });
+
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPrevSong();
+            }
+        });
+
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+
+        //location
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        lat = location.getLatitude();
+        lng = location.getLongitude();
 
 
         playBtn.setOnClickListener(new View.OnClickListener() {
@@ -190,13 +255,31 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if(fromUser) {
+                    seekBar.setMax(mediaPlayer.getDuration() / 1000);
+                    mediaPlayer.seekTo(progress * 1000);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         bManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_FINISHED);
         bManager.registerReceiver(bReceiver, intentFilter);
-
-
-
 
 
         /**
@@ -212,6 +295,7 @@ public class MusicPlayer extends AppCompatActivity {
         final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         //save data in shared preferences
         final LocationListener locationListener = new LocationListener() {
+        musicConnection = new ServiceConnection() {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d("Chenged", location.toString());
@@ -269,6 +353,7 @@ public class MusicPlayer extends AppCompatActivity {
             musicService.playSong();
             isBound = true;
 
+            mediaPlayer = musicService.getPlayer();
             setupPlayer(songs.get(cur_song));
         }
 
@@ -295,7 +380,7 @@ public class MusicPlayer extends AppCompatActivity {
         stopService(playIntent);
         musicService = null;
         super.onDestroy();
-
+        unbindService(musicConnection);
     }
 
 
@@ -339,6 +424,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         editor.apply();
     }
+
 
 
 

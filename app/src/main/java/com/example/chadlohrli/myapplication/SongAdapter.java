@@ -8,9 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.chadlohrli.myapplication.R;
-import com.example.chadlohrli.myapplication.SongData;
-
 import java.util.ArrayList;
 
 /**
@@ -22,7 +19,7 @@ public class SongAdapter extends BaseAdapter {
     private ArrayList<SongData> songs;
     private LayoutInflater songInf;
 
-    public SongAdapter(Context c, ArrayList<SongData> songs){
+    public SongAdapter(Context c, ArrayList<SongData> songs) {
         this.songs = songs;
         songInf = LayoutInflater.from(c);
     }
@@ -45,11 +42,11 @@ public class SongAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         //map to song layout
-        LinearLayout songLay = (LinearLayout)songInf.inflate
+        LinearLayout songLay = (LinearLayout) songInf.inflate
                 (R.layout.song, viewGroup, false);
         //get title and artist views
-        TextView songView = (TextView)songLay.findViewById(R.id.song_title);
-        TextView artistView = (TextView)songLay.findViewById(R.id.song_artist);
+        TextView songView = (TextView) songLay.findViewById(R.id.song_title);
+        TextView artistView = (TextView) songLay.findViewById(R.id.song_artist);
         //get song using position
         SongData currSong = songs.get(i);
         //get title and artist strings

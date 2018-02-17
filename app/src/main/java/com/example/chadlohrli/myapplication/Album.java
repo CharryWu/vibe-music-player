@@ -1,7 +1,5 @@
 package com.example.chadlohrli.myapplication;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -11,7 +9,7 @@ public class Album implements Serializable {
     //private Bitmap album_image;
     private ArrayList<SongData> songs;
 
-    public Album(String title, String name /*Bitmap pic*/, ArrayList<SongData> songList){
+    public Album(String title, String name /*Bitmap pic*/, ArrayList<SongData> songList) {
         albumTitle = title;
         artistName = name;
         //album_image = pic;
@@ -21,10 +19,14 @@ public class Album implements Serializable {
     public String getAlbumTitle() {
         return this.albumTitle;
     }
+
     public String getArtistName() {
         return this.artistName;
     }
+
     //public Bitmap getImage() { return this.album_image; }
-    public ArrayList<SongData> getSongs() { return this.songs;}
+    public ArrayList<SongData> getSongs() {
+        return this.songs;
+    }
 
 }

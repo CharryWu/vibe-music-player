@@ -24,7 +24,7 @@ public class SharedPrefs {
         songadd.putFloat("Longitude", longitude);
         songadd.putInt("Day", day);
         songadd.putInt("Time", time);
-        songadd.putInt("Rating", rating);
+        songadd.putFloat("Rating", rating);
         songadd.putInt("State",state);
         songadd.putInt("Times played", timesPlayed);
         songadd.putString("Last played", lastPlayed);

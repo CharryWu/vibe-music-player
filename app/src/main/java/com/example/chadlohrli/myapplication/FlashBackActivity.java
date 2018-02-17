@@ -3,6 +3,7 @@ package com.example.chadlohrli.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -21,22 +22,20 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class FlashBackActivity extends AppCompatActivity {
-    Location curLocation;
-
-    //private Button backbtn;
+    private Location location;
     private ListView songlist;
     private TextView location_view;
     private TextView time_view;
     private ArrayList<SongData> flashbackList = new ArrayList<SongData>();
-
     private double ratings;
-
     private float lt = 0;
     private float lng2 = 0;
     double time = 0;
@@ -49,17 +48,12 @@ public class FlashBackActivity extends AppCompatActivity {
     }
 
     public void songPicked(View view) {
-        //mp.setList(songs);
-        //mp.setSong(Integer.par seInt(view.getTag().toString()));
-
         Intent intent = new Intent(FlashBackActivity.this, FlashBackActivity.class);
         intent.putExtra("SONGS", flashbackList);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
         finish();
-
     }
-
 
     protected double matchTimeOfDay(double songTime) {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -87,6 +81,24 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
+    protected double tiebreaker(ArrayList<SongData> songs){
+        Collections.sort(songs, new Comparator<SongData>()
+        {
+            @Override
+            public int compare(SongData lhs, SongData rhs) {
+                String lid = lhs.getID();
+                String rid = rhs.getID();
+                SharedPreferences lpref = getSharedPreferences(lid, MODE_PRIVATE);
+                SharedPreferences rpref = getSharedPreferences(lid, MODE_PRIVATE);
+                double lrate = (double) lpref.getFloat("Rating", 0);
+                double rrate = (double) rpref.getFloat("Rating", 0);
+
+
+
+                return Integer.valueOf(rhs.getDistance()).compareTo(lhs.getDistance());
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,16 +122,11 @@ public class FlashBackActivity extends AppCompatActivity {
             return;
         }
 
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        //curr_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        //locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;
         Date dp_hour = Calendar.getInstance().getTime();
         time_view.setText("Last Time Played:" + String.valueOf(dp_hour));
-
 
         if (location != null) {
             lat = location.getLatitude();
@@ -138,22 +145,13 @@ public class FlashBackActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         //do address thing
         Field[] fields = R.raw.class.getFields();
         String path = "android.resource://" + getPackageName()+"/raw/";
         for (int i = 0; i < fields.length; i++) {
-
             String id = fields[i].getName();
-
             Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
-
-            //location distance
-            //double lat;
-            //String str = "Latitude";
             if (map.size() != 0) {
-                //Float lattt = (Float)map.get("Latitude");
-                //Log.i("Lat",String.valueOf(lattt.floatValue()));
                 Object latitude = map.get("Latitude");
                 Object longitude = map.get("Longitude");
                 Object t = map.get("Time");
@@ -174,32 +172,24 @@ public class FlashBackActivity extends AppCompatActivity {
             day = (int) matchDay(day);
             double dist = location.distanceTo(loc);
             dist = matchLocation(dist);
-
             ratings = time+day+dist;
+            SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+            pref.edit().putFloat("Rating", (float)ratings);
+            pref.edit().commit();
 
             if (ratings >= 2) {
-
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
-
         }
 
-
-        /*
-        Field[] fields = R.raw.class.getFields();
-        String path = "android.resource://" + getPackageName() + "/raw/";
-        String id = fields[0].getName();
-        SongData test = SongParser.parseSong(path, id, getApplicationContext());
-        flashbackList.add(test);
-
-        Log.d("crashed", "here");*/
-
+        orderSongs(flashbackList);
         songlist = (ListView) findViewById(R.id.song_list);
-
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
+    }
 
+    public void orderSongs(ArrayList<SongData> songs){
 
     }
         /**
@@ -220,30 +210,22 @@ public class FlashBackActivity extends AppCompatActivity {
           11. Handle location changes (automatic),time of day and day of week (manual)
          **/
 
-        protected double matchTimeOfDay(int songTime) {
-            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-            if (hour == songTime) {
-                return 2;
-            }
-            return 0;
-        }
+    /**
+     * TODO PART 2:
+     *   1. Flashback button with unchangable playlist
+     *   2. Updae location, daya and time and get new Flashback Mix
+     *   3. Sort and find the right songs
+     */
+    /*public class sort implements Comparable<sort>{
 
-        protected double matchDay(int songDate) {
-            int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (songDate == day) {
-                return 2;
-            }
-            return 0;
-        }
+        private double rating;
+        private int fav;
+        private double timestamp;
 
-        protected double matchLocation(Location songLocation) {
-            double distance = curLocation.distanceTo(songLocation);
-            double locRating = 0;
-            if (distance <= 304.8) {
-                locRating = 2;
-                double temp = ((304.8 - distance)/304.8);
-                locRating += temp;
-            }
-            return locRating;
+        public sort(Song)
+        @Override
+        public int compareTo(sort f){
+
         }
+    }*/
 }

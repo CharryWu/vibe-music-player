@@ -83,7 +83,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
-    private FusedLocationProviderClient mFusedLocationClient;
+    //private FusedLocationProviderClient mFusedLocationClient;
     private Location lkl;
 
     private MusicService musicService;

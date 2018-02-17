@@ -15,7 +15,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class SharedPrefs {
 
-    public static void saveData(Context context, String id, float latitude, float longitude, int day, int time, int rating, int timesPlayed, int lastPlayed) {
+    public static void saveData(Context context, String id, float latitude, float longitude, int day, int time, int rating, int state, int timesPlayed, String lastPlayed) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
@@ -25,8 +25,9 @@ public class SharedPrefs {
         songadd.putInt("Day", day);
         songadd.putInt("Time", time);
         songadd.putInt("Rating", rating);
+        songadd.putInt("State",state);
         songadd.putInt("Times played", timesPlayed);
-        songadd.putInt("Last played", lastPlayed);
+        songadd.putString("Last played", lastPlayed);
 
         Log.i("latitude", Float.toString(latitude));
         Log.i("longitude", Float.toString(longitude));
@@ -35,11 +36,11 @@ public class SharedPrefs {
 
     }
 
-    public static void updateFavorite(Context context, String id, int rating) {
+    public static void updateFavorite(Context context, String id, int state) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putInt("Rating", rating);
+        songadd.putInt("State", state);
 
         songadd.commit();
     }

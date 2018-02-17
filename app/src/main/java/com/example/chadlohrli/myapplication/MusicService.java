@@ -1,19 +1,15 @@
 package com.example.chadlohrli.myapplication;
 
-import android.Manifest;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.SeekBar;
@@ -72,6 +68,9 @@ MediaPlayer.OnCompletionListener {
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Intent RTReturn = new Intent(MusicPlayer.SONG_FINISHED);
+        RTReturn.putExtra("hi", "song finished");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn);
 
 
     }

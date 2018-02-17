@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -56,7 +57,7 @@ public class FlashBackActivity extends AppCompatActivity {
         //mp.setList(songs);
         //mp.setSong(Integer.par seInt(view.getTag().toString()));
 
-        Intent intent = new Intent(FlashBackActivity.this, FlashBackActivity.class);
+        Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", flashbackList);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
@@ -152,7 +153,6 @@ public class FlashBackActivity extends AppCompatActivity {
             String id = fields[i].getName();
 
             //clear sharedpref first
-            SharedPreferences sp = getApplicationContext().getSharedPreferences()
 
 
             Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
@@ -212,9 +212,17 @@ public class FlashBackActivity extends AppCompatActivity {
 
         songlist = (ListView) findViewById(R.id.song_list);
 
+        if (songlist == null) {
+            location_view.setVisibility(View.INVISIBLE);
+            time_view.setVisibility(View.INVISIBLE);
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashkback!", Toast.LENGTH_LONG);
+            toast.show();
+        }
+
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
 
 
     }
+    //TODO clean up code, pass playlist to musicplayer
 }

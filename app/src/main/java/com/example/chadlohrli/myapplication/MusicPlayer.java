@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -44,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+enum state {NEUTRAL,DISLIKE,FAVORITE};
+
 public class MusicPlayer extends AppCompatActivity {
 
 
@@ -69,13 +72,13 @@ public class MusicPlayer extends AppCompatActivity {
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
 
-    private final int MONDAY = 0;
-    private final int TUESDAY = 1;
-    private final int WEDNESDAY = 2;
-    private final int THURSDAY = 3;
-    private final int FRIDAY = 4;
-    private final int SATURDAY = 5;
-    private final int SUNDAY = 6;
+    private final int SUNDAY = 0;
+    private final int MONDAY = 1;
+    private final int TUESDAY = 2;
+    private final int WEDNESDAY = 3;
+    private final int THURSDAY = 4;
+    private final int FRIDAY = 5;
+    private final int SATURDAY = 6;
 
     private int timeofday = 0;
     private int day = 0;
@@ -93,9 +96,8 @@ public class MusicPlayer extends AppCompatActivity {
     private LocalBroadcastManager bManager;
     private Location location;
 
-    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,16 +187,32 @@ public class MusicPlayer extends AppCompatActivity {
 
     // -- functional methods -- //
 
+    public void setStateButton(){
+
+        if(songState == state.NEUTRAL.ordinal()){
+            favBtn.setText("+");
+            favBtn.setBackgroundColor(Color.WHITE);
+        }else if(songState == state.DISLIKE.ordinal()){
+            favBtn.setText("x");
+            favBtn.setBackgroundColor(Color.RED);
+        }else if(songState == state.FAVORITE.ordinal()){
+            favBtn.setText("\u2714");
+            favBtn.setBackgroundColor(Color.GREEN);
+        }
+
+    }
+
     public void checkSongState(SongData song){
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
 
-        try {
-            //songState = ((Integer) map.get("State")).intValue();
-            Log.d("State:", String.valueOf(songState));
-        }catch(Error err){
+        if(map.get("State") != null){
+            songState = ((Integer) map.get("State")).intValue();
+        }else{
             songState = state.NEUTRAL.ordinal();
         }
+
+        setStateButton();
 
     }
 
@@ -204,7 +222,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        //checkSongState(songs.get(cur_song));
+        checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -323,12 +341,15 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    @SuppressWarnings("ClickableViewAccessibility")
     @SuppressLint("ClickableViewAccessibility")
     public void initListeners() {
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playNextSong();
             }
         });
@@ -336,6 +357,8 @@ public class MusicPlayer extends AppCompatActivity {
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playPrevSong();
             }
         });
@@ -381,7 +404,6 @@ public class MusicPlayer extends AppCompatActivity {
         });
 
 
-
         favBtn.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -393,6 +415,8 @@ public class MusicPlayer extends AppCompatActivity {
                         songState = state.NEUTRAL.ordinal();
 
                     Log.d("STATE", String.valueOf(songState));
+
+                    setStateButton();
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
@@ -407,6 +431,7 @@ public class MusicPlayer extends AppCompatActivity {
                     else if(songState == state.FAVORITE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
+                    setStateButton();
 
                     Log.d("STATE", String.valueOf(songState));
 
@@ -435,7 +460,9 @@ public class MusicPlayer extends AppCompatActivity {
         }
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lm != null) {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         lat = location.getLatitude();
         lng = location.getLongitude();
 

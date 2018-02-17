@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+enum state {NEUTRAL,DISLIKE,FAVORITE};
+
 public class MusicPlayer extends AppCompatActivity {
 
 
@@ -94,7 +96,7 @@ public class MusicPlayer extends AppCompatActivity {
     private LocalBroadcastManager bManager;
     private Location location;
 
-    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
 
     @Override

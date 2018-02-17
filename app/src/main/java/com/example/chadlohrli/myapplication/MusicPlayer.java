@@ -48,7 +48,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
-
+    private DateHelper dateHelper;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -96,6 +96,10 @@ public class MusicPlayer extends AppCompatActivity {
     private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
 
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +112,7 @@ public class MusicPlayer extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        setDateHelper(new DateHelper());
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
@@ -189,12 +194,12 @@ public class MusicPlayer extends AppCompatActivity {
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
 
-        try {
+        if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();
-            Log.d("State:", String.valueOf(songState));
-        }catch(Error err){
+        }else{
             songState = state.NEUTRAL.ordinal();
         }
+
 
     }
 
@@ -204,7 +209,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        checkSongState(songs.get(cur_song));
+        //checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -270,6 +275,7 @@ public class MusicPlayer extends AppCompatActivity {
         int timesPlayed = ((Integer)map.get("Times played")).intValue();
         timesPlayed++;
 
+
         SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
 
     }
@@ -295,7 +301,7 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        saveSong(song); //save data to shared preferences
+        //saveSong(song); //save data to shared preferences
 
     }
 
@@ -328,6 +334,8 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playNextSong();
             }
         });
@@ -335,6 +343,8 @@ public class MusicPlayer extends AppCompatActivity {
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPlayingMusic = true;
+                playBtn.setImageResource(android.R.drawable.ic_media_pause);
                 playPrevSong();
             }
         });
@@ -468,7 +478,8 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     protected int getTimeOfDay() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         if(hour >= 17 && hour <= 5)
             return NIGHT;
         else if (hour >= 6 && hour <= 10 )
@@ -478,8 +489,8 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     protected int getDay() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-
+        //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int day = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         switch (day) {
             case 0: return MONDAY;
             case 1: return TUESDAY;

@@ -97,7 +97,6 @@ public class MusicPlayer extends AppCompatActivity {
     private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -340,6 +339,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    @SuppressWarnings("ClickableViewAccessibility")
     @SuppressLint("ClickableViewAccessibility")
     public void initListeners() {
 
@@ -400,7 +400,6 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
-
 
 
         favBtn.setOnTouchListener(new View.OnTouchListener() {

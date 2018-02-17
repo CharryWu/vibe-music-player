@@ -98,6 +98,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
+    private int timesPlayed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +123,7 @@ public class MusicPlayer extends AppCompatActivity {
         initViews();
         initListeners();
         initBroadcast();
-        initLocation();
+        //initLocation();
 
 
     }
@@ -285,9 +286,13 @@ public class MusicPlayer extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
-        int timesPlayed = ((Integer)map.get("Times played")).intValue();
-        timesPlayed++;
 
+        if (map.get("Times played") != null) {
+            timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
+        }
+        else {
+            timesPlayed++;
+        }
 
         SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
 
@@ -314,7 +319,8 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        //saveSong(song); //save data to shared preferences
+        saveSong(song); //save data to shared preferences
+        Log.i("saveSong", "called");
 
     }
 

@@ -54,22 +54,28 @@ public class AlbumActivity extends AppCompatActivity {
             SongData songToAdd = songs.get(i);
             boolean matchFound = false;
             if (i == 0) {
+                Log.d("first song: building new album for ", songToAdd.getAlbum());
                 ArrayList<SongData> list = new ArrayList<SongData>();
                 Album firstElement = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                 firstElement.getSongs().add(songToAdd);
+                Log.d("first song: added song to album", songToAdd.getTitle());
                 albumArrayList.add(firstElement);
             } else {
                 for (int j = 0; j < albumArrayList.size(); j++) {
                     if (songToAdd.getAlbum().equals(albumArrayList.get(j).getAlbumTitle())) {
+                        Log.d("album exists for ", songToAdd.getAlbum());
                         obj = albumArrayList.get(j);
                         obj.getSongs().add(songToAdd);
+                        Log.d("adding to song list ", songToAdd.getTitle());
                         matchFound = true;
                     }
                 }
                 if (!matchFound) {
+                    Log.d("building new album for ", songToAdd.getAlbum());
                     ArrayList<SongData> list = new ArrayList<SongData>();
                     Album object = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                     object.getSongs().add(songToAdd);
+                    Log.d("adding song to album ", songToAdd.getTitle());
                     albumArrayList.add(object);
                 }
             }

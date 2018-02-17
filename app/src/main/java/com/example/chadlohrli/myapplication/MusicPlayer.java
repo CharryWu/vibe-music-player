@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -185,6 +186,21 @@ public class MusicPlayer extends AppCompatActivity {
 
     // -- functional methods -- //
 
+    public void setStateButton(){
+
+        if(songState == state.NEUTRAL.ordinal()){
+            favBtn.setText("+");
+            favBtn.setBackgroundColor(Color.WHITE);
+        }else if(songState == state.DISLIKE.ordinal()){
+            favBtn.setText("x");
+            favBtn.setBackgroundColor(Color.RED);
+        }else if(songState == state.FAVORITE.ordinal()){
+            favBtn.setText("\u2714");
+            favBtn.setBackgroundColor(Color.GREEN);
+        }
+
+    }
+
     public void checkSongState(SongData song){
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
@@ -195,6 +211,7 @@ public class MusicPlayer extends AppCompatActivity {
             songState = state.NEUTRAL.ordinal();
         }
 
+        setStateButton();
 
     }
 
@@ -204,7 +221,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        //checkSongState(songs.get(cur_song));
+        checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -398,6 +415,8 @@ public class MusicPlayer extends AppCompatActivity {
 
                     Log.d("STATE", String.valueOf(songState));
 
+                    setStateButton();
+
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
                     return super.onDoubleTap(e);
@@ -411,6 +430,7 @@ public class MusicPlayer extends AppCompatActivity {
                     else if(songState == state.FAVORITE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
+                    setStateButton();
 
                     Log.d("STATE", String.valueOf(songState));
 

@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+enum state {NEUTRAL,DISLIKE,FAVORITE};
+
 public class MusicPlayer extends AppCompatActivity {
 
 
@@ -70,13 +72,13 @@ public class MusicPlayer extends AppCompatActivity {
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
 
-    private final int MONDAY = 0;
-    private final int TUESDAY = 1;
-    private final int WEDNESDAY = 2;
-    private final int THURSDAY = 3;
-    private final int FRIDAY = 4;
-    private final int SATURDAY = 5;
-    private final int SUNDAY = 6;
+    private final int SUNDAY = 0;
+    private final int MONDAY = 1;
+    private final int TUESDAY = 2;
+    private final int WEDNESDAY = 3;
+    private final int THURSDAY = 4;
+    private final int FRIDAY = 5;
+    private final int SATURDAY = 6;
 
     private int timeofday = 0;
     private int day = 0;
@@ -94,7 +96,7 @@ public class MusicPlayer extends AppCompatActivity {
     private LocalBroadcastManager bManager;
     private Location location;
 
-    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
 
     @Override
@@ -458,7 +460,9 @@ public class MusicPlayer extends AppCompatActivity {
         }
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lm != null) {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         lat = location.getLatitude();
         lng = location.getLongitude();
 

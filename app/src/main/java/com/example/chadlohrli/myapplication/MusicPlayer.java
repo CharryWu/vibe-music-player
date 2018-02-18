@@ -51,7 +51,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
-    public int timesPlayed;
+    //public int timesPlayed;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -72,13 +72,13 @@ public class MusicPlayer extends AppCompatActivity {
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
 
-    private final int MONDAY = 0;
-    private final int TUESDAY = 1;
-    private final int WEDNESDAY = 2;
-    private final int THURSDAY = 3;
-    private final int FRIDAY = 4;
-    private final int SATURDAY = 5;
-    private final int SUNDAY = 6;
+    private final int SUNDAY = 1;
+    private final int MONDAY = 2;
+    private final int TUESDAY = 3;
+    private final int WEDNESDAY = 4;
+    private final int THURSDAY = 5;
+    private final int FRIDAY = 6;
+    private final int SATURDAY = 7;
 
     private int timeofday = 0;
     private int day = 0;
@@ -100,6 +100,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
+    private int timesPlayed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +125,7 @@ public class MusicPlayer extends AppCompatActivity {
         initViews();
         initListeners();
         initBroadcast();
-        initLocation();
+        //initLocation();
 
 
     }
@@ -287,8 +288,6 @@ public class MusicPlayer extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
-        //int timesPlayed = ((Integer)map.get("Times played")).intValue();
-        //timesPlayed++;
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString() + 1);
         } else {
@@ -321,7 +320,6 @@ public class MusicPlayer extends AppCompatActivity {
         initTimeDay(); //get formatted time and date
 
         saveSong(song); //save data to shared preferences
-
     }
 
     @Override
@@ -467,7 +465,9 @@ public class MusicPlayer extends AppCompatActivity {
         }
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lm != null) {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         lat = location.getLatitude();
         lng = location.getLongitude();
 
@@ -487,8 +487,8 @@ public class MusicPlayer extends AppCompatActivity {
     public void initTimeDay() {
         timeofday = getTimeOfDay();
         day = getDay();
-        Log.i("time of day", String.valueOf(timeofday));
-        Log.i("day", String.valueOf(day));
+        //Log.i("time of day", String.valueOf(timeofday));
+        //Log.i("day", String.valueOf(day));
 
     }
 
@@ -502,24 +502,25 @@ public class MusicPlayer extends AppCompatActivity {
 
     protected int getTimeOfDay() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 && hour <= 5)
-            return NIGHT;
-        else if (hour >= 6 && hour <= 10 )
+        if (hour >= 0 && hour <= 8) {
             return MORNING;
-        else
+        } else if (hour > 8 && hour <= 16) {
             return AFTERNOON;
+        }
+        return NIGHT;
     }
 
     protected int getDay() {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-
+        //Log.i("time of day", String.valueOf(timeofday));
+        //Log.i("dayinfuc", String.valueOf(day));
         switch (day) {
-            case 0: return MONDAY;
-            case 1: return TUESDAY;
-            case 2: return WEDNESDAY;
-            case 3: return THURSDAY;
-            case 4: return FRIDAY;
-            case 5: return SATURDAY;
+            case 2: return MONDAY;
+            case 3: return TUESDAY;
+            case 4: return WEDNESDAY;
+            case 5: return THURSDAY;
+            case 6: return FRIDAY;
+            case 7: return SATURDAY;
             default: return SUNDAY;
 
         }

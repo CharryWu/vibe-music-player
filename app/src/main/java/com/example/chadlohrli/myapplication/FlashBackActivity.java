@@ -68,10 +68,21 @@ public class FlashBackActivity extends AppCompatActivity {
     public double matchTimeOfDay(double songTime) {
         //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
-        Log.d("TIME", Integer.toString(hour));
-        if (hour == songTime) {
+        //Log.i("TIMECURR", Integer.toString(hour));
+        //Log.i("TIMESONG", Integer.toString((int)songTime));
+
+        if (hour >= 0 && hour <= 8) {
+            hour = 0;
+        } else if (hour > 8 && hour <= 16){
+            hour = 1;
+        } else {
+            hour = 2;
+        }
+
+        if(hour == (int)songTime){
             return 2;
         }
+
         return 0;
     }
 
@@ -79,8 +90,9 @@ public class FlashBackActivity extends AppCompatActivity {
     public double matchDay(double songDate) {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
-        Log.d("DAY", Integer.toString(day));
-        if (songDate == day) {
+        Log.i("DAYCURR", Integer.toString(day));
+        Log.i("DAYSONG", Integer.toString((int)songDate));
+        if ((int)songDate == day) {
             return 2;
         }
         return 0;
@@ -157,7 +169,7 @@ public class FlashBackActivity extends AppCompatActivity {
         for (int i = 0; i < fields.length; i++) {
             String id = fields[i].getName();
             Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
-            if (map.size() != 0) {
+            if (map.size() != 0 && (map.get("Time") != null)) {
                 Object latitude = map.get("Latitude");
                 Object longitude = map.get("Longitude");
                 Object t = map.get("Time");
@@ -186,8 +198,8 @@ public class FlashBackActivity extends AppCompatActivity {
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            float ls = pref.getFloat("Rating", 0);
-            Log.i("Rating", Float.toString(ls));
+            //float ls = pref.getFloat("Rating", 0);
+            //Log.i("Rating", Float.toString(ls));
 
             //Toast.makeText(getApplicationContext(), String.valueOf(ratings) + "Firstly", Toast.LENGTH_LONG).show();
             //Toast.makeText(getApplicationContext(),  Float.toString(ls)+ "Secondly", Toast.LENGTH_LONG).show();
@@ -201,6 +213,23 @@ public class FlashBackActivity extends AppCompatActivity {
         songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
+
+        /*for(SongData songelem: flashbackList){
+            Log.i("Song", songelem.getTitle());
+            String id = songelem.getID();
+            SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+            float ls = pref.getFloat("Rating", 0);
+            Log.i("Rating", Float.toString(ls));
+            String lp = pref.getString("Last played", "");
+            Log.i("timestamp", lp );
+            Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
+        }*/
+        if (flashbackList.size() == 0) {
+            location_view.setVisibility(View.INVISIBLE);
+            time_view.setVisibility(View.INVISIBLE);
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 }
 

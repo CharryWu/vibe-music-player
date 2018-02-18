@@ -73,7 +73,6 @@ public class FlashBackActivity extends AppCompatActivity {
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         //Log.i("TIMECURR", Integer.toString(hour));
         //Log.i("TIMESONG", Integer.toString((int)songTime));
-
         if (hour >= 0 && hour <= 8) {
             hour = 0;
         } else if (hour > 8 && hour <= 16){
@@ -81,11 +80,9 @@ public class FlashBackActivity extends AppCompatActivity {
         } else {
             hour = 2;
         }
-
         if(hour == (int)songTime){
             return 2;
         }
-
         return 0;
     }
 
@@ -93,8 +90,8 @@ public class FlashBackActivity extends AppCompatActivity {
     public double matchDay(double songDate) {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
-        Log.i("DAYCURR", Integer.toString(day));
-        Log.i("DAYSONG", Integer.toString((int)songDate));
+        //Log.i("DAYCURR", Integer.toString(day));
+        //Log.i("DAYSONG", Integer.toString((int)songDate));
         if ((int)songDate == day) {
             return 2;
         }
@@ -120,7 +117,6 @@ public class FlashBackActivity extends AppCompatActivity {
         time_view = (TextView) findViewById(R.id.time);
 
         setDateHelper(new DateHelper());
-
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -194,18 +190,8 @@ public class FlashBackActivity extends AppCompatActivity {
             double dist = location.distanceTo(loc);
             dist = matchLocation(dist);
             ratings = time+day+dist;
-
-            //pref.edit().putFloat("Rating", (float)ratings);
-            //pref.edit().apply();
-
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
-            SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
-
-            //float ls = pref.getFloat("Rating", 0);
-            //Log.i("Rating", Float.toString(ls));
-
-            //Toast.makeText(getApplicationContext(), String.valueOf(ratings) + "Firstly", Toast.LENGTH_LONG).show();
-            //Toast.makeText(getApplicationContext(),  Float.toString(ls)+ "Secondly", Toast.LENGTH_LONG).show();
+            //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
             if (ratings >= 2) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
@@ -213,6 +199,8 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
+
+        //commented out listview of all flashback songs
         /*songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);*/
@@ -230,7 +218,8 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         });
 
-        for(SongData songelem: flashbackList){
+        /* flashback debugger
+           for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());
             String id = songelem.getID();
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
@@ -239,7 +228,7 @@ public class FlashBackActivity extends AppCompatActivity {
             String lp = pref.getString("Last played", "");
             Log.i("timestamp", lp );
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
-        }
+        }*/
 
         if (flashbackList.size() == 0) {
             location_view.setVisibility(View.INVISIBLE);

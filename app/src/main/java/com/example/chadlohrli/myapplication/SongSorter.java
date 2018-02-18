@@ -30,9 +30,6 @@ class SongSorter implements Comparator<SongData> {
         SharedPreferences lpref = curContext.getSharedPreferences(lid, Context.MODE_PRIVATE);
         SharedPreferences rpref = curContext.getSharedPreferences(rid, Context.MODE_PRIVATE);
 
-        /*Map<String,?> lpref = SharedPrefs.getData(curContext,lid);
-        Map<String,?> rpref = SharedPrefs.getData(curContext,rid);*/
-
         double lrate = (double) lpref.getFloat("Rating", 0);
         double rrate = (double) rpref.getFloat("Rating", 0);
 
@@ -42,7 +39,10 @@ class SongSorter implements Comparator<SongData> {
         int lfav = lpref.getInt("fav", 0);
         int rfav = rpref.getInt("fav", 0);
 
-        /*double lrate = (Double) lpref.get("Rating");
+        /*Map<String,?> lpref = SharedPrefs.getData(curContext,lid);
+        Map<String,?> rpref = SharedPrefs.getData(curContext,rid);
+
+        double lrate = (Double) lpref.get("Rating");
         double rrate = (Double) rpref.get("Rating");
 
         String ltime = lpref.get("Rating").toString();
@@ -51,7 +51,6 @@ class SongSorter implements Comparator<SongData> {
         int lfav = (Integer) lpref.get("fav");
         int rfav = ((Integer) rpref.get("fav"));
         */
-
 
         if (lrate != rrate) {
             return ((rrate > lrate)?1:-1);

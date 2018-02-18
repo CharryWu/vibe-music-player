@@ -52,7 +52,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public static final String SONG_FINISHED = "SONG FINISHED";
     //public int timesPlayed;
-    public static int mode = 1;
+    public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -435,6 +435,8 @@ public class MusicPlayer extends AppCompatActivity {
                     setStateButton();
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
+
+                    playNextSong(); //skip song if disliked
 
                     return super.onDoubleTap(e);
 

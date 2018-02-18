@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.lang.reflect.Field;
@@ -17,6 +20,9 @@ import java.util.Map;
 public class SongListActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<SongData> songs;
+    private int songState;
+    private Button undislikeBtn;
+
 
     public ArrayList<SongData> createSongs() {
 
@@ -46,6 +52,7 @@ public class SongListActivity extends AppCompatActivity {
         return songs;
     }
 
+
     public void songPicked(View view) {
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", songs);
@@ -71,6 +78,11 @@ public class SongListActivity extends AppCompatActivity {
 
         SongAdapter songadt = new SongAdapter(this, songs);
         listView.setAdapter(songadt);
+
+
+
     }
+
+
 }
 

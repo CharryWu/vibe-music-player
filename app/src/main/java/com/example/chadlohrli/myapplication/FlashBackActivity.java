@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.app.Fragment;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -28,9 +30,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.text.SimpleDateFormat;
 
 public class FlashBackActivity extends AppCompatActivity {
     private Location location;
+    private DateHelper dateHelper;
     private ListView songlist;
     private TextView location_view;
     private TextView time_view;
@@ -40,6 +44,8 @@ public class FlashBackActivity extends AppCompatActivity {
     private float lng2 = 0;
     double time = 0;
     double day = 0;
+    String timestamp;
+    //also add fav
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -48,30 +54,39 @@ public class FlashBackActivity extends AppCompatActivity {
     }
 
     public void songPicked(View view) {
-        Intent intent = new Intent(FlashBackActivity.this, FlashBackActivity.class);
+        Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", flashbackList);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         FlashBackActivity.this.startActivity(intent);
         finish();
     }
 
-    protected double matchTimeOfDay(double songTime) {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
+    public double matchTimeOfDay(double songTime) {
+        //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
+        Log.d("TIME", Integer.toString(hour));
         if (hour == songTime) {
             return 2;
         }
         return 0;
     }
 
-    protected double matchDay(double songDate) {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+    public double matchDay(double songDate) {
+        //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
+        Log.d("DAY", Integer.toString(day));
         if (songDate == day) {
             return 2;
         }
         return 0;
     }
 
-    protected double matchLocation(double distance) {
+    public double matchLocation(double distance) {
         double locRating = 0;
         if (distance <= 304.8) {
             locRating = 2;
@@ -79,25 +94,6 @@ public class FlashBackActivity extends AppCompatActivity {
             locRating += temp;
         }
         return locRating;
-    }
-
-    protected double tiebreaker(ArrayList<SongData> songs){
-        Collections.sort(songs, new Comparator<SongData>()
-        {
-            @Override
-            public int compare(SongData lhs, SongData rhs) {
-                String lid = lhs.getID();
-                String rid = rhs.getID();
-                SharedPreferences lpref = getSharedPreferences(lid, MODE_PRIVATE);
-                SharedPreferences rpref = getSharedPreferences(lid, MODE_PRIVATE);
-                double lrate = (double) lpref.getFloat("Rating", 0);
-                double rrate = (double) rpref.getFloat("Rating", 0);
-
-
-
-                return Integer.valueOf(rhs.getDistance()).compareTo(lhs.getDistance());
-            }
-        });
     }
 
     @Override
@@ -108,10 +104,14 @@ public class FlashBackActivity extends AppCompatActivity {
         location_view = (TextView) findViewById(R.id.location);
         time_view = (TextView) findViewById(R.id.time);
 
+        setDateHelper(new DateHelper());
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -119,15 +119,21 @@ public class FlashBackActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+            //Toast.makeText(getApplicationContext(), "permissions messed up", Toast.LENGTH_LONG).show();
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+
+            //return;
         }
 
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;
         Date dp_hour = Calendar.getInstance().getTime();
-        time_view.setText("Last Time Played:" + String.valueOf(dp_hour));
-
+        String timeShow = "Last Time Played:" + String.valueOf(dp_hour);
+        time_view.setText(timeShow);
+        //Toast.makeText(getApplicationContext(), timeShow, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "abc", Toast.LENGTH_LONG).show();
         if (location != null) {
             lat = location.getLatitude();
             lng = location.getLongitude();
@@ -173,59 +179,29 @@ public class FlashBackActivity extends AppCompatActivity {
             double dist = location.distanceTo(loc);
             dist = matchLocation(dist);
             ratings = time+day+dist;
+
+            //pref.edit().putFloat("Rating", (float)ratings);
+            //pref.edit().apply();
+
+            SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
-            pref.edit().putFloat("Rating", (float)ratings);
-            pref.edit().commit();
+
+            float ls = pref.getFloat("Rating", 0);
+            Log.i("Rating", Float.toString(ls));
+
+            //Toast.makeText(getApplicationContext(), String.valueOf(ratings) + "Firstly", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),  Float.toString(ls)+ "Secondly", Toast.LENGTH_LONG).show();
 
             if (ratings >= 2) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
         }
-
-        orderSongs(flashbackList);
+        Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
         songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
     }
-
-    public void orderSongs(ArrayList<SongData> songs){
-
-    }
-        /**
-        TODO:
-          1. Track last known location
-          2. Use locations distance method to store all songs played in the given radius, track
-             minimum distance
-          3. Get time of day, day of week
-          4. Give ratings to all songs, create arraylist of selected songs (Unfavorated songs
-             should not be considered)
-          5. Location: within 1000 feet: give rating 2 to 3
-          6. Time of Day: Give rating of 2 if it matches
-          7. Day of Week: Give rating of 2 if it matches
-          8. Favorited: tiebreaker
-          Time stamp: tiebreaker
-          9. Add ratings, consider songs with > 2 rating
-          10. Sort by highest ratings to give recommendations
-          11. Handle location changes (automatic),time of day and day of week (manual)
-         **/
-
-    /**
-     * TODO PART 2:
-     *   1. Flashback button with unchangable playlist
-     *   2. Updae location, daya and time and get new Flashback Mix
-     *   3. Sort and find the right songs
-     */
-    /*public class sort implements Comparable<sort>{
-
-        private double rating;
-        private int fav;
-        private double timestamp;
-
-        public sort(Song)
-        @Override
-        public int compareTo(sort f){
-
-        }
-    }*/
 }
+
+

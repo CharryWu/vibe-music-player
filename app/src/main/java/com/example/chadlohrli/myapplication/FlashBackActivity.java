@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class FlashBackActivity extends AppCompatActivity {
     private Location location;
     private DateHelper dateHelper;
     private ListView songlist;
+    private ImageButton playFB;
     private TextView location_view;
     private TextView time_view;
     private ArrayList<SongData> flashbackList = new ArrayList<SongData>();
@@ -57,6 +59,7 @@ public class FlashBackActivity extends AppCompatActivity {
         Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", flashbackList);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("caller", "FlashBackActivity");
         FlashBackActivity.this.startActivity(intent);
         finish();
     }
@@ -210,9 +213,22 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
-        songlist = (ListView) findViewById(R.id.song_list);
+        /*songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
-        songlist.setAdapter(songadt);
+        songlist.setAdapter(songadt);*/
+        playFB = (ImageButton) findViewById(R.id.playfb);
+
+        playFB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
+                intent.putExtra("SONGS", flashbackList);
+                intent.putExtra("CUR", 0);
+                intent.putExtra("caller", "FlashBackActivity");
+                FlashBackActivity.this.startActivity(intent);
+                finish();
+            }
+        });
 
         for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());

@@ -15,6 +15,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     Button songButton;
     Button albumButton;
+    //1 is songs mode/album mode and 0 is flashback mode
 
     ImageButton flashBackButton;
     @Override

@@ -52,6 +52,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public static final String SONG_FINISHED = "SONG FINISHED";
     //public int timesPlayed;
+    public static int mode = 1;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -121,6 +122,12 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
+        String caller = getIntent().getStringExtra("caller");
+        if(caller.equals("FlashBackActivity")){
+            mode = 0;
+        } else {
+            mode = 1;
+        }
 
         initViews();
         initListeners();
@@ -289,7 +296,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
         if(map.get("Times played") != null){
-            timesPlayed = Integer.valueOf(map.get("Times played").toString() + 1);
+            timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
             timesPlayed++;
         }
@@ -352,18 +359,22 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isPlayingMusic = true;
-                playBtn.setImageResource(android.R.drawable.ic_media_pause);
-                playNextSong();
+                if(mode != 0) {
+                    isPlayingMusic = true;
+                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
+                    playNextSong();
+                }
             }
         });
 
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isPlayingMusic = true;
-                playBtn.setImageResource(android.R.drawable.ic_media_pause);
-                playPrevSong();
+                if (mode != 0) {
+                    isPlayingMusic = true;
+                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
+                    playPrevSong();
+                }
             }
         });
 

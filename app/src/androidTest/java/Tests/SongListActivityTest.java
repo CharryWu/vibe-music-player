@@ -38,27 +38,26 @@ public class SongListActivityTest {
     public ActivityTestRule<SongListActivity> songListActivity = new ActivityTestRule<SongListActivity>(SongListActivity.class);
 
     @Before
-    public void setup() {
-        sd = SongParser.parseSong("android.resource://" +
-                        songListActivity.getActivity().getPackageName() + "/raw/", R.raw.class.getFields()[0].getName(),
-                songListActivity.getActivity().getApplicationContext());
-    }
-
-
-    @Test
-    public void testSongParser() {
-        assertEquals("backeast", sd.getID());
-        assertEquals("I Will Not Be Afraid (A Sampler)", sd.getAlbum());
-        assertEquals("Back East", sd.getTitle());
-        assertEquals("189518", sd.getLength());
+    public void setUp() {
+        songs = songListActivity.getActivity().createSongs();
     }
 
     @Test
     public void testCreateSongs() {
+        String songMade;
+        String songRaw;
+        boolean songMatch = true;
+
         Field[] fields = R.raw.class.getFields();
-        ArrayList<SongData> list = songListActivity.getActivity().createSongs();
-        assertEquals(fields.length, list.size());
-        // Can't compare song file name and song's true name stored in its metadata because they
-        // do not exactly match
+        for (int i = 0; i < fields.length; i++) {
+            songMade = songs.get(i).getTitle().toLowerCase().replaceAll("\\s", "");
+            songMade = songMade.replace("'", "");
+            songRaw = fields[i].getName().toLowerCase().replaceAll("_", "");
+            if (!songRaw.equals(songMade)) {
+                songMatch = false;
+            }
+        }
+        assertTrue(songMatch);
+        assertEquals(fields.length, songs.size());
     }
 }

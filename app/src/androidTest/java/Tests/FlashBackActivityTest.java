@@ -41,13 +41,8 @@ public class FlashBackActivityTest {
 
     @Test
     public void testMatchTimeOfDay() {
-        activity.setDateHelper(new DateHelper());
-        double result = flashBackActivity.getActivity().matchTimeOfDay(13);
-        assertEquals(2, result, .01);
-        result = flashBackActivity.getActivity().matchTimeOfDay(7);
-        assertEquals(0, result, .01);
         activity.setDateHelper(new MockDateHelper());
-        result = flashBackActivity.getActivity().matchTimeOfDay(5);
+        double result = flashBackActivity.getActivity().matchTimeOfDay(5);
         assertEquals(2, result, .01);
         result = flashBackActivity.getActivity().matchTimeOfDay(7);
         assertEquals(0, result, .01);
@@ -55,13 +50,8 @@ public class FlashBackActivityTest {
 
     @Test
     public void testDay() {
-        activity.setDateHelper(new DateHelper());
-        double result = flashBackActivity.getActivity().matchDay(6);
-        assertEquals(2, result, .01);
-        result = flashBackActivity.getActivity().matchDay(1);
-        assertEquals(0, result, .01);
         activity.setDateHelper(new MockDateHelper());
-        result = flashBackActivity.getActivity().matchDay(3);
+        double result = flashBackActivity.getActivity().matchDay(3);
         assertEquals(2, result, .01);
         result = flashBackActivity.getActivity().matchDay(1);
         assertEquals(0, result, .01);

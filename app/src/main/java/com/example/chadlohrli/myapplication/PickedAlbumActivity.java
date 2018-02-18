@@ -66,6 +66,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MusicPlayer.class);
         intent.putExtra("SONGS", songs);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("caller", "PickedAlbumActivity");
         this.startActivity(intent);
     }
 }

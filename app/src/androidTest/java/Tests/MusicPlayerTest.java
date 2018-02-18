@@ -7,6 +7,9 @@ import android.support.test.rule.ServiceTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import com.example.chadlohrli.myapplication.MockDateHelper;
+import com.example.chadlohrli.myapplication.MockDateHelperAfternoon;
+import com.example.chadlohrli.myapplication.MockDateHelperMorning;
 import com.example.chadlohrli.myapplication.MusicPlayer;
 import com.example.chadlohrli.myapplication.MusicService;
 import com.example.chadlohrli.myapplication.R;
@@ -21,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.TimeoutException;
@@ -35,49 +39,68 @@ import static org.junit.Assert.assertThat;
 public class MusicPlayerTest {
 
     private ArrayList<SongData> songs;
+    private MusicPlayer musicPlayer;
 
     @Rule
-    public ActivityTestRule<MusicPlayer> musicPlayer = new ActivityTestRule<MusicPlayer>(MusicPlayer.class);
-
-    @Rule
-    public final ServiceTestRule mServiceRule = new ServiceTestRule();
+    public ActivityTestRule<MusicPlayer> musicPlayerRule = new ActivityTestRule<MusicPlayer>(MusicPlayer.class, false, false);
 
     @Rule
     public ActivityTestRule<SongListActivity> songListActivity = new ActivityTestRule<SongListActivity>(SongListActivity.class);
 
-    @Before
-    public void setup() {
-        songs = songListActivity.getActivity().createSongs();
 
+        @Before
+    public void setup() {
+       songs = songListActivity.getActivity().createSongs();
+       Intent intent = new Intent();
+       intent.putExtra("SONGS", songs);
+       intent.putExtra("CUR", 0);
+       musicPlayerRule.launchActivity(intent);
+
+            /**
+        songs = new ArrayList<SongData>();
+        SongData defaultSong = new SongData("mock", "mock", "mock", "mock", "mock", "mock");
+        songs.add(defaultSong);
+        Intent intent = new Intent();
+        intent.putExtra("SONGS", songs);
+        musicPlayerRule.launchActivity(intent);
+        */
     };
 
-    @Test
-    public void testService() throws TimeoutException {
-        Intent serviceIntent = new Intent(musicPlayer.getActivity().getApplicationContext(), MusicService.class);
-        IBinder binder = mServiceRule.bindService(serviceIntent);
-
-        MusicService service = ((MusicService.MusicBinder) binder).getService();
 
 
 
-    }
 
-    @Test
-    public void testSongParser() {
-        //this tests the SongParser class which is used in SongListActivity
-
-    }
-
-    @Test
-    public void testCreateSongs() {
+   @Test
+    public void testGetTimeOfDay() {
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelper());
+        int timeOfDay = musicPlayerRule.getActivity().getTimeOfDay();
+        assertEquals(2, timeOfDay);
 
 
-    }
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelperAfternoon());
+        timeOfDay = musicPlayerRule.getActivity().getTimeOfDay();
+        assertEquals(1, timeOfDay);
 
-    @Test public void testSongPicked() {
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelperMorning());
+        timeOfDay = musicPlayerRule.getActivity().getTimeOfDay();
+        assertEquals(0, timeOfDay);
 
+   }
+   @Test
+   public void testGetDay() {
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelper());
+        int day = musicPlayerRule.getActivity().getDay();
+        assertEquals(Calendar.TUESDAY, day);
 
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelperMorning());
+        day = musicPlayerRule.getActivity().getDay();
+        assertEquals(Calendar.SATURDAY, day);
 
-    }
+        musicPlayerRule.getActivity().setDateHelper(new MockDateHelperAfternoon());
+        day = musicPlayerRule.getActivity().getDay();
+        assertEquals(Calendar.SUNDAY, day);
+
+   }
+
 
 }

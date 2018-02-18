@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -44,11 +45,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+enum state {NEUTRAL,DISLIKE,FAVORITE};
+
 public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
+
     private DateHelper dateHelper;
+
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -69,13 +74,13 @@ public class MusicPlayer extends AppCompatActivity {
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
 
-    private final int MONDAY = 0;
-    private final int TUESDAY = 1;
-    private final int WEDNESDAY = 2;
-    private final int THURSDAY = 3;
-    private final int FRIDAY = 4;
-    private final int SATURDAY = 5;
-    private final int SUNDAY = 6;
+    private final int SUNDAY = 0;
+    private final int MONDAY = 1;
+    private final int TUESDAY = 2;
+    private final int WEDNESDAY = 3;
+    private final int THURSDAY = 4;
+    private final int FRIDAY = 5;
+    private final int SATURDAY = 6;
 
     private int timeofday = 0;
     private int day = 0;
@@ -93,13 +98,8 @@ public class MusicPlayer extends AppCompatActivity {
     private LocalBroadcastManager bManager;
     private Location location;
 
-    private enum state {NEUTRAL,DISLIKE,FAVORITE};
+    //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
-
-    public void setDateHelper(DateHelper dateHelper) {
-        this.dateHelper = dateHelper;
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +129,11 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     }
+
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
 
     // -- inner class variables -- //
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -190,6 +195,21 @@ public class MusicPlayer extends AppCompatActivity {
 
     // -- functional methods -- //
 
+    public void setStateButton(){
+
+        if(songState == state.NEUTRAL.ordinal()){
+            favBtn.setText("+");
+            favBtn.setBackgroundColor(Color.WHITE);
+        }else if(songState == state.DISLIKE.ordinal()){
+            favBtn.setText("x");
+            favBtn.setBackgroundColor(Color.RED);
+        }else if(songState == state.FAVORITE.ordinal()){
+            favBtn.setText("\u2714");
+            favBtn.setBackgroundColor(Color.GREEN);
+        }
+
+    }
+
     public void checkSongState(SongData song){
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
@@ -200,6 +220,7 @@ public class MusicPlayer extends AppCompatActivity {
             songState = state.NEUTRAL.ordinal();
         }
 
+        setStateButton();
 
     }
 
@@ -209,7 +230,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playSong() {
 
-        //checkSongState(songs.get(cur_song));
+        checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
         /*
@@ -328,6 +349,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     }
 
+    @SuppressWarnings("ClickableViewAccessibility")
     @SuppressLint("ClickableViewAccessibility")
     public void initListeners() {
 
@@ -390,7 +412,6 @@ public class MusicPlayer extends AppCompatActivity {
         });
 
 
-
         favBtn.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -402,6 +423,8 @@ public class MusicPlayer extends AppCompatActivity {
                         songState = state.NEUTRAL.ordinal();
 
                     Log.d("STATE", String.valueOf(songState));
+
+                    setStateButton();
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
@@ -416,6 +439,7 @@ public class MusicPlayer extends AppCompatActivity {
                     else if(songState == state.FAVORITE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
+                    setStateButton();
 
                     Log.d("STATE", String.valueOf(songState));
 
@@ -444,7 +468,9 @@ public class MusicPlayer extends AppCompatActivity {
         }
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lm != null) {
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         lat = location.getLatitude();
         lng = location.getLongitude();
 
@@ -477,10 +503,10 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
 
-    protected int getTimeOfDay() {
+    public int getTimeOfDay() {
         //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 && hour <= 5)
+        if(hour >= 17 || hour <= 5)
             return NIGHT;
         else if (hour >= 6 && hour <= 10 )
             return MORNING;
@@ -488,19 +514,22 @@ public class MusicPlayer extends AppCompatActivity {
             return AFTERNOON;
     }
 
-    protected int getDay() {
+    public int getDay() {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        int day = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
+        int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
+        return day;
+        /**
         switch (day) {
-            case 0: return MONDAY;
-            case 1: return TUESDAY;
-            case 2: return WEDNESDAY;
-            case 3: return THURSDAY;
-            case 4: return FRIDAY;
-            case 5: return SATURDAY;
-            default: return SUNDAY;
+            case 0: return SUNDAY;
+            case 1: return MONDAY;
+            case 2: return TUESDAY;
+            case 3: return WEDNESDAY;
+            case 4: return THURSDAY;
+            case 5: return FRIDAY;
+            default: return SATURDAY;
 
         }
+         */
 
     }
 

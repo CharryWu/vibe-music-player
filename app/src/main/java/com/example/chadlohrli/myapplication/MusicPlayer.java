@@ -129,7 +129,7 @@ public class MusicPlayer extends AppCompatActivity {
         toast.show();
 
         String caller = getIntent().getStringExtra("caller");
-        if(caller.equals("FlashBackActivity")){
+        if(caller != null && caller.equals("FlashBackActivity")){
             mode = 0;
         } else {
             mode = 1;

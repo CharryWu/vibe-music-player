@@ -31,7 +31,6 @@ import java.util.Map;
 public class FlashBackActivity extends AppCompatActivity {
 
     private DateHelper dateHelper;
-    //private Button backbtn;
     private ListView songlist;
     private TextView location_view;
     private TextView time_view;
@@ -129,10 +128,6 @@ public class FlashBackActivity extends AppCompatActivity {
 
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        //curr_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        //locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-
-
         Date dp_hour = Calendar.getInstance().getTime();
         time_view.setText("Last Time Played:" + String.valueOf(dp_hour));
 
@@ -171,8 +166,7 @@ public class FlashBackActivity extends AppCompatActivity {
             //double lat;
             //String str = "Latitude";
             if (map.size() != 0) {
-                //Float lattt = (Float)map.get("Latitude");
-                //Log.i("Lat",String.valueOf(lattt.floatValue()));
+
                 Object latitude = map.get("Latitude");
                 Object longitude = map.get("Longitude");
                 Object t = map.get("Time");
@@ -210,27 +204,16 @@ public class FlashBackActivity extends AppCompatActivity {
 
         }
 
-
-        /*
-        Field[] fields = R.raw.class.getFields();
-        String path = "android.resource://" + getPackageName() + "/raw/";
-        String id = fields[0].getName();
-        SongData test = SongParser.parseSong(path, id, getApplicationContext());
-        flashbackList.add(test);
-
-        Log.d("crashed", "here");*/
-
         songlist = (ListView) findViewById(R.id.song_list);
 
-        if (songlist == null) {
+        SongAdapter songadt = new SongAdapter(this, flashbackList);
+        songlist.setAdapter(songadt);
+        if (flashbackList.size() == 0) {
             location_view.setVisibility(View.INVISIBLE);
             time_view.setVisibility(View.INVISIBLE);
             Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashkback!", Toast.LENGTH_LONG);
             toast.show();
         }
-
-        SongAdapter songadt = new SongAdapter(this, flashbackList);
-        songlist.setAdapter(songadt);
 
 
     }

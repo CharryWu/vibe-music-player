@@ -214,7 +214,7 @@ public class FlashBackActivity extends AppCompatActivity {
         SongAdapter songadt = new SongAdapter(this, flashbackList);
         songlist.setAdapter(songadt);
 
-        /*for(SongData songelem: flashbackList){
+        for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());
             String id = songelem.getID();
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
@@ -223,7 +223,8 @@ public class FlashBackActivity extends AppCompatActivity {
             String lp = pref.getString("Last played", "");
             Log.i("timestamp", lp );
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
-        }*/
+        }
+
         if (flashbackList.size() == 0) {
             location_view.setVisibility(View.INVISIBLE);
             time_view.setVisibility(View.INVISIBLE);

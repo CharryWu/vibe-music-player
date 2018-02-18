@@ -12,6 +12,7 @@
         android:layout_height="120dp"
         android:layout_marginEnd="23dp"
         android:layout_marginStart="32dp"
+        android:background="@drawable/album_art"
         android:text="Flashback Mode"
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

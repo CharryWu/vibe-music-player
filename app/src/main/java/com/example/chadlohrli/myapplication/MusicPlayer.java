@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,14 +45,19 @@ import java.util.Locale;
 import java.util.Map;
 
 enum state {NEUTRAL,DISLIKE,FAVORITE};
+//int timesPlayed;
 
 public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
 
+
     private DateHelper dateHelper;
 
+
+    //public int timesPlayed;
+    public static int mode = 1;
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -74,13 +78,13 @@ public class MusicPlayer extends AppCompatActivity {
     private final int AFTERNOON = 1;
     private final int NIGHT = 2;
 
-    private final int SUNDAY = 0;
-    private final int MONDAY = 1;
-    private final int TUESDAY = 2;
-    private final int WEDNESDAY = 3;
-    private final int THURSDAY = 4;
-    private final int FRIDAY = 5;
-    private final int SATURDAY = 6;
+    private final int SUNDAY = 1;
+    private final int MONDAY = 2;
+    private final int TUESDAY = 3;
+    private final int WEDNESDAY = 4;
+    private final int THURSDAY = 5;
+    private final int FRIDAY = 6;
+    private final int SATURDAY = 7;
 
     private int timeofday = 0;
     private int day = 0;
@@ -89,6 +93,8 @@ public class MusicPlayer extends AppCompatActivity {
 
     private ArrayList<SongData> songs;
     private int cur_song;
+    //private FusedLocationProviderClient mFusedLocationClient;
+    private Location lkl;
 
     private MusicService musicService;
     private Intent playIntent;
@@ -100,6 +106,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
+    private int timesPlayed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,11 +128,17 @@ public class MusicPlayer extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
+        String caller = getIntent().getStringExtra("caller");
+        if(caller.equals("FlashBackActivity")){
+            mode = 0;
+        } else {
+            mode = 1;
+        }
 
         initViews();
         initListeners();
         initBroadcast();
-        initLocation();
+        //initLocation();
 
 
     }
@@ -293,9 +306,11 @@ public class MusicPlayer extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
-        int timesPlayed = ((Integer)map.get("Times played")).intValue();
-        timesPlayed++;
-
+        if(map.get("Times played") != null){
+            timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
+        } else {
+            timesPlayed++;
+        }
 
         SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
 
@@ -322,8 +337,7 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        //saveSong(song); //save data to shared preferences
-
+        saveSong(song); //save data to shared preferences
     }
 
     @Override
@@ -356,18 +370,22 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isPlayingMusic = true;
-                playBtn.setImageResource(android.R.drawable.ic_media_pause);
-                playNextSong();
+                if(mode != 0) {
+                    isPlayingMusic = true;
+                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
+                    playNextSong();
+                }
             }
         });
 
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isPlayingMusic = true;
-                playBtn.setImageResource(android.R.drawable.ic_media_pause);
-                playPrevSong();
+                if (mode != 0) {
+                    isPlayingMusic = true;
+                    playBtn.setImageResource(android.R.drawable.ic_media_pause);
+                    playPrevSong();
+                }
             }
         });
 
@@ -387,6 +405,7 @@ public class MusicPlayer extends AppCompatActivity {
 
             }
         });
+
 
 
 
@@ -490,8 +509,8 @@ public class MusicPlayer extends AppCompatActivity {
     public void initTimeDay() {
         timeofday = getTimeOfDay();
         day = getDay();
-        Log.i("time of day", String.valueOf(timeofday));
-        Log.i("day", String.valueOf(day));
+        //Log.i("time of day", String.valueOf(timeofday));
+        //Log.i("day", String.valueOf(day));
 
     }
 
@@ -503,12 +522,13 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
 
+
     public int getTimeOfDay() {
         //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
-        if(hour >= 17 || hour <= 5)
+        if(hour > 17 || hour < 5)
             return NIGHT;
-        else if (hour >= 6 && hour <= 10 )
+        else if (hour >= 5 && hour < 11 )
             return MORNING;
         else
             return AFTERNOON;
@@ -527,10 +547,23 @@ public class MusicPlayer extends AppCompatActivity {
             case 4: return THURSDAY;
             case 5: return FRIDAY;
             default: return SATURDAY;
+=======
+    protected int getDay() {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        //Log.i("time of day", String.valueOf(timeofday));
+        //Log.i("dayinfuc", String.valueOf(day));
+        switch (day) {
+            case 2: return MONDAY;
+            case 3: return TUESDAY;
+            case 4: return WEDNESDAY;
+            case 5: return THURSDAY;
+            case 6: return FRIDAY;
+            case 7: return SATURDAY;
+            default: return SUNDAY;
+>>>>>>> c61c2149ff710701e18976409192d844493deb3b
 
         }
          */
 
     }
-
 }

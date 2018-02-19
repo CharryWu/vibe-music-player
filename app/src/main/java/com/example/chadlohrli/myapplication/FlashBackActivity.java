@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class FlashBackActivity extends AppCompatActivity {
     double day = 0;
     String timestamp;
     //also add fav
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -108,16 +110,16 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
-    public void onStart(){
-        super.onStart();
-        LocationHelper.getLatLong(getApplicationContext());
-    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onStart(){
+        super.onStart();
         setContentView(R.layout.flashback);
+        LocationHelper.getLatLong(getApplicationContext());
+        flashback();
+    }
 
+    protected void flashback(){
         location_view = (TextView) findViewById(R.id.location);
         time_view = (TextView) findViewById(R.id.time);
 
@@ -200,9 +202,13 @@ public class FlashBackActivity extends AppCompatActivity {
             dist = matchLocation(dist);
             ratings = time+day+dist;
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
+
+            SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+            int fav = pref.getInt("fav", 0);
             //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            if (ratings >= 2) {
+            int tp = pref.getInt("Times played", 0);
+            if (ratings >= 2 && (fav != -1) && (tp > 0)) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
@@ -217,6 +223,17 @@ public class FlashBackActivity extends AppCompatActivity {
         }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
 
+        /*if(!flashbackList.isEmpty()) {
+            Iterator<SongData> iter = flashbackList.iterator();
+            for (SongData songelem : flashbackList) {
+                String id = songelem.getID();
+                SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+                int fav = pref.getInt("fav", 0);
+                if (fav == -1) {
+                    flashbackList.remove(songelem);
+                }
+            }
+        }*/
         //commented out listview of all flashback songs
         /*songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
@@ -226,6 +243,11 @@ public class FlashBackActivity extends AppCompatActivity {
         playFB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (flashbackList.size() == 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+                    toast.show();
+                    onSupportNavigateUp();
+                }
 
                 Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
                 intent.putExtra("SONGS", flashbackList);
@@ -236,8 +258,8 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         });
 
-        /* flashback debugger
-           for(SongData songelem: flashbackList){
+        //flashback debugger
+        for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());
             String id = songelem.getID();
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
@@ -246,10 +268,15 @@ public class FlashBackActivity extends AppCompatActivity {
             String lp = pref.getString("Last played", "");
             Log.i("timestamp", lp );
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
-        }*/
-
-
+        }
     }
+
+    /*@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.flashback);
+        flashback();
+    }*/
 }
 
 

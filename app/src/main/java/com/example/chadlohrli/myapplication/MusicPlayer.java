@@ -62,7 +62,6 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     //public int timesPlayed;
-    public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -112,6 +111,8 @@ public class MusicPlayer extends AppCompatActivity {
     //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
     private int timesPlayed = 0;
+    String timeStamp;
+    private int fav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,19 +129,13 @@ public class MusicPlayer extends AppCompatActivity {
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
+        timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
                 Toast.LENGTH_SHORT);
         toast.show();
-
-        String caller = getIntent().getStringExtra("caller");
-        if(caller != null && caller.equals("FlashBackActivity")){
-            mode = 0;
-        } else {
-            mode = 1;
-        }
 
         initViews();
         initListeners();
@@ -221,12 +216,15 @@ public class MusicPlayer extends AppCompatActivity {
         if(songState == state.NEUTRAL.ordinal()){
             favBtn.setText("+");
             favBtn.setBackgroundColor(Color.WHITE);
+            fav = 0;
         }else if(songState == state.DISLIKE.ordinal()){
             favBtn.setText("x");
             favBtn.setBackgroundColor(Color.RED);
+            fav = -1;
         }else if(songState == state.FAVORITE.ordinal()){
             favBtn.setText("\u2714");
             favBtn.setBackgroundColor(Color.GREEN);
+            fav = 1;
         }
 
     }
@@ -268,6 +266,14 @@ public class MusicPlayer extends AppCompatActivity {
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
         setupPlayer(songs.get(cur_song));
+        SharedPreferences pref = getSharedPreferences("last song", MODE_PRIVATE);
+        SharedPreferences.Editor edit = pref.edit();
+        edit.putString("song", songs.get(cur_song).getTitle());
+        edit.putFloat("Latitude", (float)lat);
+        edit.putFloat("Longitude", (float)lng);
+        edit.putString("Last played", timeStamp);
+
+        edit.apply();
 
     }
 
@@ -316,8 +322,6 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void saveSong(SongData song) {
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-
         Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
@@ -325,7 +329,7 @@ public class MusicPlayer extends AppCompatActivity {
             timesPlayed++;
         }
 
-        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp);
+        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
 
     }
 
@@ -373,7 +377,6 @@ public class MusicPlayer extends AppCompatActivity {
         songTitle =  findViewById(R.id.songTitle);
         artistTitle =  findViewById(R.id.artistTitle);
         locationTitle = findViewById(R.id.locationTitle);
-
     }
 
     @SuppressWarnings("ClickableViewAccessibility")
@@ -383,22 +386,19 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mode != 0) {
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                     playNextSong();
-                }
             }
         });
 
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mode != 0) {
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                     playPrevSong();
-                }
+
             }
         });
 

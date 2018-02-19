@@ -44,6 +44,7 @@ public class FlashBackActivity extends AppCompatActivity {
     private double ratings;
     private float lt = 0;
     private float lng2 = 0;
+    private int songState = 0;
     double time = 0;
     double day = 0;
     String timestamp;
@@ -173,11 +174,13 @@ public class FlashBackActivity extends AppCompatActivity {
                 Object longitude = map.get("Longitude");
                 Object t = map.get("Time");
                 Object d = map.get("Day");
+                Object s = map.get("State");
 
                 lt = Float.valueOf(latitude.toString());
                 lng2 = Float.valueOf(longitude.toString());
                 time = (int)t;
                 day = (int)d;
+                songState = (int)s;
             }
 
             //get song's location
@@ -193,7 +196,7 @@ public class FlashBackActivity extends AppCompatActivity {
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
             //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            if (ratings >= 2) {
+            if (ratings >= 2 && songState != state.DISLIKE.ordinal()) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
@@ -231,6 +234,7 @@ public class FlashBackActivity extends AppCompatActivity {
         }*/
 
         if (flashbackList.size() == 0) {
+            Log.d("EMPTY FLASHBACK", "no songs were added to flashback mix");
             location_view.setVisibility(View.INVISIBLE);
             time_view.setVisibility(View.INVISIBLE);
             Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);

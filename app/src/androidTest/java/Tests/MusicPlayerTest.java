@@ -13,6 +13,7 @@ import com.example.chadlohrli.myapplication.MockDateHelperMorning;
 import com.example.chadlohrli.myapplication.MusicPlayer;
 import com.example.chadlohrli.myapplication.MusicService;
 import com.example.chadlohrli.myapplication.R;
+import com.example.chadlohrli.myapplication.SharedPrefs;
 import com.example.chadlohrli.myapplication.SongData;
 import com.example.chadlohrli.myapplication.SongListActivity;
 import com.example.chadlohrli.myapplication.SongParser;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +39,6 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(AndroidJUnit4.class)
 public class MusicPlayerTest {
-
     private ArrayList<SongData> songs;
     private MusicPlayer musicPlayer;
 
@@ -55,20 +56,7 @@ public class MusicPlayerTest {
        intent.putExtra("SONGS", songs);
        intent.putExtra("CUR", 0);
        musicPlayerRule.launchActivity(intent);
-
-            /**
-        songs = new ArrayList<SongData>();
-        SongData defaultSong = new SongData("mock", "mock", "mock", "mock", "mock", "mock");
-        songs.add(defaultSong);
-        Intent intent = new Intent();
-        intent.putExtra("SONGS", songs);
-        musicPlayerRule.launchActivity(intent);
-        */
-    };
-
-
-
-
+    }
 
    @Test
     public void testGetTimeOfDay() {
@@ -86,6 +74,7 @@ public class MusicPlayerTest {
         assertEquals(0, timeOfDay);
 
    }
+
    @Test
    public void testGetDay() {
         musicPlayerRule.getActivity().setDateHelper(new MockDateHelper());
@@ -99,8 +88,5 @@ public class MusicPlayerTest {
         musicPlayerRule.getActivity().setDateHelper(new MockDateHelperAfternoon());
         day = musicPlayerRule.getActivity().getDay();
         assertEquals(Calendar.SUNDAY, day);
-
    }
-
-
 }

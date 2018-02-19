@@ -43,6 +43,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 enum state {NEUTRAL,DISLIKE,FAVORITE};
 //int timesPlayed;
@@ -57,7 +59,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     //public int timesPlayed;
-    public static int mode = 1;
+    public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -123,6 +125,7 @@ public class MusicPlayer extends AppCompatActivity {
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
+
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -247,16 +250,16 @@ public class MusicPlayer extends AppCompatActivity {
         checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
-        /*
-        int count = 0;
-        while(songState == state.DISLIKE.ordinal()){
-            if(count >= songs.size())
-                break;
-            playNextSong();
-            checkSongState(songs.get(cur_song));
-            count++;
+        if(songState == state.DISLIKE.ordinal()){
+            if(songs.size() == 1){
+                onSupportNavigateUp();
+            }else{
+                songs.remove(cur_song);
+                playNextSong();
+            }
         }
-        */
+
+        Log.d("Songs size",String.valueOf(songs.size()));
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
@@ -266,8 +269,13 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playNextSong(){
 
-        if (++cur_song > songs.size()-1)
-            cur_song = 0;
+        if(songs.size() > 0){
+            if (++cur_song > songs.size()-1)
+                cur_song = 0;
+        }else{
+            onSupportNavigateUp();
+        }
+
 
         Log.d("new index",String.valueOf(cur_song));
 
@@ -436,9 +444,15 @@ public class MusicPlayer extends AppCompatActivity {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
+
+
+
                     Log.d("TEST", "onDoubleTap");
-                    if(songState == state.NEUTRAL.ordinal())
+                    if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.DISLIKE.ordinal();
+                        Toast toast = Toast.makeText(getApplicationContext(), "Disliked!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                     else if(songState == state.DISLIKE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
@@ -448,18 +462,41 @@ public class MusicPlayer extends AppCompatActivity {
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
+                    /*
+                    //This allows UI to update before switching songs
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            playNextSong();
+
+                        }
+                    }, 1000);
+
+                    */
+
+                    playNextSong();
+
                     return super.onDoubleTap(e);
+
+
 
                 }
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent event) {
                     Log.d("TEST", "onSingleTap");
-                    if(songState == state.NEUTRAL.ordinal())
+                    if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.FAVORITE.ordinal();
-                    else if(songState == state.FAVORITE.ordinal())
+                        Toast toast = Toast.makeText(getApplicationContext(), "Favorited!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                    else if(songState == state.FAVORITE.ordinal()) {
                         songState = state.NEUTRAL.ordinal();
+                        Toast toast = Toast.makeText(getApplicationContext(), "Un-Favorited!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
 
                     setStateButton();
+
 
                     Log.d("STATE", String.valueOf(songState));
 

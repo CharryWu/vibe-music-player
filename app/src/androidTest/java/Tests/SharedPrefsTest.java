@@ -92,4 +92,9 @@ public class SharedPrefsTest {
 
 
     }
+
+    @Test
+    public void testGetData() {
+
+    }
 }

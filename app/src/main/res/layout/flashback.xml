@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     tools:context="com.example.chadlohrli.myapplication.FlashBackActivity">
 
+    <ImageButton
+        android:id="@+id/playfb"
+        android:layout_width="263dp"
+        android:layout_height="224dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/album_art"
+        android:text="Flashback Mode"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="138dp"
@@ -46,16 +62,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/playBtn"
-        android:layout_width="94dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="180dp"
-        android:text="Play"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

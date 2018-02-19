@@ -120,6 +120,7 @@ public class MusicPlayer extends AppCompatActivity {
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
 
+
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
         toast.show();
@@ -237,16 +238,16 @@ public class MusicPlayer extends AppCompatActivity {
         checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
-        /*
-        int count = 0;
-        while(songState == state.DISLIKE.ordinal()){
-            if(count >= songs.size())
-                break;
-            playNextSong();
-            checkSongState(songs.get(cur_song));
-            count++;
+        if(songState == state.DISLIKE.ordinal()){
+            if(songs.size() == 1){
+                onSupportNavigateUp();
+            }else{
+                songs.remove(cur_song);
+                playNextSong();
+            }
         }
-        */
+
+        Log.d("Songs size",String.valueOf(songs.size()));
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
@@ -256,8 +257,13 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playNextSong(){
 
-        if (++cur_song > songs.size()-1)
-            cur_song = 0;
+        if(songs.size() > 0){
+            if (++cur_song > songs.size()-1)
+                cur_song = 0;
+        }else{
+            onSupportNavigateUp();
+        }
+
 
         Log.d("new index",String.valueOf(cur_song));
 
@@ -444,6 +450,7 @@ public class MusicPlayer extends AppCompatActivity {
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
+                    /*
                     //This allows UI to update before switching songs
                     new Timer().schedule(new TimerTask() {
                         @Override
@@ -453,7 +460,13 @@ public class MusicPlayer extends AppCompatActivity {
                         }
                     }, 1000);
 
+                    */
+
+                    playNextSong();
+
                     return super.onDoubleTap(e);
+
+
 
                 }
                 @Override

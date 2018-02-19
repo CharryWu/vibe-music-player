@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class FlashBackActivity extends AppCompatActivity {
     double day = 0;
     String timestamp;
     //also add fav
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -73,12 +75,12 @@ public class FlashBackActivity extends AppCompatActivity {
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         //Log.i("TIMECURR", Integer.toString(hour));
         //Log.i("TIMESONG", Integer.toString((int)songTime));
-        if (hour >= 0 && hour <= 8) {
+        if (hour >= 5 && hour < 11) {
             hour = 0;
-        } else if (hour > 8 && hour <= 16){
-            hour = 1;
-        } else {
+        } else if (hour > 17 || hour < 5){
             hour = 2;
+        } else {
+            hour = 1;
         }
         if(hour == (int)songTime){
             return 2;
@@ -108,11 +110,16 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.flashback);
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+        setContentView(R.layout.flashback);
+        LocationHelper.getLatLong(getApplicationContext());
+        flashback();
+    }
+
+    protected void flashback(){
         location_view = (TextView) findViewById(R.id.location);
         time_view = (TextView) findViewById(R.id.time);
 
@@ -148,6 +155,10 @@ public class FlashBackActivity extends AppCompatActivity {
         if (location != null) {
             lat = location.getLatitude();
             lng = location.getLongitude();
+        }else{
+            Toast.makeText(getApplicationContext(), "Cannot Get Location", Toast.LENGTH_LONG).show();
+            onSupportNavigateUp();
+            return;
         }
 
         //get location name
@@ -191,15 +202,38 @@ public class FlashBackActivity extends AppCompatActivity {
             dist = matchLocation(dist);
             ratings = time+day+dist;
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
+
+            SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+            int fav = pref.getInt("fav", 0);
             //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            if (ratings >= 2) {
+            int tp = pref.getInt("Times played", 0);
+            if (ratings >= 2 && (fav != -1) && (tp > 0)) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
         }
+        if (flashbackList.size() == 0) {
+            location_view.setVisibility(View.INVISIBLE);
+            time_view.setVisibility(View.INVISIBLE);
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+            onSupportNavigateUp();
+            return;
+        }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
 
+        /*if(!flashbackList.isEmpty()) {
+            Iterator<SongData> iter = flashbackList.iterator();
+            for (SongData songelem : flashbackList) {
+                String id = songelem.getID();
+                SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
+                int fav = pref.getInt("fav", 0);
+                if (fav == -1) {
+                    flashbackList.remove(songelem);
+                }
+            }
+        }*/
         //commented out listview of all flashback songs
         /*songlist = (ListView) findViewById(R.id.song_list);
         SongAdapter songadt = new SongAdapter(this, flashbackList);
@@ -209,6 +243,12 @@ public class FlashBackActivity extends AppCompatActivity {
         playFB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (flashbackList.size() == 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+                    toast.show();
+                    onSupportNavigateUp();
+                }
+
                 Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
                 intent.putExtra("SONGS", flashbackList);
                 intent.putExtra("CUR", 0);
@@ -218,8 +258,8 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         });
 
-        /* flashback debugger
-           for(SongData songelem: flashbackList){
+        //flashback debugger
+        for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());
             String id = songelem.getID();
             SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
@@ -228,15 +268,15 @@ public class FlashBackActivity extends AppCompatActivity {
             String lp = pref.getString("Last played", "");
             Log.i("timestamp", lp );
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
-        }*/
-
-        if (flashbackList.size() == 0) {
-            location_view.setVisibility(View.INVISIBLE);
-            time_view.setVisibility(View.INVISIBLE);
-            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
-            toast.show();
         }
     }
+
+    /*@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.flashback);
+        flashback();
+    }*/
 }
 
 

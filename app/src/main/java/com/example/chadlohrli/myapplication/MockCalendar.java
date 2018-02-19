@@ -11,11 +11,15 @@ import java.util.Calendar;
 
 public class MockCalendar extends Calendar {
     long millis;
+    int day;
+    int hour;
 
     public MockCalendar() {
     }
-    public MockCalendar(long millis) {
-        this.millis = millis;
+    public MockCalendar(int day, int hour) {
+        this.day = day;
+        this.hour = hour;
+
     }
     public static MockCalendar getInstance() {
         return new MockCalendar();
@@ -24,10 +28,10 @@ public class MockCalendar extends Calendar {
     @Override
     public int get(int field) {
         if (field == Calendar.HOUR_OF_DAY) {
-            return 5;
+            return 18;
         }
         if (field == Calendar.DAY_OF_WEEK) {
-            return 3;
+            return Calendar.TUESDAY;
         }
         return 0;
     }

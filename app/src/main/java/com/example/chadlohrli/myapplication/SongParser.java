@@ -81,13 +81,13 @@ public class SongParser {
 
             //cast null variables to empty strings
             if(album_title == null){
-                album_title = "";
+                album_title = "Unknown Album";
             }else if(song_title == null){
-                song_title = "";
+                song_title = "Unknown Song";
             }else if(song_length == null){
                 song_length = "";
             }else if(song_artist == null){
-                song_artist = "";
+                song_artist = "Unknown Artist";
             }
 
 

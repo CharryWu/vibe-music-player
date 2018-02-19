@@ -10,7 +10,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.SeekBar;
 
@@ -70,8 +69,6 @@ MediaPlayer.OnCompletionListener {
         Intent RTReturn = new Intent(MusicPlayer.SONG_FINISHED);
         RTReturn.putExtra("hi", "song finished");
         LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn);
-
-
     }
 
     public void setSongList(ArrayList<SongData> songList) {
@@ -118,7 +115,7 @@ MediaPlayer.OnCompletionListener {
 
 
     public class MusicBinder extends Binder {
-        MusicService getService() {
+        public MusicService getService() {
             return MusicService.this;
         }
     }

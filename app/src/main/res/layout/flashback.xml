@@ -4,7 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chadlohrli.myapplication.SongListActivity">
+    tools:context="com.example.chadlohrli.myapplication.FlashBackActivity">
+
+    <ImageButton
+        android:id="@+id/playfb"
+        android:layout_width="263dp"
+        android:layout_height="224dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/album_art"
+        android:text="Flashback Mode"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time" />
 
     <TextView
         android:id="@+id/textView"
@@ -19,42 +35,43 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.033" />
 
-    <Button
-        android:id="@+id/go_back"
-        android:layout_width="65dp"
-        android:layout_height="36dp"
-        android:layout_marginBottom="464dp"
-        android:text="back"
-        android:textSize="15sp"
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="324dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="416dp"
+        android:background="#07000000"
+        android:gravity="left|center"
+        android:textColor="#111111"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.012"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
-        android:id="@+id/flashback"
-        android:layout_width="330dp"
-        android:layout_height="44dp"
-        android:layout_marginBottom="412dp"
-        android:background="#808080"
-        android:text="Last Location played "
-        android:textSize="15dp"
+        android:id="@+id/time"
+        android:layout_width="326dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="368dp"
+        android:background="#07000000"
+        android:gravity="left|center"
         android:textColor="#111111"
-        android:gravity="center_horizontal"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <ListView
+    <!--<ListView
         android:id="@+id/song_list"
-        android:layout_width="338dp"
-        android:layout_height="386dp"
+        android:layout_width="332dp"
+        android:layout_height="341dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-    </ListView>
+    </ListView>-->
+
 
 
 </android.support.constraint.ConstraintLayout>

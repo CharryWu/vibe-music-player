@@ -1,8 +1,10 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Previous screen: {@link AlbumActivity}
@@ -27,6 +30,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
     private ArrayList<Album> albums;
     private Album cur_album;
     private ArrayList<SongData> songs;
+    private Button undislikeBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,38 +44,65 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
         //grab data from intent
         albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
-        cur_album = albums.get(getIntent().getIntExtra("CUR",0));
+        cur_album = albums.get(getIntent().getIntExtra("CUR", 0));
         songs = cur_album.getSongs();
 
         //display song for now to ensure data has correctly been passed
         Toast toast = Toast.makeText(getApplicationContext(), cur_album.getAlbumTitle(), Toast.LENGTH_SHORT);
         toast.show();
 
-        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0),getApplicationContext()));
+        Bitmap bp = SongParser.albumCover(songs.get(0), getApplicationContext());
+        albumCover.setImageBitmap(SongParser.albumCover(songs.get(0), getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());
 
-        listView.setAdapter(new SongAdapter(this,songs));
-        Button backButton = (Button) findViewById(R.id.back_button_picked_album);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PickedAlbumActivity.this, AlbumActivity.class);
-                PickedAlbumActivity.this.startActivity(intent);
-                finish();
-            }
-        });
 
     }
 
-    public void songPicked(View view){
-        //mp.setList(songs);
-        //mp.setSong(Integer.par seInt(view.getTag().toString()));
+    @Override
+    protected void onStart() {
+        super.onStart();
 
+
+        listView.setAdapter(new SongAdapter(this, songs));
+
+
+    }
+
+    public void dislikeAction(View view){
+
+        Log.d("TAG",view.getTag().toString());
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+        undislikeBtn = view.findViewById(R.id.undislikeBtn);
+        undislikeBtn.setVisibility(View.INVISIBLE);
+        Toast toast = Toast.makeText(getApplicationContext(), "UnDisliked!", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    public void songPicked(View view) {
         Intent intent = new Intent(this, MusicPlayer.class);
-        intent.putExtra("SONGS",songs);
-        intent.putExtra("CUR",Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("SONGS", songs);
+        intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
+        intent.putExtra("caller", "PickedAlbumActivity");
+
+        //if a disliked song is picked, it is no longer disliked
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        if(map.get("State") != null){
+            if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
+                SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+            }
+        }
+
+
         this.startActivity(intent);
-        finish();
     }
 }

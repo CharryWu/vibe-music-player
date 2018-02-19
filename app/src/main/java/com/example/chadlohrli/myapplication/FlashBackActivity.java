@@ -75,7 +75,7 @@ public class FlashBackActivity extends AppCompatActivity {
         //Log.i("TIMESONG", Integer.toString((int)songTime));
         if (hour >= 5 && hour < 11) {
             hour = 0;
-        } else if (hour > 17 && hour < 5){
+        } else if (hour > 17 || hour < 5){
             hour = 2;
         } else {
             hour = 1;

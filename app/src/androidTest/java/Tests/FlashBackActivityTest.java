@@ -5,6 +5,8 @@ import android.support.test.rule.ActivityTestRule;
 import com.example.chadlohrli.myapplication.DateHelper;
 import com.example.chadlohrli.myapplication.FlashBackActivity;
 import com.example.chadlohrli.myapplication.MockDateHelper;
+import com.example.chadlohrli.myapplication.MockDateHelperAfternoon;
+import com.example.chadlohrli.myapplication.MockDateHelperMorning;
 import com.example.chadlohrli.myapplication.SongData;
 import com.example.chadlohrli.myapplication.MockCalendar;
 
@@ -42,10 +44,14 @@ public class FlashBackActivityTest {
     @Test
     public void testMatchTimeOfDay() {
         activity.setDateHelper(new MockDateHelper());
-        double result = flashBackActivity.getActivity().matchTimeOfDay(18);
+        double result = flashBackActivity.getActivity().matchTimeOfDay(2);
         assertEquals(2, result, .01);
-        result = flashBackActivity.getActivity().matchTimeOfDay(7);
-        assertEquals(0, result, .01);
+        activity.setDateHelper(new MockDateHelperAfternoon());
+        result = flashBackActivity.getActivity().matchTimeOfDay(1);
+        assertEquals(2, result, .01);
+        activity.setDateHelper(new MockDateHelperMorning());
+        result = flashBackActivity.getActivity().matchTimeOfDay(0);
+        assertEquals(2, result, .01);
     }
 
     @Test

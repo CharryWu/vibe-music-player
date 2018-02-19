@@ -91,6 +91,7 @@ public class SongListActivity extends AppCompatActivity {
         SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
         undislikeBtn = view.findViewById(R.id.undislikeBtn);
         undislikeBtn.setVisibility(View.INVISIBLE);
+        Log.d("song disliked", song.getTitle());
         Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
         toast.show();
     }

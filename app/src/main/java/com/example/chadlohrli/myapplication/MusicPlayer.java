@@ -150,7 +150,6 @@ public class MusicPlayer extends AppCompatActivity {
         this.dateHelper = dateHelper;
     }
 
-
     // -- inner class variables -- //
     private ServiceConnection musicConnection = new ServiceConnection(){
 

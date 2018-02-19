@@ -60,4 +60,8 @@ public class SongListActivityTest {
         assertTrue(songMatch);
         assertEquals(fields.length, songs.size());
     }
+    @Test
+    public void testButtonState() {
+
+    }
 }

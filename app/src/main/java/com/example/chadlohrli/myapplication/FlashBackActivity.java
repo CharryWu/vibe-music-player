@@ -73,12 +73,12 @@ public class FlashBackActivity extends AppCompatActivity {
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         //Log.i("TIMECURR", Integer.toString(hour));
         //Log.i("TIMESONG", Integer.toString((int)songTime));
-        if (hour >= 0 && hour <= 8) {
+        if (hour >= 5 && hour < 11) {
             hour = 0;
-        } else if (hour > 8 && hour <= 16){
-            hour = 1;
-        } else {
+        } else if (hour > 17 || hour < 5){
             hour = 2;
+        } else {
+            hour = 1;
         }
         if(hour == (int)songTime){
             return 2;

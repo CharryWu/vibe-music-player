@@ -53,6 +53,11 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
+
+
+    private DateHelper dateHelper;
+
+
     //public int timesPlayed;
     public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
@@ -116,6 +121,7 @@ public class MusicPlayer extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        setDateHelper(new DateHelper());
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
@@ -126,7 +132,7 @@ public class MusicPlayer extends AppCompatActivity {
         toast.show();
 
         String caller = getIntent().getStringExtra("caller");
-        if(caller.equals("FlashBackActivity")){
+        if(caller != null && caller.equals("FlashBackActivity")){
             mode = 0;
         } else {
             mode = 1;
@@ -139,6 +145,11 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     }
+
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
 
     // -- inner class variables -- //
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -548,16 +559,32 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
 
-    protected int getTimeOfDay() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (hour >= 0 && hour <= 8) {
+
+    public int getTimeOfDay() {
+        //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
+        if(hour > 17 || hour < 5)
+            return NIGHT;
+        else if (hour >= 5 && hour < 11 )
             return MORNING;
-        } else if (hour > 8 && hour <= 16) {
+        else
             return AFTERNOON;
-        }
-        return NIGHT;
     }
 
+    public int getDay() {
+        //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
+        return day;
+        /**
+        switch (day) {
+            case 0: return SUNDAY;
+            case 1: return MONDAY;
+            case 2: return TUESDAY;
+            case 3: return WEDNESDAY;
+            case 4: return THURSDAY;
+            case 5: return FRIDAY;
+            default: return SATURDAY;
+=======
     protected int getDay() {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         //Log.i("time of day", String.valueOf(timeofday));
@@ -570,8 +597,10 @@ public class MusicPlayer extends AppCompatActivity {
             case 6: return FRIDAY;
             case 7: return SATURDAY;
             default: return SUNDAY;
+>>>>>>> c61c2149ff710701e18976409192d844493deb3b
 
         }
+         */
 
     }
 }

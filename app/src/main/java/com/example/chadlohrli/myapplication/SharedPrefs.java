@@ -71,7 +71,6 @@ public class SharedPrefs {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);
         return songsList.getAll();
-
     }
 
 }

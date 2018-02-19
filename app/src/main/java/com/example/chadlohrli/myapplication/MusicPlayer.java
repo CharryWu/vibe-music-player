@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -22,8 +23,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -43,16 +46,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-enum state {NEUTRAL,DISLIKE,FAVORITE};
+;
 //int timesPlayed;
 
 public class MusicPlayer extends AppCompatActivity {
 
 
     public static final String SONG_FINISHED = "SONG FINISHED";
+
+
+    private DateHelper dateHelper;
+
+
     //public int timesPlayed;
-    public static int mode = 1;
+    public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -116,17 +126,20 @@ public class MusicPlayer extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        setDateHelper(new DateHelper());
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
         timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
+
         //display song for aesthetics
-        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
+                Toast.LENGTH_SHORT);
         toast.show();
 
         String caller = getIntent().getStringExtra("caller");
-        if(caller.equals("FlashBackActivity")){
+        if(caller != null && caller.equals("FlashBackActivity")){
             mode = 0;
         } else {
             mode = 1;
@@ -139,6 +152,11 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     }
+
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
 
     // -- inner class variables -- //
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -241,16 +259,16 @@ public class MusicPlayer extends AppCompatActivity {
         checkSongState(songs.get(cur_song));
 
         //This code ensures that no disliked songs will play
-        /*
-        int count = 0;
-        while(songState == state.DISLIKE.ordinal()){
-            if(count >= songs.size())
-                break;
-            playNextSong();
-            checkSongState(songs.get(cur_song));
-            count++;
+        if(songState == state.DISLIKE.ordinal()){
+            if(songs.size() == 1){
+                onSupportNavigateUp();
+            }else{
+                songs.remove(cur_song);
+                playNextSong();
+            }
         }
-        */
+
+        Log.d("Songs size",String.valueOf(songs.size()));
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
@@ -268,8 +286,13 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void playNextSong(){
 
-        if (++cur_song > songs.size()-1)
-            cur_song = 0;
+        if(songs.size() > 0){
+            if (++cur_song > songs.size()-1)
+                cur_song = 0;
+        }else{
+            onSupportNavigateUp();
+        }
+
 
         Log.d("new index",String.valueOf(cur_song));
 
@@ -338,7 +361,7 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        saveSong(song); //save data to shared preferences
+        saveSong(song); //save data to shared preference
     }
 
     @Override
@@ -435,9 +458,15 @@ public class MusicPlayer extends AppCompatActivity {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
+
+
+
                     Log.d("TEST", "onDoubleTap");
-                    if(songState == state.NEUTRAL.ordinal())
+                    if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.DISLIKE.ordinal();
+                        Toast toast = Toast.makeText(getApplicationContext(), "Disliked!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                     else if(songState == state.DISLIKE.ordinal())
                         songState = state.NEUTRAL.ordinal();
 
@@ -447,18 +476,41 @@ public class MusicPlayer extends AppCompatActivity {
 
                     SharedPrefs.updateFavorite(MusicPlayer.this.getApplicationContext(),songs.get(cur_song).getID(),songState);
 
+                    /*
+                    //This allows UI to update before switching songs
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            playNextSong();
+
+                        }
+                    }, 1000);
+
+                    */
+
+                    playNextSong();
+
                     return super.onDoubleTap(e);
+
+
 
                 }
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent event) {
                     Log.d("TEST", "onSingleTap");
-                    if(songState == state.NEUTRAL.ordinal())
+                    if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.FAVORITE.ordinal();
-                    else if(songState == state.FAVORITE.ordinal())
+                        Toast toast = Toast.makeText(getApplicationContext(), "Favorited!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                    else if(songState == state.FAVORITE.ordinal()) {
                         songState = state.NEUTRAL.ordinal();
+                        Toast toast = Toast.makeText(getApplicationContext(), "Un-Favorited!", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
 
                     setStateButton();
+
 
                     Log.d("STATE", String.valueOf(songState));
 
@@ -489,22 +541,28 @@ public class MusicPlayer extends AppCompatActivity {
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         if (lm != null) {
             location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        lat = location.getLatitude();
-        lng = location.getLongitude();
+            if(location != null){
+                lat = location.getLatitude();
+                lng = location.getLongitude();
 
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        try {
-            List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
-                String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                locationTitle.setText(loc_name);
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
+                    if(null!=listAddresses&&listAddresses.size()>0){
+                        String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
+                        locationTitle.setText(loc_name);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                locationTitle.setText("Location not found");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
 
     }
+
 
     public void initTimeDay() {
         timeofday = getTimeOfDay();
@@ -522,16 +580,32 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
 
-    protected int getTimeOfDay() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if (hour >= 0 && hour <= 8) {
+
+    public int getTimeOfDay() {
+        //int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
+        if(hour > 17 || hour < 5)
+            return NIGHT;
+        else if (hour >= 5 && hour < 11 )
             return MORNING;
-        } else if (hour > 8 && hour <= 16) {
+        else
             return AFTERNOON;
-        }
-        return NIGHT;
     }
 
+    public int getDay() {
+        //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
+        return day;
+        /**
+        switch (day) {
+            case 0: return SUNDAY;
+            case 1: return MONDAY;
+            case 2: return TUESDAY;
+            case 3: return WEDNESDAY;
+            case 4: return THURSDAY;
+            case 5: return FRIDAY;
+            default: return SATURDAY;
+=======
     protected int getDay() {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         //Log.i("time of day", String.valueOf(timeofday));
@@ -544,8 +618,10 @@ public class MusicPlayer extends AppCompatActivity {
             case 6: return FRIDAY;
             case 7: return SATURDAY;
             default: return SUNDAY;
+>>>>>>> c61c2149ff710701e18976409192d844493deb3b
 
         }
-
+         */
     }
+
 }

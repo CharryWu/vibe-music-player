@@ -5,7 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,6 +22,10 @@ import java.util.Map;
 public class SongListActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<SongData> songs;
+    private ArrayList<SongData> sendSongs;
+    private int songState;
+    private Button undislikeBtn;
+
 
     public ArrayList<SongData> createSongs() {
 
@@ -34,6 +41,14 @@ public class SongListActivity extends AppCompatActivity {
 
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());
 
+            /*
+            Map<String,?> map = SharedPrefs.getData(getApplicationContext(),song.getID());
+            if(map.get("State") != null){
+                if( ((Integer)map.get("State")).intValue() != state.DISLIKE.ordinal() )
+                    sendSongs.add(song);
+            }
+            */
+
             songs.add(song);
         }
 
@@ -48,13 +63,39 @@ public class SongListActivity extends AppCompatActivity {
         return songs;
     }
 
+
     public void songPicked(View view) {
+
+
+        //if a disliked song is picked, it is no longer disliked
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        if(map.get("State") != null){
+           if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
+               SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+           }
+        }
+
+
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", songs);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
         intent.putExtra("caller", "SongListActivity");
+
         SongListActivity.this.startActivity(intent);
     }
+
+    public void dislikeAction(View view){
+
+        Log.d("TAG",view.getTag().toString());
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+        undislikeBtn = view.findViewById(R.id.undislikeBtn);
+        undislikeBtn.setVisibility(View.INVISIBLE);
+        Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -67,12 +108,23 @@ public class SongListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.songlist);
 
-        listView = (ListView) findViewById(R.id.songlist);
-
         songs = createSongs();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        listView = (ListView) findViewById(R.id.songlist);
         SongAdapter songadt = new SongAdapter(this, songs);
         listView.setAdapter(songadt);
+
+
     }
+
+
+
+
 }
 

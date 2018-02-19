@@ -15,10 +15,10 @@ import android.content.Context;
  * Created by Kartik on 2/16/2018.
  */
 
-class SongSorter implements Comparator<SongData> {
+public class SongSorter implements Comparator<SongData> {
 
     Context curContext;
-    SongSorter(Context context) {
+    public SongSorter(Context context) {
         curContext = context;
     }
 

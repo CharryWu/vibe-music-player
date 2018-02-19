@@ -207,7 +207,8 @@ public class FlashBackActivity extends AppCompatActivity {
             int fav = pref.getInt("fav", 0);
             //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            if (ratings >= 2 && (fav != -1)) {
+            int tp = pref.getInt("Times played", 0);
+            if (ratings >= 2 && (fav != -1) && (tp > 0)) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }

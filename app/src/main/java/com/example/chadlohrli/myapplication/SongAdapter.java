@@ -59,6 +59,8 @@ public class SongAdapter extends BaseAdapter {
         return 0;
     }
 
+    public int getSongState() {return this.songState;}
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         //map to song layout

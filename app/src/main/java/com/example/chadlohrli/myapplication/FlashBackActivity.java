@@ -236,7 +236,6 @@ public class FlashBackActivity extends AppCompatActivity {
             }
         });
 
-
         /* flashback debugger
            for(SongData songelem: flashbackList){
             Log.i("Song", songelem.getTitle());

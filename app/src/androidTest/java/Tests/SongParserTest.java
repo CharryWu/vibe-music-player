@@ -43,9 +43,6 @@ public class SongParserTest {
         songs = songListActivity.getActivity().createSongs();
         albums = albumActivity.getActivity().buildAlbums(songs);
         context = InstrumentationRegistry.getContext();
-        sd = SongParser.parseSong("android.resource://" +
-                        songListActivity.getActivity().getPackageName() + "/raw/", R.raw.class.getFields()[0].getName(),
-                songListActivity.getActivity().getApplicationContext());
     }
 
     @Test
@@ -62,11 +59,4 @@ public class SongParserTest {
         }
     }
 
-    @Test
-    public void testParseSong() {
-        assertEquals("backeast", sd.getID());
-        assertEquals("I Will Not Be Afraid (A Sampler)", sd.getAlbum());
-        assertEquals("Back East", sd.getTitle());
-        assertEquals("189518", sd.getLength());
-    }
 }

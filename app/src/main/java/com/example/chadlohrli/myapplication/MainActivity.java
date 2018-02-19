@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         checkLocationPermission();
+        LocationHelper.getLatLong(getApplicationContext());
 
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
@@ -76,7 +77,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    public void onStart(){
+        super.onStart();
+        LocationHelper.getLatLong(getApplicationContext());
+    }
 
 
     //https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime-on-android-6

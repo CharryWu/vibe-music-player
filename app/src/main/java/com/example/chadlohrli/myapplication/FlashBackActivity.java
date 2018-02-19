@@ -108,6 +108,11 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
+    public void onStart(){
+        super.onStart();
+        LocationHelper.getLatLong(getApplicationContext());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +141,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
             //return;
         }
-gig
+
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;
@@ -148,6 +153,10 @@ gig
         if (location != null) {
             lat = location.getLatitude();
             lng = location.getLongitude();
+        }else{
+            Toast.makeText(getApplicationContext(), "Cannot Get Location", Toast.LENGTH_LONG).show();
+            onSupportNavigateUp();
+            return;
         }
 
         //get location name
@@ -226,6 +235,7 @@ gig
                 finish();
             }
         });
+
 
         /* flashback debugger
            for(SongData songelem: flashbackList){

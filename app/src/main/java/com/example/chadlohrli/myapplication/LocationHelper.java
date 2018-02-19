@@ -31,11 +31,16 @@ public class LocationHelper {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d("Changed", location.toString());
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-                Log.d("Lat:",String.valueOf(lat));
-                Log.d("Long:",String.valueOf(lon));
-                locationManager.removeUpdates(this);
+                if(location != null){
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
+                    Log.d("Lat:",String.valueOf(lat));
+                    Log.d("Long:",String.valueOf(lon));
+                    locationManager.removeUpdates(this);
+                }else{
+                    lat = 0.0;
+                    lon = 0.0;
+                }
 
             }
 
@@ -66,10 +71,14 @@ public class LocationHelper {
 
         LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        if(location != null) {
+            lat = location.getLongitude();
+            lon = location.getLatitude();
+        }else{
 
-        return new Pair <Double,Double> (latitude,longitude);
+        }
+
+        return new Pair <Double,Double> (lat,lon);
 
     }
 

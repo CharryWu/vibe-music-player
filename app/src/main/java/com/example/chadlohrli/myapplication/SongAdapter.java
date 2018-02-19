@@ -23,6 +23,7 @@ public class SongAdapter extends BaseAdapter {
     private LayoutInflater songInf;
     private Context context;
     private int songState;
+    private LinearLayout songLay;
 
     public SongAdapter(Context c, ArrayList<SongData> songs) {
         this.songs = songs;
@@ -59,10 +60,16 @@ public class SongAdapter extends BaseAdapter {
         return 0;
     }
 
+    public int getSongState() {return this.songState;}
+
+    public LinearLayout getSongLay() {
+        return this.songLay;
+    }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         //map to song layout
-        LinearLayout songLay = (LinearLayout) songInf.inflate
+        songLay = (LinearLayout) songInf.inflate
                 (R.layout.song, viewGroup, false);
 
         //get title and artist views

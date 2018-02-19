@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-enum state {NEUTRAL,DISLIKE,FAVORITE};
+;
 //int timesPlayed;
 
 public class MusicPlayer extends AppCompatActivity {

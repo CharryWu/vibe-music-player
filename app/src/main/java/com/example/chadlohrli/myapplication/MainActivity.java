@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
+        LocationHelper.getLatLong(getApplicationContext());
+
         SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
         Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), "last song");
         String title = lp.getString("song", "");
@@ -137,11 +139,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        LocationHelper.getLatLong(getApplicationContext());
-    }
 
 
     //https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime-on-android-6

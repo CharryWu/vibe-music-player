@@ -110,15 +110,12 @@ public class FlashBackActivity extends AppCompatActivity {
         return locRating;
     }
 
-    public void onStart(){
-        super.onStart();
-        LocationHelper.getLatLong(getApplicationContext());
-    }
 
     @Override
     protected void onStart(){
         super.onStart();
         setContentView(R.layout.flashback);
+        LocationHelper.getLatLong(getApplicationContext());
         flashback();
     }
 

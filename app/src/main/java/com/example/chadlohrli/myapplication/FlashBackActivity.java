@@ -234,6 +234,7 @@ public class FlashBackActivity extends AppCompatActivity {
         }*/
 
         if (flashbackList.size() == 0) {
+            Log.d("EMPTY FLASHBACK", "no songs were added to flashback mix");
             location_view.setVisibility(View.INVISIBLE);
             time_view.setVisibility(View.INVISIBLE);
             Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);

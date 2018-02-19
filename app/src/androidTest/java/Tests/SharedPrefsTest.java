@@ -32,6 +32,7 @@ public class SharedPrefsTest {
     private float rating;
     private int state;
     private int timesPlayed;
+    private int fave;
     private String lastPlayed;
     private ArrayList<SongData> songs;
 
@@ -60,7 +61,8 @@ public class SharedPrefsTest {
         state = 0;
         timesPlayed = 3;
         lastPlayed = "1995.12.21.21.12.32";
-        SharedPrefs.saveData(musicPlayerRule.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,state,timesPlayed, lastPlayed);
+        fave = 0;
+        SharedPrefs.saveData(musicPlayerRule.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,state,timesPlayed, lastPlayed, fave);
 
         Map<String, ?> map = SharedPrefs.getData(musicPlayerRule.getActivity().getApplicationContext(), id);
         float savedLatitude = (Float) map.get("Latitude");

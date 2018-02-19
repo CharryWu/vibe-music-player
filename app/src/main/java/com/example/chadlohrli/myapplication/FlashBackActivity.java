@@ -44,7 +44,6 @@ public class FlashBackActivity extends AppCompatActivity {
     private double ratings;
     private float lt = 0;
     private float lng2 = 0;
-    private int songState = 0;
     double time = 0;
     double day = 0;
     String timestamp;
@@ -137,7 +136,6 @@ public class FlashBackActivity extends AppCompatActivity {
 
             //return;
         }
-
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;
@@ -174,13 +172,11 @@ public class FlashBackActivity extends AppCompatActivity {
                 Object longitude = map.get("Longitude");
                 Object t = map.get("Time");
                 Object d = map.get("Day");
-                Object s = map.get("State");
 
                 lt = Float.valueOf(latitude.toString());
                 lng2 = Float.valueOf(longitude.toString());
                 time = (int)t;
                 day = (int)d;
-                songState = (int)s;
             }
 
             //get song's location
@@ -196,10 +192,18 @@ public class FlashBackActivity extends AppCompatActivity {
             SharedPrefs.updateRating(FlashBackActivity.this.getApplicationContext(), id, (float)ratings);
             //SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
 
-            if (ratings >= 2 && songState != state.DISLIKE.ordinal()) {
+            if (ratings >= 2) {
                 SongData song = SongParser.parseSong(path, id, getApplicationContext());
                 flashbackList.add(song);
             }
+        }
+        if (flashbackList.size() == 0) {
+            location_view.setVisibility(View.INVISIBLE);
+            time_view.setVisibility(View.INVISIBLE);
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+            onSupportNavigateUp();
+            return;
         }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
 
@@ -212,6 +216,7 @@ public class FlashBackActivity extends AppCompatActivity {
         playFB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
                 intent.putExtra("SONGS", flashbackList);
                 intent.putExtra("CUR", 0);
@@ -233,12 +238,7 @@ public class FlashBackActivity extends AppCompatActivity {
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
         }*/
 
-        if (flashbackList.size() == 0) {
-            location_view.setVisibility(View.INVISIBLE);
-            time_view.setVisibility(View.INVISIBLE);
-            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
-            toast.show();
-        }
+
     }
 }
 

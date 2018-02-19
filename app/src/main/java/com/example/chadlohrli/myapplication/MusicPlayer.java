@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -22,8 +23,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -46,7 +49,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-enum state {NEUTRAL,DISLIKE,FAVORITE};
+;
 //int timesPlayed;
 
 public class MusicPlayer extends AppCompatActivity {
@@ -128,7 +131,8 @@ public class MusicPlayer extends AppCompatActivity {
 
 
         //display song for aesthetics
-        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
+                Toast.LENGTH_SHORT);
         toast.show();
 
         String caller = getIntent().getStringExtra("caller");
@@ -344,7 +348,7 @@ public class MusicPlayer extends AppCompatActivity {
         initLocation(); //refresh lat/long and display location
         initTimeDay(); //get formatted time and date
 
-        saveSong(song); //save data to shared preferences
+        saveSong(song); //save data to shared preference
     }
 
     @Override
@@ -525,22 +529,28 @@ public class MusicPlayer extends AppCompatActivity {
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         if (lm != null) {
             location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        lat = location.getLatitude();
-        lng = location.getLongitude();
+            if(location != null){
+                lat = location.getLatitude();
+                lng = location.getLongitude();
 
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        try {
-            List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
-                String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                locationTitle.setText(loc_name);
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
+                    if(null!=listAddresses&&listAddresses.size()>0){
+                        String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
+                        locationTitle.setText(loc_name);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                locationTitle.setText("Location not found");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
 
     }
+
 
     public void initTimeDay() {
         timeofday = getTimeOfDay();
@@ -600,6 +610,6 @@ public class MusicPlayer extends AppCompatActivity {
 
         }
          */
-
     }
+
 }

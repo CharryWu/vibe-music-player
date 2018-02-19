@@ -61,6 +61,16 @@ public class SongListActivity extends AppCompatActivity {
         SongListActivity.this.startActivity(intent);
     }
 
+    public void dislikeAction(View view){
+
+        Log.d("TAG",view.getTag().toString());
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+        undislikeBtn = view.findViewById(R.id.undislikeBtn);
+        undislikeBtn.setVisibility(View.INVISIBLE);
+    }
+
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -72,16 +82,22 @@ public class SongListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.songlist);
 
-        listView = (ListView) findViewById(R.id.songlist);
-
         songs = createSongs();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        listView = (ListView) findViewById(R.id.songlist);
         SongAdapter songadt = new SongAdapter(this, songs);
         listView.setAdapter(songadt);
 
 
-
     }
+
+
 
 
 }

@@ -83,6 +83,7 @@ public class SongAdapter extends BaseAdapter {
         artistView.setText(currSong.getArtist());
         //set position as tag
         songLay.setTag(i);
+        undislikeBtn.setTag(i);
         return songLay;
     }
 }

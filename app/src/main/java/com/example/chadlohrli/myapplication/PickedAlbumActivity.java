@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
     private ArrayList<Album> albums;
     private Album cur_album;
     private ArrayList<SongData> songs;
+    private Button undislikeBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,15 @@ public class PickedAlbumActivity extends AppCompatActivity {
         artistName.setText(cur_album.getArtistName());
 
         listView.setAdapter(new SongAdapter(this, songs));
+    }
+
+    public void dislikeAction(View view){
+
+        Log.d("TAG",view.getTag().toString());
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+        undislikeBtn = view.findViewById(R.id.undislikeBtn);
+        undislikeBtn.setVisibility(View.INVISIBLE);
     }
 
 

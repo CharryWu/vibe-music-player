@@ -1,37 +1,34 @@
 package com.example.chadlohrli.myapplication;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 
 /**
- * Created by marissahing on 2/16/18.
+ * Created by Kyle on 2/17/2018.
  */
 
-public class MockCalendar extends Calendar {
+public class MockCalendarMorning extends Calendar {
     long millis;
     int day;
     int hour;
 
-    public MockCalendar() {
+    public MockCalendarMorning() {
     }
-    public MockCalendar(int day, int hour) {
+    public MockCalendarMorning(int day, int hour) {
         this.day = day;
         this.hour = hour;
 
     }
-    public static MockCalendar getInstance() {
-        return new MockCalendar();
+    public static MockCalendarMorning getInstance() {
+        return new MockCalendarMorning();
     }
 
     @Override
     public int get(int field) {
         if (field == Calendar.HOUR_OF_DAY) {
-            return 18;
+            return 6;
         }
         if (field == Calendar.DAY_OF_WEEK) {
-            return Calendar.TUESDAY;
+            return Calendar.SATURDAY;
         }
         return 0;
     }
@@ -82,6 +79,4 @@ public class MockCalendar extends Calendar {
     public int getLeastMaximum(int i) {
         return 0;
     }
-
 }
-

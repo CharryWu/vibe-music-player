@@ -73,12 +73,12 @@ public class FlashBackActivity extends AppCompatActivity {
         int hour = dateHelper.getCalendar().get(Calendar.HOUR_OF_DAY);
         //Log.i("TIMECURR", Integer.toString(hour));
         //Log.i("TIMESONG", Integer.toString((int)songTime));
-        if (hour >= 0 && hour <= 8) {
+        if (hour >= 5 && hour < 11) {
             hour = 0;
-        } else if (hour > 8 && hour <= 16){
-            hour = 1;
-        } else {
+        } else if (hour > 17 || hour < 5){
             hour = 2;
+        } else {
+            hour = 1;
         }
         if(hour == (int)songTime){
             return 2;
@@ -136,7 +136,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
             //return;
         }
-
+gig
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;
@@ -198,6 +198,14 @@ public class FlashBackActivity extends AppCompatActivity {
                 flashbackList.add(song);
             }
         }
+        if (flashbackList.size() == 0) {
+            location_view.setVisibility(View.INVISIBLE);
+            time_view.setVisibility(View.INVISIBLE);
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+            onSupportNavigateUp();
+            return;
+        }
         Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
 
         //commented out listview of all flashback songs
@@ -209,6 +217,7 @@ public class FlashBackActivity extends AppCompatActivity {
         playFB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(FlashBackActivity.this, MusicPlayer.class);
                 intent.putExtra("SONGS", flashbackList);
                 intent.putExtra("CUR", 0);
@@ -230,12 +239,7 @@ public class FlashBackActivity extends AppCompatActivity {
             Log.i("fav", Integer.toString(pref.getInt("fav", 0)));
         }*/
 
-        if (flashbackList.size() == 0) {
-            location_view.setVisibility(View.INVISIBLE);
-            time_view.setVisibility(View.INVISIBLE);
-            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
-            toast.show();
-        }
+
     }
 }
 

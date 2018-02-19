@@ -62,7 +62,6 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     //public int timesPlayed;
-    public static int mode = 1; //0 - flashback | 1 - regular mode
     private ImageView albumCover;
     private TextView locationTitle;
     private TextView songTitle;
@@ -393,22 +392,19 @@ public class MusicPlayer extends AppCompatActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mode != 0) {
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                     playNextSong();
-                }
             }
         });
 
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mode != 0) {
                     isPlayingMusic = true;
                     playBtn.setImageResource(android.R.drawable.ic_media_pause);
                     playPrevSong();
-                }
+
             }
         });
 

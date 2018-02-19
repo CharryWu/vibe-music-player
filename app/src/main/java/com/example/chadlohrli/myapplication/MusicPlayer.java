@@ -529,20 +529,25 @@ public class MusicPlayer extends AppCompatActivity {
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         if (lm != null) {
             location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        lat = location.getLatitude();
-        lng = location.getLongitude();
+            if(location != null){
+                lat = location.getLatitude();
+                lng = location.getLongitude();
 
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        try {
-            List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
-                String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                locationTitle.setText(loc_name);
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
+                    if(null!=listAddresses&&listAddresses.size()>0){
+                        String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
+                        locationTitle.setText(loc_name);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                locationTitle.setText("Location not found");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
 
     }
 

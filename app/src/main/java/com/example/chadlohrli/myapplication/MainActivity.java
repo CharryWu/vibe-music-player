@@ -75,10 +75,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void setUpListeners() {
 
-    }
 
+
+
+    //https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime-on-android-6
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
-                        .setTitle("Location Permssion")
+                        .setTitle("Location Permission")
                         .setMessage("Can we use your location?")
                         .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                             @Override
@@ -113,8 +114,10 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
+            canSend = false;
             return false;
         } else {
+            canSend = true;
             return true;
         }
     }

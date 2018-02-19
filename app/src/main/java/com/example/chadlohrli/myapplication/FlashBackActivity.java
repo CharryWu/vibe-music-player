@@ -136,7 +136,7 @@ public class FlashBackActivity extends AppCompatActivity {
 
             //return;
         }
-
+gig
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = 0;
         double lng = 0;

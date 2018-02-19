@@ -29,7 +29,7 @@ public class SharedPrefsTest {
     private float longitude;
     private int day;
     private int time;
-    private int rating;
+    private float rating;
     private int state;
     private int timesPlayed;
     private String lastPlayed;
@@ -67,7 +67,7 @@ public class SharedPrefsTest {
         float savedLongitude = (Float) map.get("Longitude");
         int savedDay = (Integer) map.get("Day");
         int savedTime = (Integer) map.get("Time");
-        int savedRating = (Integer) map.get("Rating");
+        float savedRating = (Float) map.get("Rating");
         int savedState = (Integer) map.get("State");
         int savedTimesPlayed = (Integer) map.get("Times played");
         String savedlastPlayed = (String) map.get("Last played");
@@ -77,7 +77,7 @@ public class SharedPrefsTest {
         assertEquals(longitude, savedLongitude, .1);
         assertEquals(day, savedDay);
         assertEquals(time, savedTime);
-        assertEquals(rating, savedRating);
+        assertEquals(rating, savedRating, .1);
         assertEquals(state, savedState);
         assertEquals(timesPlayed, savedTimesPlayed);
 

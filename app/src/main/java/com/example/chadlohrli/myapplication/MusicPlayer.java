@@ -131,7 +131,8 @@ public class MusicPlayer extends AppCompatActivity {
 
 
         //display song for aesthetics
-        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
+                Toast.LENGTH_SHORT);
         toast.show();
 
         String caller = getIntent().getStringExtra("caller");

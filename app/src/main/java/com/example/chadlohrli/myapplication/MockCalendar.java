@@ -28,7 +28,7 @@ public class MockCalendar extends Calendar {
     @Override
     public int get(int field) {
         if (field == Calendar.HOUR_OF_DAY) {
-            return 5;
+            return 18;
         }
         if (field == Calendar.DAY_OF_WEEK) {
             return Calendar.TUESDAY;

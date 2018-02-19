@@ -42,7 +42,7 @@ public class FlashBackActivityTest {
     @Test
     public void testMatchTimeOfDay() {
         activity.setDateHelper(new MockDateHelper());
-        double result = flashBackActivity.getActivity().matchTimeOfDay(5);
+        double result = flashBackActivity.getActivity().matchTimeOfDay(18);
         assertEquals(2, result, .01);
         result = flashBackActivity.getActivity().matchTimeOfDay(7);
         assertEquals(0, result, .01);

@@ -1,13 +1,10 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -42,7 +39,7 @@ public class SongListActivity extends AppCompatActivity {
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());
 
             /*
-            Map<String,?> map = SharedPrefs.getData(getApplicationContext(),song.getID());
+            Map<String,?> map = SharedPrefs.getSongData(getApplicationContext(),song.getID());
             if(map.get("State") != null){
                 if( ((Integer)map.get("State")).intValue() != state.DISLIKE.ordinal() )
                     sendSongs.add(song);
@@ -69,7 +66,7 @@ public class SongListActivity extends AppCompatActivity {
 
         //if a disliked song is picked, it is no longer disliked
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("State") != null){
            if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
                SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());

@@ -7,14 +7,12 @@ import com.example.chadlohrli.myapplication.SharedPrefs;
 import com.example.chadlohrli.myapplication.SongData;
 import com.example.chadlohrli.myapplication.SongSorter;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -73,8 +71,8 @@ public class SongSorterTest {
         rlastPlayed = "1995.12.21.21.12.32";
         rfave = 0;
 
-        SharedPrefs.saveData(flashBackActivity.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,lstate,timesPlayed, lastPlayed, fave);
-        SharedPrefs.saveData(flashBackActivity.getActivity().getApplicationContext(),rid, rlatitude,rlongitude,rday,rtime,rrating,rstate,rtimesPlayed, rlastPlayed, rfave);
+        SharedPrefs.saveSongData(flashBackActivity.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,lstate,timesPlayed, lastPlayed, fave);
+        SharedPrefs.saveSongData(flashBackActivity.getActivity().getApplicationContext(),rid, rlatitude,rlongitude,rday,rtime,rrating,rstate,rtimesPlayed, rlastPlayed, rfave);
 
         song1 = new SongData(id, "10", "lala", "everglow", "coldplay", "a");
         song2 = new SongData(rid, "12", "lala2", "happier", "ed", "b");

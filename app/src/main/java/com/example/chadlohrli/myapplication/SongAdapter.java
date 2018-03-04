@@ -33,7 +33,7 @@ public class SongAdapter extends BaseAdapter {
     public void checkSongState(SongData song){
 
 
-        Map<String,?> map = SharedPrefs.getData(context,song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(context,song.getID());
 
         if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();

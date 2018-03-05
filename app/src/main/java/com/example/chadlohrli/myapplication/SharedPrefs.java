@@ -16,10 +16,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class SharedPrefs {
 
-    public static void saveData(Context context, String id, float latitude, float longitude, int day, int time, float rating, int state, int timesPlayed, String lastPlayed) {
+    public static void saveSongData(Context context, String id, float latitude, float longitude, int day, int time, float rating, int state, int timesPlayed, String lastPlayed, int fav) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
+
 
         songadd.putFloat("Latitude", latitude);
         songadd.putFloat("Longitude", longitude);
@@ -30,10 +31,11 @@ public class SharedPrefs {
         songadd.putInt("Times played", timesPlayed);
         songadd.putString("Last played", lastPlayed);
         //need this for song sorter
-        songadd.putInt("fav", 0);
-        Log.i("latitude", Float.toString(latitude));
-        Log.i("longitude", Float.toString(longitude));
-        Log.i("Rating", Float.toString(rating));
+        songadd.putInt("fav", fav);
+        //Log.i("latitude", Float.toString(latitude));
+        //Log.i("longitude", Float.toString(longitude));
+        //
+        // Log.i("Rating", Float.toString(rating));
 
         songadd.commit();
 
@@ -65,7 +67,7 @@ public class SharedPrefs {
         songadd.commit();
     }
 
-    public static Map<String, ?> getData(Context context, String id) {
+    public static Map<String, ?> getSongData(Context context, String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);
         return songsList.getAll();

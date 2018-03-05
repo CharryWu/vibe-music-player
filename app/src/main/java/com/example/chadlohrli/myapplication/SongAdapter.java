@@ -33,7 +33,7 @@ public class SongAdapter extends BaseAdapter {
     public void checkSongState(SongData song){
 
 
-        Map<String,?> map = SharedPrefs.getData(context,song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(context,song.getID());
 
         if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();
@@ -58,6 +58,8 @@ public class SongAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return 0;
     }
+
+    public int getSongState() {return this.songState;}
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {

@@ -39,8 +39,8 @@ public class SongSorter implements Comparator<SongData> {
         int lfav = lpref.getInt("fav", 0);
         int rfav = rpref.getInt("fav", 0);
 
-        /*Map<String,?> lpref = SharedPrefs.getData(curContext,lid);
-        Map<String,?> rpref = SharedPrefs.getData(curContext,rid);
+        /*Map<String,?> lpref = SharedPrefs.getSongData(curContext,lid);
+        Map<String,?> rpref = SharedPrefs.getSongData(curContext,rid);
 
         double lrate = (Double) lpref.get("Rating");
         double rrate = (Double) rpref.get("Rating");
@@ -70,4 +70,5 @@ public class SongSorter implements Comparator<SongData> {
         }
         return 1;
     }
+
 }

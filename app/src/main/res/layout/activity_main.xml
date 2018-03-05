@@ -7,6 +7,19 @@
     tools:context="com.example.chadlohrli.myapplication.MainActivity"
     tools:layout_editor_absoluteY="81dp">
 
+    <Button
+        android:id="@+id/signout_btn"
+        android:layout_width="72dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="460dp"
+        android:text="sign out"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.921"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
     <ImageButton
         android:id="@+id/flashback_button"
         android:layout_width="151dp"

@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         //grab all accounts associated with this phone
         AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
         Account[] list = manager.getAccounts();
-        Log.i("Accounts",list[0].toString());
+        //Log.i("Accounts",list[0].toString());
 
         //TODO google+ API to fetch friend list
 

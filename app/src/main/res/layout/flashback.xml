@@ -24,9 +24,15 @@
 
     <TextView
         android:id="@+id/textView"
+<<<<<<< HEAD
         android:layout_width="138dp"
         android:layout_height="33dp"
         android:text="Flashback Mix"
+=======
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vibe Mode"
+>>>>>>> 6a48b50d2081d79afb11ca1623ad9ec37b809053
         android:textColor="#000000"
         android:textSize="10pt"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -2,8 +2,11 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -17,6 +20,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     private ArrayList<SongData> madeSongs;
     private ArrayList<Album> albumArray;
+    private BottomNavigationView bottomNav;
 
     public ArrayList<SongData> createSongs() {
 
@@ -54,28 +58,28 @@ public class AlbumActivity extends AppCompatActivity {
             SongData songToAdd = songs.get(i);
             boolean matchFound = false;
             if (i == 0) {
-                Log.d("first song: building new album for ", songToAdd.getAlbum());
+                //Log.d("first song: building new album for ", songToAdd.getAlbum());
                 ArrayList<SongData> list = new ArrayList<SongData>();
                 Album firstElement = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                 firstElement.getSongs().add(songToAdd);
-                Log.d("first song: added song to album", songToAdd.getTitle());
+                //Log.d("first song: added song to album", songToAdd.getTitle());
                 albumArrayList.add(firstElement);
             } else {
                 for (int j = 0; j < albumArrayList.size(); j++) {
                     if (songToAdd.getAlbum().equals(albumArrayList.get(j).getAlbumTitle())) {
-                        Log.d("album exists for ", songToAdd.getAlbum());
+                        //Log.d("album exists for ", songToAdd.getAlbum());
                         obj = albumArrayList.get(j);
                         obj.getSongs().add(songToAdd);
-                        Log.d("adding to song list ", songToAdd.getTitle());
+                        //Log.d("adding to song list ", songToAdd.getTitle());
                         matchFound = true;
                     }
                 }
                 if (!matchFound) {
-                    Log.d("building new album for ", songToAdd.getAlbum());
+                    //Log.d("building new album for ", songToAdd.getAlbum());
                     ArrayList<SongData> list = new ArrayList<SongData>();
                     Album object = new Album(songToAdd.getAlbum(), songToAdd.getArtist(), list);
                     object.getSongs().add(songToAdd);
-                    Log.d("adding song to album ", songToAdd.getTitle());
+                    //Log.d("adding song to album ", songToAdd.getTitle());
                     albumArrayList.add(object);
                 }
             }
@@ -105,6 +109,25 @@ public class AlbumActivity extends AppCompatActivity {
 
         madeSongs = createSongs();
         albumArray = buildAlbums(madeSongs);
+
+        bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.download:
+                        Intent searchIntent = new Intent(AlbumActivity.this, DownloadActivity.class);
+                        AlbumActivity.this.startActivity(searchIntent);
+                        break;
+                    case R.id.my_library:
+                        Intent homeIntent = new Intent(AlbumActivity.this, MainActivity.class);
+                        AlbumActivity.this.startActivity(homeIntent);
+                        break;
+                }
+                return true;
+            }
+        });
 
         GridView gridView = (GridView) findViewById(R.id.gv);
         AlbumAdapter customGrid = new AlbumAdapter(this, R.layout.row_grid, albumArray);

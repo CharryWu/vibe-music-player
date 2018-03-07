@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/my_library"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:checked="true"
+        android:icon="@drawable/my_library"
+        android:title="My Library"
+        android:visible="true" />
+
+
+    <item
+        android:id="@+id/download"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:checked="true"
+        android:icon="@drawable/download"
+        android:title="Download"
+        android:visible="true" />
+
+</menu>

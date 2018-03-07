@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.chadlohrli.myapplication"
@@ -45,7 +45,11 @@ dependencies {
     compile 'com.google.apis:google-api-services-people:v1-rev239-1.23.0'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
     testCompile 'junit:junit:4.12'
+<<<<<<< HEAD
+    implementation 'com.android.support:design:27.1.0'
+=======
 
+>>>>>>> 22701cee11d4a4158b035d1e8db42c0a2f747f97
 }
 
 

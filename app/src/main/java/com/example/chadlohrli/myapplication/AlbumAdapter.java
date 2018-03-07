@@ -25,6 +25,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
+
     }
 
 

@@ -14,13 +14,19 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+
 import android.provider.Contacts;
 import android.support.annotation.NonNull;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -70,10 +76,47 @@ public class MainActivity extends AppCompatActivity {
     String time;
     private ArrayList<SongData> completeList = new ArrayList<SongData>();
 
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onStart(){
         super.onStart();
+
+        LocationHelper.getLatLong(getApplicationContext());
+
+        SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
+        Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), "last song");
+        String title = lp.getString("song", "");
+        TextView song = (TextView)findViewById(R.id.location);
+
+        if(title.isEmpty()) {
+            song.setText("No song played yet");
+            return;
+        }
+
+        Object t = map.get("Last played");
+
+        double lt = (double)lp.getFloat("Latitude", 0);
+        double lng2 = (double)lp.getFloat("Longitude", 0);
+
+        //Log.i("song last played", title);
+        if(t != null) {
+            time = t.toString();
+        }
+        song.setText(title);
+        TextView deets = (TextView)findViewById(R.id.place_loc_date) ;
+
+        //get song's location
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation((double)lt,(double) lng2, 1);
+            if(null!=listAddresses&&listAddresses.size()>0){
+                loc_name = "Last Played Location: " + listAddresses.get(0).getAddressLine(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        deets.setText(loc_name + " at " + time);
         setLastPlayed();
     }
 
@@ -99,6 +142,25 @@ public class MainActivity extends AppCompatActivity {
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
+        bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.download:
+                        if(canSend) {
+                            Intent searchIntent = new Intent(MainActivity.this, DownloadActivity.class);
+                            MainActivity.this.startActivity(searchIntent);
+                        }
+                        else {
+                            checkLocationPermission();
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
 
         songButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         findViewById(R.id.signout_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
         Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), "last song");
         String title = lp.getString("song", "");
-        TextView song = (TextView)findViewById(R.id.textView2);
+        TextView song = (TextView)findViewById(R.id.location);
 
         if(title.isEmpty()) {
             song.setText("No song played yet");
@@ -236,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             time = t.toString();
         }
         song.setText(title);
-        TextView deets = (TextView)findViewById(R.id.textView3) ;
+        TextView deets = (TextView)findViewById(R.id.place_loc_date) ;
 
         //get song's location
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -258,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
         //grab all accounts associated with this phone
         AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
         Account[] list = manager.getAccounts();
-        Log.i("Accounts",list[0].toString());
+        //Log.i("Accounts",list[0].toString());
 
         //TODO google+ API to fetch friend list
 

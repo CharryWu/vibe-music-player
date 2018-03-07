@@ -2,11 +2,22 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
@@ -16,12 +27,14 @@ import java.util.Comparator;
 import java.util.Map;
 
 
-public class SongListActivity extends AppCompatActivity {
+public class SongListActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ListView listView;
     private ArrayList<SongData> songs;
     private ArrayList<SongData> sendSongs;
     private int songState;
     private Button undislikeBtn;
+    private BottomNavigationView bottomNav;
+    private Spinner spinner;
 
 
     public ArrayList<SongData> createSongs() {
@@ -89,6 +102,7 @@ public class SongListActivity extends AppCompatActivity {
         SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
         undislikeBtn = view.findViewById(R.id.undislikeBtn);
         undislikeBtn.setVisibility(View.INVISIBLE);
+        Log.d("song disliked", song.getTitle());
         Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
         toast.show();
     }
@@ -105,7 +119,35 @@ public class SongListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.songlist);
 
+        bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.download:
+                        Intent searchIntent = new Intent(SongListActivity.this, DownloadActivity.class);
+                        SongListActivity.this.startActivity(searchIntent);
+                        break;
+                    case R.id.my_library:
+                        Intent homeIntent = new Intent(SongListActivity.this, MainActivity.class);
+                        SongListActivity.this.startActivity(homeIntent);
+                        break;
+                }
+                return true;
+            }
+        });
+
         songs = createSongs();
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drop_down, R.layout.support_simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(this);
+
+
 
     }
 
@@ -120,8 +162,80 @@ public class SongListActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        switch(i) {
+            case 0:
+                Collections.sort(songs, new Comparator<SongData>() {
+                    @Override
+                    public int compare(SongData a, SongData b) {
+                        return a.getTitle().compareTo(b.getTitle());
+                    }
+                });
+                SongAdapter songadt1 = new SongAdapter(this, songs);
+                listView.setAdapter(songadt1);
+                break;
+            case 1:
+                Collections.sort(songs, new Comparator<SongData>() {
+                    @Override
+                    public int compare(SongData a, SongData b) {
+                        return a.getArtist().compareTo(b.getArtist());
+                    }
+                });
+                SongAdapter songadt2 = new SongAdapter(this, songs);
+                listView.setAdapter(songadt2);
+                break;
+            case 2:
+                Collections.sort(songs, new Comparator<SongData>() {
+                    @Override
+                    public int compare(SongData a, SongData b) {
+                        return a.getAlbum().compareTo(b.getAlbum());
+                    }
+                });
+                SongAdapter songadt3 = new SongAdapter(this, songs);
+                listView.setAdapter(songadt3);
+                break;
+            case 3:
+                // TODO: 3/6/18  SORT SONGS BASED ON FAVORITE: SORTING NOW AS FAVORITE, DISLIKED, NEUTRAL
+                Collections.sort(songs, new Comparator<SongData>() {
+                    @Override
+                    public int compare(SongData a, SongData b) {
+                        int songStateA;
+                        int songStateB;
+                        Map<String,?> map = SharedPrefs.getSongData(getApplicationContext(), a.getID());
+                        Map<String,?> map1 = SharedPrefs.getSongData(getApplicationContext(), b.getID());
 
+                        if(map.get("State") != null){
+                            songStateA = ((Integer) map.get("State")).intValue();
+                        }else{
+                            songStateA = state.NEUTRAL.ordinal();
+                        }
 
+                        if(map1.get("State") != null){
+                            songStateB = ((Integer) map1.get("State")).intValue();
+                        }else{
+                            songStateB = state.NEUTRAL.ordinal();
+                        }
 
+                        if (songStateA < songStateB) {
+                            return 1;
+                        }
+                        else if (songStateA > songStateB) {
+                            return -1;
+                        }
+                        return a.getTitle().compareTo(b.getTitle());
+                    }
+                });
+                SongAdapter songadt4 = new SongAdapter(this, songs);
+                listView.setAdapter(songadt4);
+                break;
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        //empty because spinner selections will never disappear
+    }
 }
 

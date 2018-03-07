@@ -13,4 +13,6 @@ public class SongProgressFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_song_progress, container, false);
     }
+
+
 }

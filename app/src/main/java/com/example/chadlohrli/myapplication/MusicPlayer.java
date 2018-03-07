@@ -138,6 +138,8 @@ public class MusicPlayer extends AppCompatActivity {
         //initLocation();
 
 
+
+
     }
 
     public void setDateHelper(DateHelper dateHelper) {

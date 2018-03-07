@@ -83,18 +83,6 @@ public class PickedAlbumActivity extends AppCompatActivity {
         albumCover.setImageBitmap(SongParser.albumCover(songs.get(0), getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());
-/*
-        int song = getIntent().getIntExtra("SONGPLAYING", -1);
-        if (song != -1) {
-            Log.d("YES", "we here");
-            SongProgressFragment fragment = new SongProgressFragment();
-            SongData songToShow = songs.get(song);
-            fragment.newInstance(songToShow.getTitle(), songToShow.getArtist());
-            layout = (FrameLayout) findViewById(R.id.frameLayout);
-            layout.setVisibility(View.VISIBLE);
-        }
- */
-
 
 
 

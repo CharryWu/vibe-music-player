@@ -136,7 +136,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
         //if a disliked song is picked, it is no longer disliked
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("State") != null){
             if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
                 SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());

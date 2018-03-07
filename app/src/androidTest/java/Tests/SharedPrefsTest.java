@@ -62,9 +62,9 @@ public class SharedPrefsTest {
         timesPlayed = 3;
         lastPlayed = "1995.12.21.21.12.32";
         fave = 0;
-        SharedPrefs.saveData(musicPlayerRule.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,state,timesPlayed, lastPlayed, fave);
+        SharedPrefs.saveSongData(musicPlayerRule.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,state,timesPlayed, lastPlayed, fave);
 
-        Map<String, ?> map = SharedPrefs.getData(musicPlayerRule.getActivity().getApplicationContext(), id);
+        Map<String, ?> map = SharedPrefs.getSongData(musicPlayerRule.getActivity().getApplicationContext(), id);
         float savedLatitude = (Float) map.get("Latitude");
         float savedLongitude = (Float) map.get("Longitude");
         int savedDay = (Integer) map.get("Day");
@@ -88,7 +88,7 @@ public class SharedPrefsTest {
     @Test
     public void testUpdateFavorite() {
         SharedPrefs.updateFavorite(musicPlayerRule.getActivity().getApplicationContext(), id, 1);
-        Map<String, ?> map = SharedPrefs.getData(musicPlayerRule.getActivity().getApplicationContext(), id);
+        Map<String, ?> map = SharedPrefs.getSongData(musicPlayerRule.getActivity().getApplicationContext(), id);
         int savedState = (Integer)map.get("State");
         assertEquals(1, savedState);
 

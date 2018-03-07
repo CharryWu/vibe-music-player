@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -23,10 +22,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -46,8 +43,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 ;
 //int timesPlayed;
@@ -237,7 +232,7 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void checkSongState(SongData song){
 
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
 
         if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();
@@ -328,14 +323,14 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void saveSong(SongData song) {
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
             timesPlayed++;
         }
 
-        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
+        SharedPrefs.saveSongData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
 
     }
 

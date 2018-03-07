@@ -7,4 +7,6 @@
         <item>Sort By Album</item>
         <item>Sort By Favorites</item>
     </string-array>
+
+    <string name="client_id"></string>
 </resources>

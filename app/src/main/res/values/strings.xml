@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">My Application</string>
+
+    <string-array name="drop_down">
+        <item>Sort By Title</item>
+        <item>Sort By Artist</item>
+        <item>Sort By Album</item>
+        <item>Sort By Favorites</item>
+    </string-array>
 </resources>

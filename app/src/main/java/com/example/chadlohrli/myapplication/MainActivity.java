@@ -11,11 +11,14 @@ import android.content.pm.PackageManager;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     String time;
     private ArrayList<SongData> completeList = new ArrayList<SongData>();
 
+    private BottomNavigationView bottomNav;
+
     @Override
     protected void onStart(){
         super.onStart();
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
         Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), "last song");
         String title = lp.getString("song", "");
-        TextView song = (TextView)findViewById(R.id.textView2);
+        TextView song = (TextView)findViewById(R.id.location);
 
         if(title.isEmpty()) {
             song.setText("No song played yet");
@@ -73,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             time = t.toString();
         }
         song.setText(title);
-        TextView deets = (TextView)findViewById(R.id.textView3) ;
+        TextView deets = (TextView)findViewById(R.id.place_loc_date) ;
 
         //get song's location
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -99,6 +104,25 @@ public class MainActivity extends AppCompatActivity {
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
+        bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.download:
+                        if(canSend) {
+                            Intent searchIntent = new Intent(MainActivity.this, DownloadActivity.class);
+                            MainActivity.this.startActivity(searchIntent);
+                        }
+                        else {
+                            checkLocationPermission();
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
 
         songButton.setOnClickListener(new View.OnClickListener() {
             @Override

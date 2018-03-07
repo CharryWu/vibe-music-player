@@ -138,13 +138,12 @@ public class MusicPlayer extends AppCompatActivity {
         //initLocation();
 
 
-
-
     }
 
     public void setDateHelper(DateHelper dateHelper) {
         this.dateHelper = dateHelper;
     }
+
 
     // -- inner class variables -- //
     private ServiceConnection musicConnection = new ServiceConnection(){

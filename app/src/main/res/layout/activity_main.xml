@@ -54,9 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/song_button" />
-     />
-
-
+    " />
 
     <TextView
         android:id="@+id/location"

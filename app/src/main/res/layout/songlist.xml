@@ -8,6 +8,7 @@
     tools:context="com.example.chadlohrli.myapplication.SongListActivity"
     tools:layout_editor_absoluteY="81dp">
 
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -55,6 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
 
 
 </android.support.constraint.ConstraintLayout>

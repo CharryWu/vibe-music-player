@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/CSE110.iml" filepath="$PROJECT_DIR$/CSE110.iml" />
-      <module fileurl="file://C:\Users\Kartik\Desktop\cse-110-team-project-team-5\CSE110.iml" filepath="C:\Users\Kartik\Desktop\cse-110-team-project-team-5\CSE110.iml" />
+=======
+>>>>>>> 22701cee11d4a4158b035d1e8db42c0a2f747f97
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cse-110-team-project-team-5.iml" filepath="$PROJECT_DIR$/cse-110-team-project-team-5.iml" />
     </modules>
   </component>
 </project>

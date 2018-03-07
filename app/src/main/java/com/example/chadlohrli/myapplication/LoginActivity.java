@@ -89,11 +89,13 @@ public class LoginActivity extends AppCompatActivity {
             myRef.child("users").child(id).child("username").setValue(name);
             myRef.child("users").child(id).child("email").setValue(email);
 
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            LoginActivity.this.startActivity(intent);
+
         }
 
 
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        LoginActivity.this.startActivity(intent);
+
 
 
 

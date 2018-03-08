@@ -33,7 +33,7 @@ public class SongAdapter extends BaseAdapter {
     public void checkSongState(SongData song){
 
 
-        Map<String,?> map = SharedPrefs.getData(context,song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(context,song.getID());
 
         if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();
@@ -70,6 +70,8 @@ public class SongAdapter extends BaseAdapter {
         //get title and artist views
         TextView songView = (TextView) songLay.findViewById(R.id.song_title);
         TextView artistView = (TextView) songLay.findViewById(R.id.song_artist);
+
+
         Button undislikeBtn = (Button) songLay.findViewById(R.id.undislikeBtn);
         undislikeBtn.setVisibility(View.INVISIBLE);
         //get song using position
@@ -82,7 +84,9 @@ public class SongAdapter extends BaseAdapter {
         }
         //get title and artist strings
         songView.setText(currSong.getTitle());
-        artistView.setText(currSong.getArtist());
+        String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();
+        artistView.setText(songAndAlbum);
+
         //set position as tag
         songLay.setTag(i);
         undislikeBtn.setTag(i);

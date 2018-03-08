@@ -87,7 +87,7 @@ public class SongParser {
             }else if(song_length == null){
                 song_length = "";
             }else if(song_artist == null){
-                song_artist = "Unkown Artist";
+                song_artist = "Unknown Artist";
             }
 
 

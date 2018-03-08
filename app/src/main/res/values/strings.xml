@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">My Application</string>
+
+    <string-array name="drop_down">
+        <item>Sort By Title</item>
+        <item>Sort By Artist</item>
+        <item>Sort By Album</item>
+        <item>Sort By Favorites</item>
+    </string-array>
+
+    <string name="client_id">25677911820-o69qhi2erbibj3kh6n6klf9g3o6jorm8.apps.googleusercontent.com</string>
 </resources>

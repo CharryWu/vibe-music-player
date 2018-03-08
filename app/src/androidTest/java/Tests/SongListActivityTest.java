@@ -44,20 +44,7 @@ public class SongListActivityTest {
 
     @Test
     public void testCreateSongs() {
-        String songMade;
-        String songRaw;
-        boolean songMatch = true;
-
         Field[] fields = R.raw.class.getFields();
-        for (int i = 0; i < fields.length; i++) {
-            songMade = songs.get(i).getTitle().toLowerCase().replaceAll("\\s", "");
-            songMade = songMade.replace("'", "");
-            songRaw = fields[i].getName().toLowerCase().replaceAll("_", "");
-            if (!songRaw.equals(songMade)) {
-                songMatch = false;
-            }
-        }
-        assertTrue(songMatch);
         assertEquals(fields.length, songs.size());
     }
     @Test

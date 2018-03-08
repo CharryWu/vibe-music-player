@@ -31,6 +31,7 @@ public class SongAdapterTest {
     private int lstate;
     private int timesPlayed;
     private String lastPlayed;
+    private int fave;
     private String rid;
     private float rlatitude;
     private float rlongitude;
@@ -40,6 +41,7 @@ public class SongAdapterTest {
     private int rstate;
     private int rtimesPlayed;
     private String rlastPlayed;
+    private int rfave;
 
     @Rule
     public ActivityTestRule<SongListActivity> songListActivity = new ActivityTestRule<SongListActivity>(SongListActivity.class);
@@ -55,6 +57,7 @@ public class SongAdapterTest {
         lstate = state.NEUTRAL.ordinal();
         timesPlayed = 3;
         lastPlayed = "1995.12.21.21.12.32";
+        fave = 0;
         rid = "hymnfortheweekend";
         rlatitude = (float) 32.927315;
         rlongitude = (float) -117.102829;
@@ -64,9 +67,10 @@ public class SongAdapterTest {
         rstate = state.DISLIKE.ordinal();
         rtimesPlayed = 3;
         rlastPlayed = "1995.12.21.21.12.32";
+        rfave = 0;
 
-        SharedPrefs.saveData(songListActivity.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,lstate,timesPlayed, lastPlayed);
-        SharedPrefs.saveData(songListActivity.getActivity().getApplicationContext(),rid, rlatitude,rlongitude,rday,rtime,rrating,rstate,rtimesPlayed, rlastPlayed);
+        SharedPrefs.saveSongData(songListActivity.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,lstate,timesPlayed, lastPlayed, fave);
+        SharedPrefs.saveSongData(songListActivity.getActivity().getApplicationContext(),rid, rlatitude,rlongitude,rday,rtime,rrating,rstate,rtimesPlayed, rlastPlayed, rfave);
 
         song1 = new SongData(id, "10", "lala", "everglow", "coldplay", "a");
         song2 = new SongData(rid, "12", "lala2", "happier", "ed", "b");

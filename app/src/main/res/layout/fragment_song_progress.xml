@@ -1,0 +1,55 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@color/colorPrimary"
+    tools:context="com.example.chadlohrli.myapplication.SongProgressFragment">
+
+    <Button
+        android:id="@+id/carrot"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginEnd="84dp"
+        android:layout_marginStart="49dp"
+        android:layout_marginTop="7dp"
+        android:text="\u2303"
+        android:textSize="25dp"
+        android:textColor="@android:color/white"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/song_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444" />
+
+    <TextView
+        android:id="@+id/song_title"
+        android:layout_width="119dp"
+        android:layout_height="17dp"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="82dp"
+        android:layout_marginTop="7dp"
+        android:text="NULL FOR NOW"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/artist_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/carrot"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="119dp"
+        android:layout_height="17dp"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="19dp"
+        android:layout_marginStart="2dp"
+        android:text="NULL FOR NOW"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/song_title"
+        app:layout_constraintTop_toBottomOf="@+id/song_title"/>
+
+</android.support.constraint.ConstraintLayout>

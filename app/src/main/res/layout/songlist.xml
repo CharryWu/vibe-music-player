@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context="com.example.chadlohrli.myapplication.SongListActivity">
 
+
+    <ListView
+        android:id="@+id/songlist"
+        android:layout_width="338dp"
+        android:layout_height="425dp"
+        android:layout_marginBottom="68dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+    </ListView>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -17,19 +30,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.033" />
-
-
-    <ListView
-        android:id="@+id/songlist"
-        android:layout_width="338dp"
-        android:layout_height="422dp"
-        android:layout_marginBottom="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-    </ListView>
+        app:layout_constraintVertical_bias="0.966" />
 
 
 </android.support.constraint.ConstraintLayout>

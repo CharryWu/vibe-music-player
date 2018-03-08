@@ -86,6 +86,17 @@ public class FlashBackActivity extends AppCompatActivity {
         return 0;
     }
 
+    public double matchWeek(double songDate) {
+        int date = dateHelper.getCalendar().get(Calendar.WEEK_OF_YEAR);
+
+        if((int)songDate == day) {
+            return 2;
+        }
+        return 0;
+    }
+
+
+
 
     public double matchDay(double songDate) {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);

@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button songButton;
     Button albumButton;
+    Button downloadButton;
     private boolean canSend = false;
 
     ImageButton flashBackButton;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
+        downloadButton = (Button) findViewById(R.id.download);
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
 
         songButton.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +77,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DownloadTestActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
+
     }
 
 

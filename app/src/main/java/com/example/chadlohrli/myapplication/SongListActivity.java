@@ -90,7 +90,6 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", songs);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
-        intent.putExtra("caller", "SongListActivity");
 
         SongListActivity.this.startActivity(intent);
     }

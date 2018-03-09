@@ -1,6 +1,7 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.provider.Contacts;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,9 +13,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.services.people.v1.PeopleService;
+import com.google.api.services.people.v1.model.ListConnectionsResponse;
+import com.google.api.services.people.v1.model.Person;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,12 +31,16 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.net.URL;
+import java.util.List;
+
 public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private String TAG = "Google";
+    private String serverAuth = "";
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
@@ -43,10 +55,12 @@ public class LoginActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.client_id))
                 .requestEmail()
+                .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
+
 
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,14 +70,30 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+
     }
 
+    /*
+    private void GFriends() {
+        List<Person> connections = null;
+        try{
+            PeopleService peopleService = PeopleAuth.setUp(LoginActivity.this, serverAuth);
+            ListConnectionsResponse response = peopleService.people().connections()
+                    .list("people/me")
+                    .setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers")
+                    .execute();
+            response.getConnections();
+        }catch(Exception e){}
+        Log.i(TAG,String.valueOf(connections.size()));
+    }
+    */
 
     @Override
     protected void onStart(){
         super.onStart();
         //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if(currentUser != null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(intent);
@@ -89,12 +119,11 @@ public class LoginActivity extends AppCompatActivity {
             myRef.child("users").child(id).child("username").setValue(name);
             myRef.child("users").child(id).child("email").setValue(email);
 
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            LoginActivity.this.startActivity(intent);
+
+
         }
-
-
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        LoginActivity.this.startActivity(intent);
-
 
 
     }
@@ -126,13 +155,18 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
+
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.i("Failed", "Google sign in failed");
+                Log.i("Failed", e.getMessage());
                 // ...
+                findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
             }
             //handleSignInResult(task);
         }
+
+
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -148,7 +182,6 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
-                            findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -159,13 +192,15 @@ public class LoginActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+        //findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
     }
+
+
 
     /*
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {

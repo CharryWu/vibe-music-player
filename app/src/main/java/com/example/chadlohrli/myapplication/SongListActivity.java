@@ -1,9 +1,14 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -20,6 +25,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,16 +43,28 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
     private Spinner spinner;
 
 
+
+
     public ArrayList<SongData> createSongs() {
 
-        Field[] fields = R.raw.class.getFields();
+
+
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        Log.v("Files",musicDirectory.exists()+"");
+        Log.v("Files",musicDirectory.isDirectory()+"");
+        Log.v("Files",musicDirectory.listFiles()+"");
+        File[] fields = musicDirectory.listFiles();
+        //int s = files.length;
+        //files[0].getName();
+
+        //Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
         for (int count = 0; count < fields.length; count++) {
 
             Log.i("Raw Asset:", fields[count].getName());
-
-            String path = "android.resource://" + getPackageName() + "/raw/";
+            //String path = "android.resource://" + getPackageName() + "/raw/";
+            String path  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
             String Id = fields[count].getName();
 
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());

@@ -47,8 +47,4 @@ public class SongListActivityTest {
         Field[] fields = R.raw.class.getFields();
         assertEquals(fields.length, songs.size());
     }
-    @Test
-    public void testButtonState() {
-
-    }
 }

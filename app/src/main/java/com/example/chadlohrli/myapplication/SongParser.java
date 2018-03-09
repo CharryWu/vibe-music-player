@@ -68,7 +68,7 @@ public class SongParser {
 
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
-            song_path = path + Id;
+            song_path = path + "/" + Id;
 
             Uri uri = Uri.parse(song_path);
             mmr.setDataSource(context, uri);

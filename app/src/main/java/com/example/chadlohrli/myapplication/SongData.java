@@ -1,12 +1,15 @@
 package com.example.chadlohrli.myapplication;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by sungeun on 2/9/18.
  */
 
-public class SongData implements Serializable {
+public class SongData implements Serializable, Parcelable {
 
     private String id;
     private String song_length;
@@ -26,6 +29,27 @@ public class SongData implements Serializable {
         song_path = songPath;
         //album_image = albumImage;
     }
+
+    protected SongData(Parcel in) {
+        id = in.readString();
+        song_length = in.readString();
+        album_title = in.readString();
+        song_title = in.readString();
+        song_artist = in.readString();
+        song_path = in.readString();
+    }
+
+    public static final Creator<SongData> CREATOR = new Creator<SongData>() {
+        @Override
+        public SongData createFromParcel(Parcel in) {
+            return new SongData(in);
+        }
+
+        @Override
+        public SongData[] newArray(int size) {
+            return new SongData[size];
+        }
+    };
 
     public String getID() {
         return id;
@@ -50,6 +74,22 @@ public class SongData implements Serializable {
     public String getPath() {
         return song_path;
     }
+
     //public Bitmap getImage() {return album_image;}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(song_length);
+        dest.writeString(album_title);
+        dest.writeString(song_title);
+        dest.writeString(song_artist);
+        dest.writeString(song_path);
+    }
 
 }

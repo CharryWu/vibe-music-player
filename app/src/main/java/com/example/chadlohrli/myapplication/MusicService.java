@@ -67,7 +67,6 @@ MediaPlayer.OnCompletionListener {
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d("COMPLETED", songs.get(cur_song).getTitle());
         Intent RTReturn = new Intent(MusicPlayer.SONG_FINISHED);
         RTReturn.putExtra("hi", "song finished");
         LocalBroadcastManager.getInstance(this).sendBroadcast(RTReturn);

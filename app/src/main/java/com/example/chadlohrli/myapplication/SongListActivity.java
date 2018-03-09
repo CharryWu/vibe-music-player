@@ -1,9 +1,14 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -20,6 +25,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,16 +43,28 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
     private Spinner spinner;
 
 
+
+
     public ArrayList<SongData> createSongs() {
 
-        Field[] fields = R.raw.class.getFields();
+
+
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        Log.v("Files",musicDirectory.exists()+"");
+        Log.v("Files",musicDirectory.isDirectory()+"");
+        Log.v("Files",musicDirectory.listFiles()+"");
+        File[] fields = musicDirectory.listFiles();
+        //int s = files.length;
+        //files[0].getName();
+
+        //Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
         for (int count = 0; count < fields.length; count++) {
 
             Log.i("Raw Asset:", fields[count].getName());
-
-            String path = "android.resource://" + getPackageName() + "/raw/";
+            //String path = "android.resource://" + getPackageName() + "/raw/";
+            String path  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
             String Id = fields[count].getName();
 
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());
@@ -90,22 +108,21 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         Intent intent = new Intent(SongListActivity.this, MusicPlayer.class);
         intent.putExtra("SONGS", songs);
         intent.putExtra("CUR", Integer.parseInt(view.getTag().toString()));
-        intent.putExtra("caller", "SongListActivity");
 
         SongListActivity.this.startActivity(intent);
     }
 
-    public void dislikeAction(View view){
 
+    public void dislikeAction(View view){
         Log.d("TAG",view.getTag().toString());
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
         SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
         undislikeBtn = view.findViewById(R.id.undislikeBtn);
         undislikeBtn.setVisibility(View.INVISIBLE);
-        Log.d("song disliked", song.getTitle());
         Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
         toast.show();
     }
+
 
 
     @Override
@@ -196,7 +213,6 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
                 listView.setAdapter(songadt3);
                 break;
             case 3:
-                // TODO: 3/6/18  SORT SONGS BASED ON FAVORITE: SORTING NOW AS FAVORITE, DISLIKED, NEUTRAL
                 Collections.sort(songs, new Comparator<SongData>() {
                     @Override
                     public int compare(SongData a, SongData b) {

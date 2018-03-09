@@ -167,7 +167,6 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void dislikeAction(View view){
-
         Log.d("TAG",view.getTag().toString());
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
         SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
@@ -278,7 +277,6 @@ public class MusicPlayer extends AppCompatActivity {
             favBtn.setBackgroundColor(Color.GREEN);
             fav = 1;
         }
-
     }
 
     public void checkSongState(SongData song){
@@ -313,6 +311,7 @@ public class MusicPlayer extends AppCompatActivity {
             }
         }
 
+        updateFragment();
         Log.d("Songs size",String.valueOf(songs.size()));
 
         musicService.setCurrentSong(cur_song);
@@ -324,7 +323,6 @@ public class MusicPlayer extends AppCompatActivity {
         edit.putFloat("Latitude", (float)lat);
         edit.putFloat("Longitude", (float)lng);
         edit.putString("Last played", timeStamp);
-        updateFragment();
 
         edit.apply();
 
@@ -500,9 +498,6 @@ public class MusicPlayer extends AppCompatActivity {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-
-
-
                     Log.d("TEST", "onDoubleTap");
                     if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.DISLIKE.ordinal();

@@ -94,8 +94,8 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         SongListActivity.this.startActivity(intent);
     }
 
-    public void dislikeAction(View view){
 
+    public void dislikeAction(View view){
         Log.d("TAG",view.getTag().toString());
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
         SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
@@ -104,6 +104,7 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
         toast.show();
     }
+
 
 
     @Override
@@ -194,7 +195,6 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
                 listView.setAdapter(songadt3);
                 break;
             case 3:
-                // TODO: 3/6/18  SORT SONGS BASED ON FAVORITE: SORTING NOW AS FAVORITE, DISLIKED, NEUTRAL
                 Collections.sort(songs, new Comparator<SongData>() {
                     @Override
                     public int compare(SongData a, SongData b) {

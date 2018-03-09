@@ -12,17 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class SongProgressFragment extends Fragment {
 
@@ -31,7 +25,6 @@ public class SongProgressFragment extends Fragment {
     private SongAdapter songadt;
     private Button carrot;
     private boolean viewUp = false;
-    private Button undislikeBtn;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

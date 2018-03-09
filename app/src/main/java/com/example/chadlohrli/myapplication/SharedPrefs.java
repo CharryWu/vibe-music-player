@@ -42,7 +42,6 @@ public class SharedPrefs {
     }
 
     public static void updateFavorite(Context context, String id, int songState) {
-
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("State", songState);

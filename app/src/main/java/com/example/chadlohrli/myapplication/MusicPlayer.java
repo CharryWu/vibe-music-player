@@ -251,12 +251,6 @@ public class MusicPlayer extends AppCompatActivity {
         musicService = null;
         super.onDestroy();
         unbindService(musicConnection);
-
-        /*
-        Intent intent = new Intent();
-        intent.putExtra("SONGPLAYING", cur_song);
-        this.startActivity(intent);
-         **/
     }
 
 

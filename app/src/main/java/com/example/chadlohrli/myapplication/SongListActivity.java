@@ -49,13 +49,13 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
 
 
 
-        File musicDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                .getAbsolutePath());
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files",musicDirectory.exists()+"");
         Log.v("Files",musicDirectory.isDirectory()+"");
         Log.v("Files",musicDirectory.listFiles()+"");
         File[] files = musicDirectory.listFiles();
         int s = files.length;
+        files[0].getName();
 
         Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();

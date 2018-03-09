@@ -39,8 +39,7 @@ public class DownloadActivity extends AppCompatActivity {
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
 
-            File musicDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                    .getAbsolutePath());
+            File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
             Log.v("Files",musicDirectory.exists()+"");
             Log.v("Files",musicDirectory.isDirectory()+"");
             Log.v("Files",musicDirectory.listFiles()+"");
@@ -96,8 +95,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     public void download(String url) {
         //http://soundbible.com/grab.php?id=2200&type=mp3
-        File musicDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                .getAbsolutePath());
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files",musicDirectory.exists()+"");
         Log.v("Files",musicDirectory.isDirectory()+"");
         Log.v("Files",musicDirectory.listFiles()+"");
@@ -111,7 +109,8 @@ public class DownloadActivity extends AppCompatActivity {
 
         request.setDescription("Downloading Song");
 
-        request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC, "test.mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, "test.mp3");
+
         request.allowScanningByMediaScanner();
         request.setMimeType("audio/MP3");
         downloadManager.enqueue(request);

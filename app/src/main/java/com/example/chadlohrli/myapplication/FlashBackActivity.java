@@ -9,30 +9,24 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.Fragment;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.text.SimpleDateFormat;
 
 public class FlashBackActivity extends AppCompatActivity {
     private Location location;
@@ -178,7 +172,7 @@ public class FlashBackActivity extends AppCompatActivity {
         String path = "android.resource://" + getPackageName()+"/raw/";
         for (int i = 0; i < fields.length; i++) {
             String id = fields[i].getName();
-            Map<String, ?> map = SharedPrefs.getData(getApplicationContext(), id);
+            Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), id);
             if (map.size() != 0 && (map.get("Time") != null)) {
                 Object latitude = map.get("Latitude");
                 Object longitude = map.get("Longitude");

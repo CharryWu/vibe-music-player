@@ -1,12 +1,18 @@
 package com.example.chadlohrli.myapplication;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,11 +32,14 @@ public class PickedAlbumActivity extends AppCompatActivity {
     private ImageView albumCover;
     private TextView albumName;
     private TextView artistName;
+    private FrameLayout layout;
 
     private ArrayList<Album> albums;
     private Album cur_album;
     private ArrayList<SongData> songs;
     private Button undislikeBtn;
+
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,25 @@ public class PickedAlbumActivity extends AppCompatActivity {
         albumCover = (ImageView) findViewById(R.id.album_art_picked_album);
         albumName = (TextView) findViewById(R.id.album_name_textview_picked_album);
         artistName = (TextView) findViewById(R.id.artist_name_textview_picked_album);
+
+        bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.download:
+                        Intent searchIntent = new Intent(PickedAlbumActivity.this, DownloadActivity.class);
+                        PickedAlbumActivity.this.startActivity(searchIntent);
+                        break;
+                    case R.id.my_library:
+                        Intent homeIntent = new Intent(PickedAlbumActivity.this, MainActivity.class);
+                        PickedAlbumActivity.this.startActivity(homeIntent);
+                        break;
+                }
+                return true;
+            }
+        });
 
         //grab data from intent
         albums = (ArrayList<Album>) getIntent().getSerializableExtra("ALBUMS");
@@ -55,6 +83,19 @@ public class PickedAlbumActivity extends AppCompatActivity {
         albumCover.setImageBitmap(SongParser.albumCover(songs.get(0), getApplicationContext()));
         albumName.setText(cur_album.getAlbumTitle());
         artistName.setText(cur_album.getArtistName());
+/*
+        int song = getIntent().getIntExtra("SONGPLAYING", -1);
+        if (song != -1) {
+            Log.d("YES", "we here");
+            SongProgressFragment fragment = new SongProgressFragment();
+            SongData songToShow = songs.get(song);
+            fragment.newInstance(songToShow.getTitle(), songToShow.getArtist());
+            layout = (FrameLayout) findViewById(R.id.frameLayout);
+            layout.setVisibility(View.VISIBLE);
+        }
+ */
+
+
 
 
     }
@@ -95,7 +136,7 @@ public class PickedAlbumActivity extends AppCompatActivity {
 
         //if a disliked song is picked, it is no longer disliked
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("State") != null){
             if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
                 SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());

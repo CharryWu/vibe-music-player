@@ -1,0 +1,63 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.chadlohrli.myapplication.SongProgressFragment"
+    tools:layout_editor_absoluteY="81dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/carrot"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:text="\u2303"
+            android:textColor="@android:color/white"
+            android:textSize="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/artist_name"
+            app:layout_constraintHorizontal_bias="0.339"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/song_title"
+            android:layout_width="119dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="90dp"
+            android:text="NULL FOR NOW"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/artist_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="49dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="NULL FOR NOW"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/song_title" />
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>

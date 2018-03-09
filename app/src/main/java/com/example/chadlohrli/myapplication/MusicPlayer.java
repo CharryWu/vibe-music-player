@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -23,10 +22,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -35,6 +33,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +46,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 ;
 //int timesPlayed;
@@ -108,6 +106,14 @@ public class MusicPlayer extends AppCompatActivity {
     private LocalBroadcastManager bManager;
     private Location location;
 
+    private FragmentManager fm;
+    private SongProgressFragment fragment;
+    private Bundle bundle;
+    private String album_artist;
+    private SongData songPlaying;
+    private Button undislikeBtn;
+    private ListView layout;
+
     //private enum state {NEUTRAL,DISLIKE,FAVORITE};
     private int songState;
     private int timesPlayed = 0;
@@ -131,6 +137,9 @@ public class MusicPlayer extends AppCompatActivity {
         cur_song = getIntent().getIntExtra("CUR",0);
         timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
+        layout = findViewById(R.id.listView);
+        layout.setVisibility(View.GONE);
+
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -141,8 +150,44 @@ public class MusicPlayer extends AppCompatActivity {
         initListeners();
         initBroadcast();
         //initLocation();
+    }
 
+    public void songPicked(View view) {
+        //if a disliked song is picked, it is no longer disliked
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        Map<String, ?> map = SharedPrefs.getSongData(this.getApplicationContext(), song.getID());
+        if (map.get("State") != null) {
+            if (((Integer) map.get("State")).intValue() == state.DISLIKE.ordinal()) {
+                SharedPrefs.updateFavorite(getApplicationContext(), song.getID(), state.NEUTRAL.ordinal());
+            }
+        }
 
+        setSong(Integer.parseInt(view.getTag().toString()));
+        playSong();
+    }
+
+    public void dislikeAction(View view){
+        Log.d("TAG",view.getTag().toString());
+        SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
+        SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+        undislikeBtn = view.findViewById(R.id.undislikeBtn);
+        undislikeBtn.setVisibility(View.INVISIBLE);
+        Toast toast = Toast.makeText(getApplicationContext(), "Un-Disliked!", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    public void updateFragment() {
+        songPlaying = songs.get(cur_song);
+        album_artist = songPlaying.getArtist() + " \u0f36 " + songPlaying.getAlbum();
+
+        fm = getSupportFragmentManager();
+        bundle = new Bundle();
+        bundle.putString("SONG", songPlaying.getTitle());
+        bundle.putString("ARTIST_ALBUM", album_artist);
+        bundle.putParcelableArrayList("SONGS", songs);
+        fragment = new SongProgressFragment();
+        fragment.setArguments(bundle);
+        fm.beginTransaction().replace(R.id.mainLay, fragment).commit();
     }
 
     public void setDateHelper(DateHelper dateHelper) {
@@ -206,6 +251,12 @@ public class MusicPlayer extends AppCompatActivity {
         musicService = null;
         super.onDestroy();
         unbindService(musicConnection);
+
+        /*
+        Intent intent = new Intent();
+        intent.putExtra("SONGPLAYING", cur_song);
+        this.startActivity(intent);
+         **/
     }
 
 
@@ -226,12 +277,11 @@ public class MusicPlayer extends AppCompatActivity {
             favBtn.setBackgroundColor(Color.GREEN);
             fav = 1;
         }
-
     }
 
     public void checkSongState(SongData song){
 
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
 
         if(map.get("State") != null){
             songState = ((Integer) map.get("State")).intValue();
@@ -261,6 +311,7 @@ public class MusicPlayer extends AppCompatActivity {
             }
         }
 
+        updateFragment();
         Log.d("Songs size",String.valueOf(songs.size()));
 
         musicService.setCurrentSong(cur_song);
@@ -285,7 +336,6 @@ public class MusicPlayer extends AppCompatActivity {
         }else{
             onSupportNavigateUp();
         }
-
 
         Log.d("new index",String.valueOf(cur_song));
 
@@ -322,14 +372,14 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void saveSong(SongData song) {
-        Map<String,?> map = SharedPrefs.getData(this.getApplicationContext(),song.getID());
+        Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
             timesPlayed++;
         }
 
-        SharedPrefs.saveData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
+        SharedPrefs.saveSongData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
 
     }
 
@@ -448,9 +498,6 @@ public class MusicPlayer extends AppCompatActivity {
             private GestureDetector gestureDetector = new GestureDetector(MusicPlayer.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-
-
-
                     Log.d("TEST", "onDoubleTap");
                     if(songState == state.NEUTRAL.ordinal()) {
                         songState = state.DISLIKE.ordinal();
@@ -612,6 +659,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         }
          */
+
     }
 
 }

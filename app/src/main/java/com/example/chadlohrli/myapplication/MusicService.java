@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -82,8 +83,12 @@ MediaPlayer.OnCompletionListener {
 
     public void setCurrentSong(int cur_song) {
         this.cur_song = cur_song;
-        Resources res = this.getResources();
-        cur_song_id = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
+        //
+        // songs.get(cur_song).getPath();
+
+
+        //Resources res = this.getResources();
+        //cur_song_id = res.getIdentifier(songs.get(cur_song).getID(), "raw", this.getPackageName());
 
         Log.d("raw", Integer.toString(R.raw.gottagetoveryou));
         Log.d("soundId", Integer.toString(cur_song_id));
@@ -94,9 +99,10 @@ MediaPlayer.OnCompletionListener {
     public void playSong() {
         mediaPlayer.reset();
 
-        AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(cur_song_id);
+
+        //AssetFileDescriptor assetFileDescriptor = this.getResources().openRawResourceFd(cur_song_id);
         try {
-            mediaPlayer.setDataSource(assetFileDescriptor);
+            mediaPlayer.setDataSource(songs.get(cur_song).getPath());
             mediaPlayer.prepare();
 
         }

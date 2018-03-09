@@ -157,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
 
 
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.i("Failed", e.getMessage());

@@ -8,7 +8,6 @@
     tools:context="com.example.chadlohrli.myapplication.SongListActivity"
     tools:layout_editor_absoluteY="81dp">
 
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -32,7 +31,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/spinner">
+    </ListView>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -56,7 +56,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
-
 
 
 </android.support.constraint.ConstraintLayout>

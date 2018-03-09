@@ -69,27 +69,23 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     /*
     private void GFriends() {
-
         List<Person> connections = null;
-
         try{
             PeopleService peopleService = PeopleAuth.setUp(LoginActivity.this, serverAuth);
-
             ListConnectionsResponse response = peopleService.people().connections()
                     .list("people/me")
                     .setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers")
                     .execute();
             response.getConnections();
-
         }catch(Exception e){}
-
         Log.i(TAG,String.valueOf(connections.size()));
     }
-
     */
 
     @Override
@@ -130,10 +126,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
     }
 
     @Override
@@ -165,9 +157,10 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
 
 
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.i("Failed", "Google sign in failed");
+                Log.i("Failed", e.getMessage());
                 // ...
                 findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
             }
@@ -209,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {

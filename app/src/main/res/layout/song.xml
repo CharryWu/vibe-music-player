@@ -43,6 +43,7 @@
         android:layout_height="40dp"
         android:lines="1"
         android:ellipsize="end"
+        android:scrollHorizontally="true"
         android:layout_marginLeft="42dp"
         android:textColor="@color/colorPrimary"
         android:textSize="18sp" />

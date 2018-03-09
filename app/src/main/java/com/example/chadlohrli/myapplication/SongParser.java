@@ -3,6 +3,7 @@ package com.example.chadlohrli.myapplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Log;
@@ -19,7 +20,9 @@ public class SongParser {
         if (song.getPath() == null)
             return null;
 
-        Bitmap album_image = null;
+        Bitmap album_image = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.blank_album);
+
         byte[] art;
 
         try {
@@ -68,7 +71,7 @@ public class SongParser {
 
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
-            song_path = path + Id;
+            song_path = path + "/" + Id;
 
             Uri uri = Uri.parse(song_path);
             mmr.setDataSource(context, uri);

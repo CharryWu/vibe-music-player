@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +19,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class DownloadActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
@@ -35,6 +38,15 @@ public class DownloadActivity extends AppCompatActivity {
                     "Music Download Complete", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
+
+            File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+            Log.v("Files",musicDirectory.exists()+"");
+            Log.v("Files",musicDirectory.isDirectory()+"");
+            Log.v("Files",musicDirectory.listFiles()+"");
+            File[] files = musicDirectory.listFiles();
+            int s = files.length;
+
+
         }
     };
 
@@ -83,14 +95,22 @@ public class DownloadActivity extends AppCompatActivity {
 
     public void download(String url) {
         //http://soundbible.com/grab.php?id=2200&type=mp3
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        Log.v("Files",musicDirectory.exists()+"");
+        Log.v("Files",musicDirectory.isDirectory()+"");
+        Log.v("Files",musicDirectory.listFiles()+"");
+        File[] files = musicDirectory.listFiles();
+        int s = files.length;
+
         Uri uri = Uri.parse(url);
 
         DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setTitle("Kyle");
+        request.setTitle(uri.getLastPathSegment());
 
         request.setDescription("Downloading Song");
 
-        request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC, "test.mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, uri.getLastPathSegment());
+
         request.allowScanningByMediaScanner();
         request.setMimeType("audio/MP3");
         downloadManager.enqueue(request);

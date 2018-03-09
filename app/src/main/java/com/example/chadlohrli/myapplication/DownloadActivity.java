@@ -105,11 +105,11 @@ public class DownloadActivity extends AppCompatActivity {
         Uri uri = Uri.parse(url);
 
         DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setTitle("Kyle");
+        request.setTitle(uri.getLastPathSegment());
 
         request.setDescription("Downloading Song");
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, "test.mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, uri.getLastPathSegment());
 
         request.allowScanningByMediaScanner();
         request.setMimeType("audio/MP3");

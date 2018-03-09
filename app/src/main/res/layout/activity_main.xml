@@ -12,34 +12,34 @@
         android:id="@+id/signout_btn"
         android:layout_width="72dp"
         android:layout_height="44dp"
-        android:layout_marginBottom="448dp"
+        android:layout_marginBottom="560dp"
         android:text="sign out"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.948"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/flashback_button"
         android:layout_width="119dp"
         android:layout_height="112dp"
-        android:layout_marginBottom="336dp"
+        android:layout_marginBottom="424dp"
         android:background="@drawable/album_art"
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/song_button"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="140dp"
+        android:layout_marginBottom="216dp"
         android:text="Songs"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -50,41 +50,40 @@
         android:text="Albums"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/song_button" />
+        app:layout_constraintTop_toBottomOf="@+id/song_button"
+        app:layout_constraintVertical_bias="0.224" />
 
     <TextView
         android:id="@+id/location"
         android:layout_width="237dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="268dp"
+        android:layout_marginBottom="356dp"
         android:text="Last Played"
         android:textAlignment="center"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/place_loc_date"
         android:layout_width="237dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="204dp"
+        android:layout_marginBottom="304dp"
         android:text="Place, Location, Date"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent" />
 
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
-        android:layout_height="47dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:paddingBottom="13dp"
         android:background="@color/colorPrimary"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
@@ -97,10 +96,11 @@
         android:id="@+id/userEmail"
         android:layout_width="198dp"
         android:layout_height="28dp"
-        android:layout_marginBottom="464dp"
+        android:layout_marginBottom="548dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
 

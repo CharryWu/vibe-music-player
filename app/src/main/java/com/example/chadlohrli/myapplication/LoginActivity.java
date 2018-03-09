@@ -69,6 +69,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     /*
@@ -130,10 +132,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
     }
 
     @Override
@@ -167,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.i("Failed", "Google sign in failed");
+                Log.i("Failed", e.getMessage());
                 // ...
                 findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
             }

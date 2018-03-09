@@ -53,18 +53,18 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         Log.v("Files",musicDirectory.exists()+"");
         Log.v("Files",musicDirectory.isDirectory()+"");
         Log.v("Files",musicDirectory.listFiles()+"");
-        File[] files = musicDirectory.listFiles();
-        int s = files.length;
-        files[0].getName();
+        File[] fields = musicDirectory.listFiles();
+        //int s = files.length;
+        //files[0].getName();
 
-        Field[] fields = R.raw.class.getFields();
+        //Field[] fields = R.raw.class.getFields();
         ArrayList<SongData> songs = new ArrayList<SongData>();
 
         for (int count = 0; count < fields.length; count++) {
 
             Log.i("Raw Asset:", fields[count].getName());
-
-            String path = "android.resource://" + getPackageName() + "/raw/";
+            //String path = "android.resource://" + getPackageName() + "/raw/";
+            String path  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
             String Id = fields[count].getName();
 
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());

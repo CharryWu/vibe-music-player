@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 
 
-public class PeopleAuth {
+public class                                                                                                                                                                                                    PeopleAuth {
 
     public static PeopleService setUp(Context context, String serverAuthCode) throws IOException {
         HttpTransport httpTransport = new NetHttpTransport();

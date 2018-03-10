@@ -44,10 +44,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.client_id))
+                .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
                 .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
-                .requestServerAuthCode(getResources().getString(R.string.client_id), false)
+                .requestServerAuthCode(getResources().getString(R.string.gapi_client_id), false)
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);

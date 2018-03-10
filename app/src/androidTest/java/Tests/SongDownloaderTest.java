@@ -25,13 +25,5 @@ public class SongDownloaderTest {
     public void setup() {
         activity = flashBackActivity.getActivity();
         songDownloader = new SongDownloader(addressArray, flashBackActivity.getActivity().getApplicationContext());
-
     };
-
-    @Test
-    public void testDownloadAllSongs() {
-        songDownloader.downloadAllSongs();
-    }
-
-
 }

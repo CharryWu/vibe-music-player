@@ -62,6 +62,7 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
 
         for (int count = 0; count < fields.length; count++) {
 
+
             Log.i("Raw Asset:", fields[count].getName());
             //String path = "android.resource://" + getPackageName() + "/raw/";
             String path  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();

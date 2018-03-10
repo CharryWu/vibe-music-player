@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:design="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.chadlohrli.myapplication.PickedAlbumActivity"
@@ -13,7 +13,8 @@
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="93dp"
+        android:layout_marginEnd="77dp"
+        android:layout_marginTop="72dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/album_art_picked_album"
@@ -37,41 +38,15 @@
         android:id="@+id/album_art_picked_album"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginBottom="540dp"
-        android:layout_marginEnd="51dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="62dp"
+        android:layout_marginStart="90dp"
+        app:layout_constraintBottom_toTopOf="@+id/songlist_activity_picked_album"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ListView
-        android:id="@+id/songlist_activity_picked_album"
-        android:layout_width="338dp"
-        android:layout_height="448dp"
-        android:layout_marginBottom="44dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-    </ListView>
-
-    <fragment
-        android:id="@+id/fragment"
-        android:name="com.example.chadlohrli.myapplication.SongProgressFragment"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.885"
-        tools:layout="@layout/fragment_song_progress" />
-
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
-        design:menu="@menu/bottom_nav_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -82,7 +57,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        design:menu="@menu/bottom_nav_items" />
+
+    <ListView
+        android:id="@+id/songlist_activity_picked_album"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="45dp"
+        android:layout_marginTop="41dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+    </ListView>
 
 
 </android.support.constraint.ConstraintLayout>

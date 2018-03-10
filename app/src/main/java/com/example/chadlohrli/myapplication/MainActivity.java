@@ -62,6 +62,8 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public static final int PERMISSION_REQUEST_CONTACT = 98;
+    public static final int PERMISSION_REQUEST_READ = 97;
+    public static final int PERMISSION_REQUEST_WRITE = 96;
 
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     Button songButton;
     Button albumButton;
     private boolean canSend = false;
+    private boolean canDownload = false;
 
     ImageButton flashBackButton;
     String loc_name;
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
 
         //update user
@@ -97,30 +100,30 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
         Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), "last song");
         String title = lp.getString("song", "");
-        TextView song = (TextView)findViewById(R.id.location);
+        TextView song = (TextView) findViewById(R.id.location);
 
-        if(title.isEmpty()) {
+        if (title.isEmpty()) {
             song.setText("No song played yet");
             return;
         }
 
         Object t = map.get("Last played");
 
-        double lt = (double)lp.getFloat("Latitude", 0);
-        double lng2 = (double)lp.getFloat("Longitude", 0);
+        double lt = (double) lp.getFloat("Latitude", 0);
+        double lng2 = (double) lp.getFloat("Longitude", 0);
 
         //Log.i("song last played", title);
-        if(t != null) {
+        if (t != null) {
             time = t.toString();
         }
         song.setText(title);
-        TextView deets = (TextView)findViewById(R.id.place_loc_date) ;
+        TextView deets = (TextView) findViewById(R.id.place_loc_date);
 
         //get song's location
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
-            List<Address> listAddresses = geocoder.getFromLocation((double)lt,(double) lng2, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
+            List<Address> listAddresses = geocoder.getFromLocation((double) lt, (double) lng2, 1);
+            if (null != listAddresses && listAddresses.size() > 0) {
                 loc_name = "Last Played Location: " + listAddresses.get(0).getAddressLine(0);
             }
         } catch (IOException e) {
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.client_id))
+                .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
                 .build();
 
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         //check permissions
         checkLocationPermission();
         askForContactPermission();
+        askForReadPermission();
 
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
@@ -159,12 +163,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.download:
-                        if(canSend) {
+                        if (canSend && canDownload) {
                             Intent searchIntent = new Intent(MainActivity.this, DownloadActivity.class);
                             MainActivity.this.startActivity(searchIntent);
-                        }
-                        else {
+                        } else {
                             checkLocationPermission();
+                            askForReadPermission();
                         }
                         break;
                 }
@@ -175,12 +179,13 @@ public class MainActivity extends AppCompatActivity {
         songButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(canSend) {
+                if (canSend && canDownload) {
                     Intent intent = new Intent(MainActivity.this, SongListActivity.class);
                     MainActivity.this.startActivity(intent);
-                }else{
+                } else {
                     checkLocationPermission();
                     askForContactPermission();
+                    askForReadPermission();
                 }
             }
         });
@@ -188,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(canSend) {
+                if (canSend) {
                     Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                     MainActivity.this.startActivity(intent);
-                }else{
+                } else {
                     checkLocationPermission();
                     askForContactPermission();
                 }
@@ -202,10 +207,10 @@ public class MainActivity extends AppCompatActivity {
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(canSend) {
+                if (canSend) {
                     Intent intent = new Intent(MainActivity.this, FlashBackActivity.class);
                     MainActivity.this.startActivity(intent);
-                }else{
+                } else {
                     checkLocationPermission();
                     askForContactPermission();
                 }
@@ -291,30 +296,30 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences lp = getSharedPreferences("last song", MODE_PRIVATE);
         Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), "last song");
         String title = lp.getString("song", "");
-        TextView song = (TextView)findViewById(R.id.location);
+        TextView song = (TextView) findViewById(R.id.location);
 
-        if(title.isEmpty()) {
+        if (title.isEmpty()) {
             song.setText("No song played yet");
             return;
         }
 
         Object t = map.get("Last played");
 
-        double lt = (double)lp.getFloat("Latitude", 0);
-        double lng2 = (double)lp.getFloat("Longitude", 0);
+        double lt = (double) lp.getFloat("Latitude", 0);
+        double lng2 = (double) lp.getFloat("Longitude", 0);
 
         //Log.i("song last played", title);
-        if(t != null) {
+        if (t != null) {
             time = t.toString();
         }
         song.setText(title);
-        TextView deets = (TextView)findViewById(R.id.place_loc_date) ;
+        TextView deets = (TextView) findViewById(R.id.place_loc_date);
 
         //get song's location
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
-            List<Address> listAddresses = geocoder.getFromLocation((double)lt,(double) lng2, 1);
-            if(null!=listAddresses&&listAddresses.size()>0){
+            List<Address> listAddresses = geocoder.getFromLocation((double) lt, (double) lng2, 1);
+            if (null != listAddresses && listAddresses.size() > 0) {
                 loc_name = "Last Played Location: " + listAddresses.get(0).getAddressLine(0);
             }
         } catch (IOException e) {
@@ -325,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setUserAccount(){
+    private void setUserAccount() {
 
         //grab all accounts associated with this phone
         AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
@@ -341,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS)
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                         == PackageManager.PERMISSION_GRANTED) {
 
             canSend = true;
@@ -349,10 +354,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public void askForContactPermission(){
+    public void askForContactPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -388,16 +392,63 @@ public class MainActivity extends AppCompatActivity {
                     // app-defined int constant. The callback method gets the
                     // result of the request.
                 }
-            }else{
+            } else {
                 setUserAccount();
             }
-        }
-        else{
+        } else {
             setUserAccount();
         }
     }
 
+    public boolean askForReadPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Contacts access needed");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setMessage("please confirm Contacts access");//TODO put real question
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @TargetApi(Build.VERSION_CODES.M)
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        requestPermissions(
+                                new String[]
+                                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}
+                                , PERMISSION_REQUEST_READ);
+                    }
+                });
+                builder.create().show();
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_READ);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+
+            canDownload = false;
+            return false;
+        }
+        else {
+            canDownload = true;
+            return true;
+        }
+
+
+
+    }
 
 
     //https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime-on-android-6
@@ -480,15 +531,33 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
 
-                    Toast.makeText(this,"No permisson for contacts",5).show();
+                    Toast.makeText(this, "No permisson for contacts", Toast.LENGTH_SHORT).show();
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
                 return;
             }
+            case PERMISSION_REQUEST_READ: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        canDownload = true;
+                    } else {
+                        canDownload = false;
+                    }
+                    return;
+                }
 
 
+            }
         }
     }
+
 }
 

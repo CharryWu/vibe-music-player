@@ -20,6 +20,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
@@ -31,7 +37,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
@@ -56,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.client_id))
                 .requestEmail()
                 .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
+                .requestServerAuthCode(getResources().getString(R.string.client_id), false)
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -155,18 +162,72 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-
-
-
+                new Thread(new RequestFriendListRunnable(account.getServerAuthCode())).start();
+                Log.d("Login:","Inside try block");
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.i("Failed", e.getMessage());
                 // ...
                 findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+            } catch (Exception e){
+                Log.d("Login:","IOException");
             }
-            //handleSignInResult(task);
+        }
+    }
+
+    private class RequestFriendListRunnable implements Runnable{
+        private String code;
+
+        public RequestFriendListRunnable(String code){
+            if(code == null) Log.e("RequestFriendListRunnable()", "param is null");
+            this.code = code;
         }
 
+        @Override
+        public void run(){
+            try{
+                printPeopleOnCode(code);
+            }catch (Exception e){
+                Log.e("RequestFriendListRunnable.run()","Exception");
+            }
+        }
+    }
+
+    public void printPeopleOnCode(String code) throws IOException{
+        HttpTransport httpTransport = new NetHttpTransport();
+        JacksonFactory jsonFactory = new JacksonFactory();
+
+        // Go to the Google API Console, open your application's
+        // credentials page, and copy the client ID and client secret.
+        // Then paste them into the following code.
+        String clientId = this.getApplicationContext().getString(R.string.client_id);
+        String clientSecret = this.getApplicationContext().getString(R.string.clientSecret);
+        // Or your redirect URL for web based applications.
+        String redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
+        String scope = "https://www.googleapis.com/auth/contacts.readonly";
+
+        GoogleTokenResponse tokenResponse =
+                new GoogleAuthorizationCodeTokenRequest(
+                        httpTransport, jsonFactory, clientId, clientSecret, code, redirectUrl)
+                        .execute();
+        // End of Step 2 <--
+
+        GoogleCredential credential = new GoogleCredential.Builder()
+                .setTransport(httpTransport)
+                .setJsonFactory(jsonFactory)
+                .setClientSecrets(clientId, clientSecret)
+                .build()
+                .setFromTokenResponse(tokenResponse);
+
+        PeopleService peopleService =
+                new PeopleService.Builder(httpTransport, jsonFactory, credential).build();
+
+        ListConnectionsResponse response = peopleService.people().connections().list("people/me")
+                .setPersonFields("names,emailAddresses")
+                .execute();
+        List<Person> connections = response.getConnections();
+
+        Log.d("",""+connections.size());
 
     }
 

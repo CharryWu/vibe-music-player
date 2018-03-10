@@ -19,8 +19,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -30,8 +35,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class VibeActivity extends AppCompatActivity {
-    private DateHelper dateHelper;
     private Location location;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -39,16 +45,30 @@ public class VibeActivity extends AppCompatActivity {
         return true;
     }
 
-    public double matchWeek(double songDate) {
+    public int matchWeek(String songTimestamp) {
+        Date curtime = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+        Date songTime = null;
+
+        try {
+            songTime = sdf.parse(songTimestamp);
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        if((curtime.getTime() - songTime.getTime()) < 604800000) {
+            return 2;
+        }
         return 0;
     }
 
-    public double matchLocation(double lat, double lng) {
-        return 0;
-    }
-
-    public void setDateHelper(DateHelper dateHelper) {
-        this.dateHelper = dateHelper;
+    public double matchLocation(Location songLoc) {
+        double distance = songLoc.distanceTo(location);
+        double locRating = 0;
+        if (distance <= 304.8) {
+            locRating += 2;
+        }
+        return locRating;
     }
 
     public Location getLoc(){

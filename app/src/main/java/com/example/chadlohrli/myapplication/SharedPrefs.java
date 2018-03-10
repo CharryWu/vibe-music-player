@@ -66,6 +66,19 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updateURL(Context context, String id, String url){
+
+        SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putString("URL",url);
+
+        Log.i("URL Updated",url);
+        songadd.commit();
+
+
+    }
+
+
     public static Map<String, ?> getSongData(Context context, String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);

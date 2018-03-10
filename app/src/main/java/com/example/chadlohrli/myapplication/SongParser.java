@@ -85,16 +85,19 @@ public class SongParser {
             //cast null variables to empty strings
             if(album_title == null){
                 album_title = "Unknown Album";
-            }else if(song_title == null){
+            }
+            if(song_title == null){
                 song_title = "Unknown Song";
-            }else if(song_length == null){
+            }
+            if(song_length == null){
                 song_length = "";
-            }else if(song_artist == null){
+            }
+            if(song_artist == null){
                 song_artist = "Unknown Artist";
             }
 
 
-            Log.d("song title:", song_title);
+            //Log.d("song title:", song_title);
 
             song = new SongData(id, song_length, album_title, song_title, song_artist, song_path/*,album_image*/);
 

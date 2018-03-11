@@ -112,6 +112,7 @@ public class MusicPlayer extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private LocalBroadcastManager bManager;
     private Location location;
+    private String locationName;
 
     private FragmentManager fm;
     private SongProgressFragment fragment;
@@ -405,21 +406,25 @@ public class MusicPlayer extends AppCompatActivity {
         //Save song object to firebase
         DatabaseReference userRef;
         DatabaseReference songRef = myRef.child("songs").child(song.getID());
-        String locUID = UUID.randomUUID().toString();
+        //String locUID = String.valueOf((float)lat + (float)lng);
+        //songRef.child("location").child(locUID).child("lat").setValue((float)lat);
+        //songRef.child("location").child(locUID).child("long").setValue((float)lng);
         songRef.child("lastPlayed").setValue(timeStamp);
-        songRef.child("location").child(locUID).child("lat").setValue((float)lat);
-        songRef.child("location").child(locUID).child("long").setValue((float)lng);
         songRef.child("url").setValue(url);
+
+        if(location != null){
+            songRef.child("location").child(locationName).setValue(true);
+        }
 
         //save song to user
         if(currentUser!= null) {
-            songRef.child("user").setValue(currentUser.getUid());
+            songRef.child("user").child(currentUser.getUid()).setValue(true);
 
             userRef = myRef.child("users").child(currentUser.getUid());
             userRef.child("songs").child(song.getID()).setValue(true);
 
         }else {
-            songRef.child("user").setValue("Anonymous");
+            songRef.child("user").child(UUID.randomUUID().toString()).setValue(true);
         }
 
 
@@ -629,7 +634,8 @@ public class MusicPlayer extends AppCompatActivity {
                     List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
                     if(null!=listAddresses&&listAddresses.size()>0){
                         String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                        locationTitle.setText(loc_name);
+                        locationName = loc_name;
+                        locationTitle.setText(locationName);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -19,8 +19,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -33,9 +36,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class VibeActivity extends AppCompatActivity {
     private Location location;
+    private ArrayList<SongData> vibeList = new ArrayList<SongData>();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
@@ -101,6 +106,22 @@ public class VibeActivity extends AppCompatActivity {
 
     protected void vibe(){
         location = getLoc();
+        DatabaseReference songs = myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String lp = snapshot.child("lastPlayed").getValue(String.class);
+                    snapshot.child("rating")
+                    if() {
 
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        Set unique<
     }
 }

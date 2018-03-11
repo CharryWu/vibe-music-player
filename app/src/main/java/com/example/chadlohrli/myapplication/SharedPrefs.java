@@ -74,12 +74,7 @@ public class SharedPrefs {
 
         Log.i("URL Updated",url);
         songadd.commit();
-
-
     }
-
-
-
 
     public static Map<String, ?> getSongData(Context context, String id) {
 

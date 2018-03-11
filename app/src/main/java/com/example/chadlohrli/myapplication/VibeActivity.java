@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,8 +45,10 @@ import java.util.Set;
 public class VibeActivity extends AppCompatActivity {
     private Location location;
     private ArrayList<String> vibeList = new ArrayList<String>();
+    private ArrayList<String> vibeListURLs = new ArrayList<String>();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
+    private FirebaseAuth mAuth;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -108,13 +112,16 @@ public class VibeActivity extends AppCompatActivity {
 
     protected void vibe(){
         location = getLoc();
+        mAuth = FirebaseAuth.getInstance();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
-                    int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
-                    snapshot.child("rating").getRef().setValue(newR);
+                    //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
+                    //snapshot.child("rating").getRef().setValue(newR);
+                    int wR = matchWeek(lp);
+                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), (float)wR);
                     for(DataSnapshot locs: snapshot.child("location").getChildren()){
                         double lat = locs.child("lat").getValue(double.class);
                         double lngt = locs.child("lngt").getValue(double.class);
@@ -122,13 +129,21 @@ public class VibeActivity extends AppCompatActivity {
                         playLoc.setLatitude(lat);
                         playLoc.setLongitude(lngt);
                         if(matchLocation(playLoc) == 2){
-                            double rat = snapshot.child("rating").getValue(int.class) + matchLocation(playLoc);
-                            snapshot.child("rating").getRef().setValue(rat);
+                            //double rat = snapshot.child("rating").getValue(int.class) + matchLocation(playLoc);
+                            //snapshot.child("rating").getRef().setValue(rat);
+                            SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
+                            int curRate = pref.getInt("Rating", 0);
+                            double locR = 2;
+                            SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
+                                    snapshot.getKey(), (float)curRate + (float)locR);
                             break;
                         }
                     }
-                    if(newR > 0) {
+                    SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
+                    int curRate = pref.getInt("Rating", 0);
+                    if(curRate > 0) {
                         vibeList.add(snapshot.getKey());
+                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
                 }
             }
@@ -139,19 +154,23 @@ public class VibeActivity extends AppCompatActivity {
         });
 
         //get CURRENT USER ID HERE
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        final String curId = currentUser.getUid();
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.child("INSERTIDHERE").child("friends").getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
-                    for(DataSnapshot fSongs: dataSnapshot.child("INSERTIDHERE").child("songs").getChildren()){
+                    for(DataSnapshot fSongs: dataSnapshot.child(friendid).child("songs").getChildren()){
                         // GET ORIGINAL RATING IN NEWR
                         // int newR = myRef.child("songs").child(snapshot.getKey()).child("rating")
                         // CHANGE RATINGS BY ADDING 2
+                        SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
+                        int curRate = pref.getInt("Rating", 0);
+                        SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
+                                snapshot.getKey(), (float)curRate + 2);
                         vibeList.add(snapshot.getKey());
-                    }
-                    if(newR == 2) {
-                        vibeList.add(snapshot.getKey());
+                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
                 }
             }
@@ -161,8 +180,15 @@ public class VibeActivity extends AppCompatActivity {
             }
         });
 
+        // Get unique song ids only
         Set<String> set = new HashSet<String>(vibeList);
         ArrayList<String> finalRec = new ArrayList<String>(set);
+
+        Set<String> seturl = new HashSet<String>(vibeListURLs);
+        ArrayList<String> finalRecURL = new ArrayList<String>(seturl);
+
+        //PASS finalRecURL to Download Service and start downloads
+
 
     }
 }

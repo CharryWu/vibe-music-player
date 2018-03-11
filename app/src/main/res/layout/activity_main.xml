@@ -8,75 +8,60 @@
     tools:context="com.example.chadlohrli.myapplication.MainActivity"
     tools:layout_editor_absoluteY="81dp">
 
-    <Button
-        android:id="@+id/signout_btn"
-        android:layout_width="72dp"
-        android:layout_height="44dp"
-        android:layout_marginBottom="560dp"
-        android:text="sign out"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageButton
         android:id="@+id/flashback_button"
         android:layout_width="119dp"
-        android:layout_height="112dp"
-        android:layout_marginBottom="424dp"
+        android:layout_height="120dp"
         android:background="@drawable/album_art"
         android:textSize="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/location"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/userEmail" />
 
     <Button
         android:id="@+id/song_button"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="216dp"
+        android:layout_height="45dp"
         android:text="Songs"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/album_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_loc_date" />
 
     <Button
         android:id="@+id/album_button"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_height="45dp"
         android:text="Albums"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/song_button"
-        app:layout_constraintVertical_bias="0.224" />
+        app:layout_constraintTop_toBottomOf="@+id/song_button" />
 
     <TextView
         android:id="@+id/location"
         android:layout_width="237dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="356dp"
         android:text="Last Played"
         android:textAlignment="center"
         android:textSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/place_loc_date"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flashback_button" />
 
     <TextView
         android:id="@+id/place_loc_date"
         android:layout_width="237dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="304dp"
         android:text="Place, Location, Date"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/song_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/location" />
 
 
     <android.support.design.widget.BottomNavigationView
@@ -87,21 +72,32 @@
         android:background="@color/colorPrimary"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
-        design:menu="@menu/bottom_nav_items"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        design:menu="@menu/bottom_nav_items" />
+
+    <Button
+        android:id="@+id/signout_btn"
+        android:layout_width="72dp"
+        android:layout_height="45dp"
+        android:text="sign out"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/userEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.036" />
 
     <TextView
         android:id="@+id/userEmail"
-        android:layout_width="198dp"
-        android:layout_height="28dp"
-        android:layout_marginBottom="548dp"
+        android:layout_width="150dp"
+        android:layout_height="25dp"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/flashback_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

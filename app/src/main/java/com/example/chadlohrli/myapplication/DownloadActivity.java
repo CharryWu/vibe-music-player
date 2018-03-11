@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -21,6 +22,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.UUID;
 
 public class DownloadActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
@@ -29,6 +35,8 @@ public class DownloadActivity extends AppCompatActivity {
     private String[] addressArray;
     private EditText editText;
     private Button downloadButton;
+    private String id;
+
 
     BroadcastReceiver onComplete = new BroadcastReceiver() {
         @Override
@@ -45,6 +53,8 @@ public class DownloadActivity extends AppCompatActivity {
             Log.v("Files",musicDirectory.listFiles()+"");
             File[] files = musicDirectory.listFiles();
             int s = files.length;
+
+            //renameSong();
 
 
         }
@@ -94,6 +104,7 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     public void download(String url) {
+
         //http://soundbible.com/grab.php?id=2200&type=mp3
         File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files",musicDirectory.exists()+"");
@@ -102,17 +113,70 @@ public class DownloadActivity extends AppCompatActivity {
         File[] files = musicDirectory.listFiles();
         int s = files.length;
 
+
+        //url = "https://firebasestorage.googleapis.com/v0/b/cse-110-team-project-team-5.appspot.com/o/song%2Fafter_the_storm?alt=media&token=9a6ac02b-0192-487a-85a1-4cf40b30e3c4";
         Uri uri = Uri.parse(url);
+        id = String.valueOf(url.hashCode());
 
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setTitle("Kyle");
+        try{
 
-        request.setDescription("Downloading Song");
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.setTitle(id);
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, "test.mp3");
+            request.setDescription("Downloading Song");
 
-        request.allowScanningByMediaScanner();
-        request.setMimeType("audio/MP3");
-        downloadManager.enqueue(request);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, id);
+
+
+            request.allowScanningByMediaScanner();
+            request.setMimeType("audio/MP3");
+
+            downloadManager.enqueue(request);
+
+
+            //save url for later pushing to firebase
+            SharedPrefs.updateURL(this,id,uri.toString());
+
+
+        }catch(IllegalArgumentException e){
+
+            Toast toast = Toast.makeText(DownloadActivity.this,
+                    "Invalid URL", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 25, 400);
+            toast.show();
+
+        }
+
+    }
+
+    public void renameSong(){
+
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+
+        SongData song = SongParser.parseSong(path,id,this);
+
+        Log.i("PREV SONG ID",song.getID());
+
+
+        String newId = (song.getAlbum() + song.getTitle()
+                + song.getArtist() + song.getLength());
+
+
+        newId = String.valueOf(newId.hashCode());
+
+        Log.i("NEW SONG ID",newId);
+
+        File of = new File(song.getPath());
+
+
+        //This Saves to internal storage
+        File nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC
+        ).getAbsolutePath() + "/" + newId + ".mp3");
+
+        nf.getAbsolutePath();
+
+        boolean f = of.renameTo(nf);
+
+
     }
 }

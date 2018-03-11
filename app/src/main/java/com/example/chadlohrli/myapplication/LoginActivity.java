@@ -1,10 +1,9 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
-import android.provider.Contacts;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -13,16 +12,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.services.people.v1.PeopleService;
-import com.google.api.services.people.v1.model.ListConnectionsResponse;
-import com.google.api.services.people.v1.model.Person;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,8 +24,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.net.URL;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -53,9 +44,10 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.client_id))
+                .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
                 .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
+                .requestServerAuthCode(getResources().getString(R.string.gapi_client_id), false)
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -77,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     private void GFriends() {
         List<Person> connections = null;
         try{
-            PeopleService peopleService = PeopleAuth.setUp(LoginActivity.this, serverAuth);
+            PeopleService peopleService = eopleAuth.setUp(LoginActivity.this, serverAuth);
             ListConnectionsResponse response = peopleService.people().connections()
                     .list("people/me")
                     .setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers")
@@ -155,19 +147,18 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-
-
+                new Thread(new AuthHandler(this.getApplicationContext(),account.getServerAuthCode())).start();
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.i("Failed", e.getMessage());
+                Log.e("Failed", e.getMessage());
                 // ...
                 findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+            } catch (Exception e){
+                Log.e("Login:","Exception");
             }
-            //handleSignInResult(task);
         }
-
-
     }
+
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());

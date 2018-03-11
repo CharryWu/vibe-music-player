@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,7 +42,7 @@ import java.util.Set;
 
 public class VibeActivity extends AppCompatActivity {
     private Location location;
-    private ArrayList<SongData> vibeList = new ArrayList<SongData>();
+    private ArrayList<String> vibeList = new ArrayList<String>();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
@@ -106,14 +108,27 @@ public class VibeActivity extends AppCompatActivity {
 
     protected void vibe(){
         location = getLoc();
-        DatabaseReference songs = myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
-                    snapshot.child("rating")
-                    if() {
-
+                    int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
+                    snapshot.child("rating").getRef().setValue(newR);
+                    for(DataSnapshot locs: snapshot.child("location").getChildren()){
+                        double lat = locs.child("lat").getValue(double.class);
+                        double lngt = locs.child("lngt").getValue(double.class);
+                        Location playLoc = new Location("any");
+                        playLoc.setLatitude(lat);
+                        playLoc.setLongitude(lngt);
+                        if(matchLocation(playLoc) == 2){
+                            double rat = snapshot.child("rating").getValue(int.class) + matchLocation(playLoc);
+                            snapshot.child("rating").getRef().setValue(rat);
+                            break;
+                        }
+                    }
+                    if(newR > 0) {
+                        vibeList.add(snapshot.getKey());
                     }
                 }
             }
@@ -122,6 +137,32 @@ public class VibeActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        Set unique<
+
+        //get CURRENT USER ID HERE
+        myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.child("INSERTIDHERE").child("friends").getChildren()) {
+                    String friendid = snapshot.getKey();
+                    for(DataSnapshot fSongs: dataSnapshot.child("INSERTIDHERE").child("songs").getChildren()){
+                        // GET ORIGINAL RATING IN NEWR
+                        // int newR = myRef.child("songs").child(snapshot.getKey()).child("rating")
+                        // CHANGE RATINGS BY ADDING 2
+                        vibeList.add(snapshot.getKey());
+                    }
+                    if(newR == 2) {
+                        vibeList.add(snapshot.getKey());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        Set<String> set = new HashSet<String>(vibeList);
+        ArrayList<String> finalRec = new ArrayList<String>(set);
+
     }
 }

@@ -38,6 +38,12 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +52,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 ;
 //int timesPlayed;
@@ -105,6 +112,7 @@ public class MusicPlayer extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private LocalBroadcastManager bManager;
     private Location location;
+    private String locationName;
 
     private FragmentManager fm;
     private SongProgressFragment fragment;
@@ -119,6 +127,11 @@ public class MusicPlayer extends AppCompatActivity {
     private int timesPlayed = 0;
     String timeStamp;
     private int fav;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +163,15 @@ public class MusicPlayer extends AppCompatActivity {
         initListeners();
         initBroadcast();
         //initLocation();
+
+        initDB();
+    }
+
+    public void initDB(){
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
     }
 
     public void songPicked(View view) {
@@ -367,13 +389,44 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void saveSong(SongData song) {
         Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
+
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
             timesPlayed++;
         }
 
+        String url = "";
+        if(map.get("URL") != null){
+            url = map.get("URL").toString();
+        }
+
         SharedPrefs.saveSongData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
+
+        //Save song object to firebase
+        DatabaseReference userRef;
+        DatabaseReference songRef = myRef.child("songs").child(song.getID());
+        //String locUID = String.valueOf((float)lat + (float)lng);
+        //songRef.child("location").child(locUID).child("lat").setValue((float)lat);
+        //songRef.child("location").child(locUID).child("long").setValue((float)lng);
+        songRef.child("lastPlayed").setValue(timeStamp);
+        songRef.child("url").setValue(url);
+
+        if(location != null){
+            songRef.child("location").child(locationName).setValue(true);
+        }
+
+        //save song to user
+        if(currentUser!= null) {
+            songRef.child("user").child(currentUser.getUid()).setValue(true);
+
+            userRef = myRef.child("users").child(currentUser.getUid());
+            userRef.child("songs").child(song.getID()).setValue(true);
+
+        }else {
+            songRef.child("user").child(UUID.randomUUID().toString()).setValue(true);
+        }
+
 
     }
 
@@ -581,7 +634,8 @@ public class MusicPlayer extends AppCompatActivity {
                     List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
                     if(null!=listAddresses&&listAddresses.size()>0){
                         String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                        locationTitle.setText(loc_name);
+                        locationName = loc_name;
+                        locationTitle.setText(locationName);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

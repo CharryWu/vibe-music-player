@@ -15,17 +15,17 @@ import android.content.Context;
  * Created by Kartik on 2/16/2018.
  */
 
-public class SongSorter implements Comparator<SongData> {
+public class VibeSongSorter implements Comparator<String> {
 
     Context curContext;
-    public SongSorter(Context context) {
+    public VibeSongSorter(Context context) {
         curContext = context;
     }
 
     Context context;
-    public int compare(SongData lhs, SongData rhs) {
-        String lid = lhs.getID();
-        String rid = rhs.getID();
+    public int compare(String lhs, String rhs) {
+        String lid = lhs;
+        String rid = rhs;
 
         SharedPreferences lpref = curContext.getSharedPreferences(lid, Context.MODE_PRIVATE);
         SharedPreferences rpref = curContext.getSharedPreferences(rid, Context.MODE_PRIVATE);

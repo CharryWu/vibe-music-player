@@ -41,6 +41,14 @@ public class SharedPrefs {
 
     }
 
+    public static void saveDefault(Context context, String id) {
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        //if you need defaults
+        songadd.commit();
+
+    }
+
     public static void updateFavorite(Context context, String id, int songState) {
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
@@ -66,11 +74,38 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updateFriendPlayed(Context context, String id, boolean played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("Friend played", played);
+
+        songadd.commit();
+    }
+
+    public static void updateLocPlay(Context context, String id, boolean played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("Loc Played", played);
+        songadd.commit();
+    }
+
+    public static void updateLastPlayedWeek(Context context, String id, boolean played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("Played this week", played);
+
+        songadd.commit();
+    }
+
     public static void updateURL(Context context, String id, String url){
 
         SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putString("URL",url);
+        songadd.putBoolean("downloaded",true);
 
         Log.i("URL Updated",url);
         songadd.commit();

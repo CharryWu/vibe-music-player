@@ -122,6 +122,8 @@ public class VibeActivity extends AppCompatActivity {
                     //snapshot.child("rating").getRef().setValue(newR);
                     int wR = matchWeek(lp);
                     SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), (float)wR);
+                    SharedPrefs.updateLastPlayedWeek(VibeActivity.this.getApplicationContext(), snapshot.getKey(), true);
+
                     for(DataSnapshot locs: snapshot.child("location").getChildren()){
                         double lat = locs.child("lat").getValue(double.class);
                         double lngt = locs.child("lngt").getValue(double.class);
@@ -136,11 +138,13 @@ public class VibeActivity extends AppCompatActivity {
                             double locR = 2;
                             SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                     snapshot.getKey(), (float)curRate + (float)locR);
+                            SharedPrefs.updateLocPlay(VibeActivity.this.getApplicationContext(), snapshot.getKey(), true);
                             break;
                         }
                     }
                     SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
                     int curRate = pref.getInt("Rating", 0);
+
                     if(curRate > 0) {
                         vibeList.add(snapshot.getKey());
                         vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -169,6 +173,7 @@ public class VibeActivity extends AppCompatActivity {
                         int curRate = pref.getInt("Rating", 0);
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                 snapshot.getKey(), (float)curRate + 2);
+                        SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), snapshot.getKey(), true);
                         vibeList.add(snapshot.getKey());
                         vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
@@ -188,7 +193,6 @@ public class VibeActivity extends AppCompatActivity {
         ArrayList<String> finalRecURL = new ArrayList<String>(seturl);
 
         //PASS finalRecURL to Download Service and start downloads
-
 
     }
 }

@@ -74,28 +74,28 @@ public class SharedPrefs {
         songadd.commit();
     }
 
-    public static void updateFriendPlayed(Context context, String id, boolean played) {
+    public static void updateFriendPlayed(Context context, String id, int played) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putBoolean("Friend played", played);
+        songadd.putInt("Friend Played", played);
 
         songadd.commit();
     }
 
-    public static void updateLocPlay(Context context, String id, boolean played) {
+    public static void updateLocPlay(Context context, String id, int played) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putBoolean("Loc Played", played);
+        songadd.putInt("Loc Played", played);
         songadd.commit();
     }
 
-    public static void updateLastPlayedWeek(Context context, String id, boolean played) {
+    public static void updateLastPlayedWeek(Context context, String id, int played) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putBoolean("Played this week", played);
+        songadd.putInt("Played this week", played);
 
         songadd.commit();
     }

@@ -33,27 +33,23 @@ public class VibeSongSorter implements Comparator<String> {
         double lrate = (double) lpref.getFloat("Rating", 0);
         double rrate = (double) rpref.getFloat("Rating", 0);
 
-        String ltime = lpref.getString("Last played", "");
-        String rtime = lpref.getString("Last played", "");
+        int lLoc = lpref.getInt("Loc Played", 0);
+        int rLoc = lpref.getInt("Loc Played", 0);
 
-        int lfav = lpref.getInt("fav", 0);
-        int rfav = rpref.getInt("fav", 0);
+        int lWeek = lpref.getInt("Played this week", 0);
+        int rWeek = rpref.getInt("Played this week", 0);
+
+        int lFr = lpref.getInt("Friend Played", 0);
+        int rFr = lpref.getInt("Friend Played", 0);
 
         if (lrate != rrate) {
             return ((rrate > lrate)?1:-1);
-        } else if (lfav != rfav) {
-            return ((rfav > lfav)?1:-1);
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-        Boolean check = false;
-        try {
-            check = sdf.parse(rtime).before(sdf.parse(ltime));
-        }catch (ParseException e){
-            e.printStackTrace();
-        }
-
-        if(check){
-            return -1;
+        } else if (lLoc != rLoc) {
+            return ((rLoc > lLoc)?1:-1);
+        }else if (lWeek != rWeek) {
+            return ((rWeek > lWeek)?1:-1);
+        }else if (lFr != rFr) {
+            return ((rFr > lFr)?1:-1);
         }
         return 1;
     }

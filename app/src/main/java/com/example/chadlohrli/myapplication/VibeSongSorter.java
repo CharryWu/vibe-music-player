@@ -15,7 +15,7 @@ import android.content.Context;
  * Created by Kartik on 2/16/2018.
  */
 
-public class VibeSongSorter implements Comparator<String> {
+public class VibeSongSorter implements Comparator<SongData> {
 
     Context curContext;
     public VibeSongSorter(Context context) {
@@ -24,12 +24,15 @@ public class VibeSongSorter implements Comparator<String> {
 
     // takes in urls and sorts songs based on vibe
     Context context;
-    public int compare(String lhs, String rhs) {
+    public int compare(SongData lhs, SongData rhs) {
         //String lid = lhs;
         //String rid = rhs;
 
-        String lid = String.valueOf(lhs.hashCode());
-        String rid = String.valueOf(rhs.hashCode());
+        //String lid = String.valueOf(lhs.hashCode());
+        //String rid = String.valueOf(rhs.hashCode());
+
+        String lid = lhs.getID();
+        String rid = rhs.getID();
 
         SharedPreferences lpref = curContext.getSharedPreferences(lid, Context.MODE_PRIVATE);
         SharedPreferences rpref = curContext.getSharedPreferences(rid, Context.MODE_PRIVATE);

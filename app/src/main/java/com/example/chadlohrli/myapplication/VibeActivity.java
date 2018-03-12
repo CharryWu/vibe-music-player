@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -35,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,13 +49,17 @@ public class VibeActivity extends AppCompatActivity {
     private Location location;
     private ArrayList<String> vibeList = new ArrayList<String>();
     private ArrayList<String> vibeListURLs = new ArrayList<String>();
-    private ArrayList<SongData> downloadedSongs = new ArrayList<SongData>();
 
+    private ArrayList<SongData> vibeSongs = new ArrayList<SongData>();
+    private Set<SongData> setSong;
+    private ArrayList<SongData> vibeFinalPlaylist;
+
+    /*
     private Set<String> set;
     private ArrayList<String> finalRec;
 
     private Set<String> seturl;
-    private ArrayList<String> finalRecURL;
+    private ArrayList<String> finalRecURL;*/
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
@@ -122,6 +129,7 @@ public class VibeActivity extends AppCompatActivity {
     protected void vibe(){
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
+        vibeSongs = createDownloadedSongs();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -155,8 +163,14 @@ public class VibeActivity extends AppCompatActivity {
                     int curRate = pref.getInt("Rating", 0);
 
                     if(curRate > 0) {
-                        vibeList.add(snapshot.getKey());
-                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
+                        SongData song = new SongData(snapshot.getKey(), null, null, null,
+                                null, null, snapshot.child("url").getValue(String.class));
+                        boolean state = pref.getBoolean("downloaded", false);
+                        if(!state) {
+                            vibeSongs.add(song);
+                        }
+                        //vibeList.add(snapshot.getKey());
+                        //vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
                 }
             }
@@ -183,8 +197,14 @@ public class VibeActivity extends AppCompatActivity {
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                 snapshot.getKey(), (float)curRate + 2);
                         SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
-                        vibeList.add(snapshot.getKey());
-                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
+                        SongData song = new SongData(snapshot.getKey(), null, null, null,
+                                null, null, snapshot.child("url").getValue(String.class));
+                        boolean state = pref.getBoolean("downloaded", false);
+                        if(!state) {
+                            vibeSongs.add(song);
+                        }
+                        //vibeList.add(snapshot.getKey());
+                        //vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
                 }
             }
@@ -195,30 +215,34 @@ public class VibeActivity extends AppCompatActivity {
         });
 
         // Get unique song ids only
-        set = new HashSet<String>(vibeList);
+        /*set = new HashSet<String>(vibeList);
         finalRec = new ArrayList<String>(set);
 
         seturl = new HashSet<String>(vibeListURLs);
-        finalRecURL = new ArrayList<String>(seturl);
+        finalRecURL = new ArrayList<String>(seturl);*/
 
-        for(String uniqueURL: finalRecURL){
+        setSong = new HashSet<SongData>(vibeSongs);
+        vibeFinalPlaylist = new ArrayList<SongData>(setSong);
 
+        Collections.sort(vibeFinalPlaylist, new VibeSongSorter(getApplicationContext()));
+
+        for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
+            vibeFinalPlaylist.get(i - 1).setPriority(i);
         }
 
-        Collections.sort(finalRecURL, new VibeSongSorter(getApplicationContext()));
         //PASS finalRecURL to Download Service and start downloads
         playFB = (ImageButton) findViewById(R.id.playfb);
         playFB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (finalRecURL.size() == 0) {
+                if (vibeFinalPlaylist.size() == 0) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
                     toast.show();
                     onSupportNavigateUp();
                 }
 
                 Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
-                intent.putExtra("SONGS", finalRecURL);
+                intent.putExtra("SONGS", vibeFinalPlaylist);
                 intent.putExtra("CUR", 0);
                 intent.putExtra("caller", "VibeActivity");
                 VibeActivity.this.startActivity(intent);
@@ -226,5 +250,27 @@ public class VibeActivity extends AppCompatActivity {
             }
         });
 
+    }
+    public ArrayList<SongData> createDownloadedSongs() {
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File[] fields = musicDirectory.listFiles();
+        ArrayList<SongData> songs = new ArrayList<SongData>();
+
+        for (int count = 0; count < fields.length; count++) {
+            String path  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+            String Id = fields[count].getName();
+
+            SongData song = SongParser.parseSong(path, Id, getApplicationContext());
+            songs.add(song);
+        }
+
+        //sort songs
+        Collections.sort(songs, new Comparator<SongData>() {
+            @Override
+            public int compare(SongData a, SongData b) {
+                return a.getTitle().compareTo(b.getTitle());
+            }
+        });
+        return songs;
     }
 }

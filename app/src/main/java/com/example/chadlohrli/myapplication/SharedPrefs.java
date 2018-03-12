@@ -125,6 +125,16 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updateDownloaded(Context context, String id){
+
+        SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("downloaded",true);
+
+        Log.i("Song Downloaded","done");
+        songadd.commit();
+    }
+
     public static Map<String, ?> getSongData(Context context, String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);

@@ -15,26 +15,30 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.google.firebase.database.DatabaseReference;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class AuthHandler implements Runnable{
+public class AuthHandler implements Runnable {
     private String code;
     private Context context;
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
+    private DatabaseReference ref;
 
-    public AuthHandler(Context context,String code){
-        if(code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
+    public AuthHandler(Context context, String code, DatabaseReference myRef) {
+        if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
+        ref = myRef;
     }
 
-    public List<Person> getFriendList(String code) throws IOException{
+    public List<Person> getFriendList(String code) throws IOException {
         // Go to the Google API Console, open your application's
         // credentials page, and copy the client ID and client secret.
         // Then paste them into the following code.
@@ -65,12 +69,34 @@ public class AuthHandler implements Runnable{
         return response.getConnections();
     }
 
+    public List<String> getFriendEmails(List<Person> friends) {
+        List<String> emails = new ArrayList<>();
+        for (Person friend : friends) {
+            if (friend.getEmailAddresses().size() > 1)
+                emails.add(friend.getEmailAddresses().get(0).getValue());
+        }
+
+        return emails;
+    }
+
+    public void getDBExistEntryFromEmail(List<String> emails){
+
+    }
+
+    public void setFriendListDB(){
+
+    }
+
     @Override
-    public void run(){
-        try{
-            getFriendList(code);
-        }catch (Exception e){
-            Log.e("RequestFriendListRunnable.run()","Exception");
+    public void run() {
+        try {
+            List<Person> friendList = getFriendList(code);
+            List<String> friendEmails = getFriendEmails(friendList);
+            for (Person p : friendList) {
+            }
+
+        } catch (Exception e) {
+            Log.e("RequestFriendListRunnable.run()", "Exception");
         }
     }
 }

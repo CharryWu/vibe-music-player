@@ -40,6 +40,8 @@ public class DownloadService extends Service {
             int songPosition = Integer.parseInt(downloadDescription);
 
             //TODO use songPosition to mark song as playable and remove progress bar in fragment
+            SongData song = songList.get(songPosition);
+            song.setIfDownloaded("True");
 
         }
     };
@@ -63,15 +65,17 @@ public class DownloadService extends Service {
     public void downloadVibeSongsPlaylist(ArrayList<SongData> songList) {
         Iterator<SongData> it = songList.iterator();
 
-        //position of song in arraylist
+        //position of song in arraylist, passed into downloadSong and then the description of download
+        //to be able to tell which song was just downloaded
         int position = 0;
         while (it.hasNext()) {
             SongData song = it.next();
             String songId = song.getID();
+            String isDownloaded = song.checkIfDownloaded();
 
-            Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
+            //Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
             //if map size is 0, then song has not yet been downloaded
-            if(map.size() == 0)
+            if(isDownloaded.equals("False"))
                 downloadSong(song, position);
             position++;
 

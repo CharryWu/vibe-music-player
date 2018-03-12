@@ -65,7 +65,6 @@ public class SongProgressFragment extends Fragment {
 
         songTitle.setText(song);
         artistAlbum.setText(artist_album);
-
         return layout;
     }
 

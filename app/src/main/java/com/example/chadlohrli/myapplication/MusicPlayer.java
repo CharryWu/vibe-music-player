@@ -406,15 +406,19 @@ public class MusicPlayer extends AppCompatActivity {
         //Save song object to firebase
         DatabaseReference userRef;
         DatabaseReference songRef = myRef.child("songs").child(song.getID());
-        //String locUID = String.valueOf((float)lat + (float)lng);
-        //songRef.child("location").child(locUID).child("lat").setValue((float)lat);
-        //songRef.child("location").child(locUID).child("long").setValue((float)lng);
         songRef.child("lastPlayed").setValue(timeStamp);
         songRef.child("url").setValue(url);
 
+        //location
+        String locUID = String.valueOf(String.valueOf(lat + lng).hashCode());
+        songRef.child("location").child(locUID).child("lat").setValue((float)lat);
+        songRef.child("location").child(locUID).child("long").setValue((float)lng);
+
+        /*
         if(location != null){
-            songRef.child("location").child(locationName).setValue(true);
+            songRef.child("location").child(locUID).child(locationName).setValue(true);
         }
+        */
 
         //save song to user
         if(currentUser!= null) {

@@ -115,9 +115,9 @@ public class DownloadActivity extends AppCompatActivity {
         int s = files.length;
 
 
+        //url = "https://firebasestorage.googleapis.com/v0/b/cse-110-team-project-team-5.appspot.com/o/song%2Fafter_the_storm?alt=media&token=9a6ac02b-0192-487a-85a1-4cf40b30e3c4";
         Uri uri = Uri.parse(url);
-        //Uri uri = Uri.parse("https://firebasestorage.googleapis.com/v0/b/cse-110-team-project-team-5.appspot.com/o/song%2Fafter_the_storm?alt=media&token=9a6ac02b-0192-487a-85a1-4cf40b30e3c4");
-        id = UUID.randomUUID().toString();
+        id = String.valueOf(url.hashCode());
 
         try{
 

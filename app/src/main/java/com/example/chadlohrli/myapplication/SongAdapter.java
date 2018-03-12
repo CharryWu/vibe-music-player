@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -70,8 +71,8 @@ public class SongAdapter extends BaseAdapter {
         //get title and artist views
         TextView songView = (TextView) songLay.findViewById(R.id.song_title);
         TextView artistView = (TextView) songLay.findViewById(R.id.song_artist);
-
-
+        //download spinner
+        ProgressBar progressBar = (ProgressBar) songLay.findViewById(R.id.downloadBar);
         Button undislikeBtn = (Button) songLay.findViewById(R.id.undislikeBtn);
         undislikeBtn.setVisibility(View.INVISIBLE);
         //get song using position
@@ -82,6 +83,10 @@ public class SongAdapter extends BaseAdapter {
             undislikeBtn.setBackgroundColor(Color.RED);
             undislikeBtn.setText("X");
         }
+        //if the current song as not been downloaded then make progressBar visible
+        if (currSong.checkIfDownloaded() == "False")
+            progressBar.setVisibility(View.VISIBLE);
+
         //get title and artist strings
         songView.setText(currSong.getTitle());
         String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();

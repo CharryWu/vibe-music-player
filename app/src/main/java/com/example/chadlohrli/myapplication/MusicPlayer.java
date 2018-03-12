@@ -2,6 +2,7 @@ package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
@@ -18,6 +20,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -133,10 +136,51 @@ public class MusicPlayer extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
+    BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //directory that song has been stored in
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+
+
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(referenceId);
+            DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            Cursor cursor = downloadManager.query(query);
+
+            if(cursor.moveToFirst()); {
+                //get description of download which contains position of downloaded song in song ArrayList passed in
+                String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
+                //convert downloadDescription to int
+                int songPosition = Integer.parseInt(downloadDescription);
+                Log.d("songPosition", Integer.toString(songPosition));
+
+                //get title of column which is the id of the song
+                String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
+                Log.d("songId", songId);
+
+                //TODO use songPosition to mark song as playable and remove progress bar in fragment
+                SongData song = songs.get(songPosition);
+
+                //parse song data into song
+                song = SongParser.parseSong(path, songId, getApplicationContext());
+
+                updateFragment();
+
+            }
+        }
+    };
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
+
+        //register download broadcast reciever
+        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -183,7 +227,6 @@ public class MusicPlayer extends AppCompatActivity {
                 SharedPrefs.updateFavorite(getApplicationContext(), song.getID(), state.NEUTRAL.ordinal());
             }
         }
-
         setSong(Integer.parseInt(view.getTag().toString()));
         playSong();
     }
@@ -314,6 +357,10 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void playSong() {
+
+        //TODO if current song has not been downloaded skip and play next song
+        if(songs.get(cur_song).checkIfDownloaded().equals("False"))
+            playNextSong();
 
         checkSongState(songs.get(cur_song));
 

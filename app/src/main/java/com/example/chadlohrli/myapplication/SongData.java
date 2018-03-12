@@ -78,7 +78,8 @@ public class SongData implements Serializable, Parcelable {
     }
 
     public String checkIfDownloaded() {return isDownloaded;}
-    public void setIfDownloaded(String downloaded) {}
+
+    public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
 
     //public Bitmap getImage() {return album_image;}
 

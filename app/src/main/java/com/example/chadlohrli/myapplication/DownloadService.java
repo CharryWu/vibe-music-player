@@ -23,33 +23,47 @@ import java.util.UUID;
 public class DownloadService extends Service {
     private ArrayList<SongData> songList;
     private DownloadManager downloadManager;
-
     //TODO move broadcast reciever into either vibe mode or music player
-    BroadcastReceiver onComplete = new BroadcastReceiver() {
+    /**
+    BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //directory that song has been stored in
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+
 
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(referenceId);
             Cursor cursor = downloadManager.query(query);
-            cursor.moveToFirst();
-            //get description of download which contains position of downloaded song in song ArrayList passed in
-            String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
-            //convert downloadDescription to int
-            int songPosition = Integer.parseInt(downloadDescription);
 
-            //TODO use songPosition to mark song as playable and remove progress bar in fragment
-            SongData song = songList.get(songPosition);
-            song.setIfDownloaded("True");
+            if(cursor.moveToFirst()); {
+                //get description of download which contains position of downloaded song in song ArrayList passed in
+                String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
+                //convert downloadDescription to int
+                int songPosition = Integer.parseInt(downloadDescription);
+                Log.d("songPosition", Integer.toString(songPosition));
 
+                //get title of column which is the id of the song
+                String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
+                Log.d("songId", songId);
+
+                //TODO use songPosition to mark song as playable and remove progress bar in fragment
+                SongData song = songList.get(songPosition);
+
+                //parse song data into song
+                song = SongParser.parseSong(path, songId, getApplicationContext());
+
+
+            }
         }
     };
-
+    */
     public DownloadService() {
         downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+
         //TODO move this into music player/vibe mode
-        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        //registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Override

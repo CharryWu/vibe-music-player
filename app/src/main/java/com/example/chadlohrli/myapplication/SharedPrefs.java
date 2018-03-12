@@ -80,6 +80,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Priority", p);
 
+        Log.i("Priority Updated", Integer.toString(p));
         songadd.commit();
     }
 
@@ -89,6 +90,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Friend Played", played);
 
+        Log.i("Friend played Updated", Integer.toString(played));
         songadd.commit();
     }
 
@@ -97,6 +99,8 @@ public class SharedPrefs {
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Loc Played", played);
+
+        Log.i("Loc played Updated", Integer.toString(played));
         songadd.commit();
     }
 
@@ -106,6 +110,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Played this week", played);
 
+        Log.i("Week played Updated", Integer.toString(played));
         songadd.commit();
     }
 

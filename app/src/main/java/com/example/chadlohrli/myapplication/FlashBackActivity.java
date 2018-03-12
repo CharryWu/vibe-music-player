@@ -1,4 +1,4 @@
-package com.example.chadlohrli.myapplication;
+/*package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.content.Context;
@@ -206,23 +206,7 @@ public class FlashBackActivity extends AppCompatActivity {
             onSupportNavigateUp();
             return;
         }
-        Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
-
-        /*if(!flashbackList.isEmpty()) {
-            Iterator<SongData> iter = flashbackList.iterator();
-            for (SongData songelem : flashbackList) {
-                String id = songelem.getID();
-                SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
-                int fav = pref.getInt("fav", 0);
-                if (fav == -1) {
-                    flashbackList.remove(songelem);
-                }
-            }
-        }*/
-        //commented out listview of all flashback songs
-        /*songlist = (ListView) findViewById(R.id.song_list);
-        SongAdapter songadt = new SongAdapter(this, flashbackList);
-        songlist.setAdapter(songadt);*/
+        Collections.sort(flashbackList, new SongSorter(getApplicationContext()))
         playFB = (ImageButton) findViewById(R.id.playfb);
 
         playFB.setOnClickListener(new View.OnClickListener() {
@@ -256,12 +240,6 @@ public class FlashBackActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.flashback);
-        flashback();
-    }*/
-}
+}*/
 
 

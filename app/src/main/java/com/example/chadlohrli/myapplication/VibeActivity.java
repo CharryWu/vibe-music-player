@@ -46,9 +46,18 @@ public class VibeActivity extends AppCompatActivity {
     private Location location;
     private ArrayList<String> vibeList = new ArrayList<String>();
     private ArrayList<String> vibeListURLs = new ArrayList<String>();
+    private ArrayList<SongData> downloadedSongs = new ArrayList<SongData>();
+
+    private Set<String> set;
+    private ArrayList<String> finalRec;
+
+    private Set<String> seturl;
+    private ArrayList<String> finalRecURL;
+
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
     private FirebaseAuth mAuth;
+    private ImageButton playFB;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -186,13 +195,36 @@ public class VibeActivity extends AppCompatActivity {
         });
 
         // Get unique song ids only
-        Set<String> set = new HashSet<String>(vibeList);
-        ArrayList<String> finalRec = new ArrayList<String>(set);
+        set = new HashSet<String>(vibeList);
+        finalRec = new ArrayList<String>(set);
 
-        Set<String> seturl = new HashSet<String>(vibeListURLs);
-        ArrayList<String> finalRecURL = new ArrayList<String>(seturl);
+        seturl = new HashSet<String>(vibeListURLs);
+        finalRecURL = new ArrayList<String>(seturl);
 
-        Collections.sort(vibeListURLs, new VibeSongSorter(getApplicationContext()));
+        for(String uniqueURL: finalRecURL){
+
+        }
+
+        Collections.sort(finalRecURL, new VibeSongSorter(getApplicationContext()));
         //PASS finalRecURL to Download Service and start downloads
+        playFB = (ImageButton) findViewById(R.id.playfb);
+        playFB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (finalRecURL.size() == 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+                    toast.show();
+                    onSupportNavigateUp();
+                }
+
+                Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
+                intent.putExtra("SONGS", finalRecURL);
+                intent.putExtra("CUR", 0);
+                intent.putExtra("caller", "VibeActivity");
+                VibeActivity.this.startActivity(intent);
+                finish();
+            }
+        });
+
     }
 }

@@ -192,7 +192,7 @@ public class VibeActivity extends AppCompatActivity {
         Set<String> seturl = new HashSet<String>(vibeListURLs);
         ArrayList<String> finalRecURL = new ArrayList<String>(seturl);
 
-        Collections.sort(vibeList, new VibeSongSorter(getApplicationContext()));
+        Collections.sort(vibeListURLs, new VibeSongSorter(getApplicationContext()));
         //PASS finalRecURL to Download Service and start downloads
     }
 }

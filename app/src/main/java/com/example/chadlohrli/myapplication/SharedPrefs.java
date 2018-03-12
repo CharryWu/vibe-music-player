@@ -74,6 +74,15 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updatePriority(Context context, String id, int p) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Priority", p);
+
+        songadd.commit();
+    }
+
     public static void updateFriendPlayed(Context context, String id, int played) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);

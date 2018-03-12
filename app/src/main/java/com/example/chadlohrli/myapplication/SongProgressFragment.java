@@ -45,7 +45,6 @@ public class SongProgressFragment extends Fragment {
         toFill.setVisibility(View.GONE);
         songadt = new SongAdapter(getActivity(), songs);
         toFill.setAdapter(songadt);
-
         carrot = layout.findViewById(R.id.carrot);
 
         carrot.setOnClickListener(new View.OnClickListener() {
@@ -89,5 +88,7 @@ public class SongProgressFragment extends Fragment {
         animate.setDuration(500);
         toFill.startAnimation(animate);
     }
+
+    public SongAdapter getSongadapter() {return songadt;}
 
 }

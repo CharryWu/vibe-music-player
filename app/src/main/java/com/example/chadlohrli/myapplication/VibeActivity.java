@@ -44,6 +44,7 @@ import java.util.Set;
 
 public class VibeActivity extends AppCompatActivity {
     private Location location;
+    private DateHelper dateHelper;
     private ArrayList<String> vibeList = new ArrayList<String>();
     private ArrayList<String> vibeListURLs = new ArrayList<String>();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -55,6 +56,11 @@ public class VibeActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+    public void setDateHelper(DateHelper dateHelper) {
+        this.dateHelper = dateHelper;
+    }
+
 
     public int matchWeek(String songTimestamp) {
         Date curtime = Calendar.getInstance().getTime();
@@ -111,6 +117,8 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     protected void vibe(){
+
+        setDateHelper(new DateHelper());
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -121,13 +129,20 @@ public class VibeActivity extends AppCompatActivity {
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
                     //snapshot.child("rating").getRef().setValue(newR);
                     int wR = matchWeek(lp);
+                    Log.i("week rating is: ", String.valueOf(wR));
+
                     SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), (float)wR);
+
                     for(DataSnapshot locs: snapshot.child("location").getChildren()){
                         double lat = locs.child("lat").getValue(double.class);
                         double lngt = locs.child("lngt").getValue(double.class);
                         Location playLoc = new Location("any");
                         playLoc.setLatitude(lat);
                         playLoc.setLongitude(lngt);
+
+                        Log.i("Latitude:", String.valueOf(lat));
+                        Log.i("Longitude:", String.valueOf(lngt));
+
                         if(matchLocation(playLoc) == 2){
                             //double rat = snapshot.child("rating").getValue(int.class) + matchLocation(playLoc);
                             //snapshot.child("rating").getRef().setValue(rat);
@@ -159,6 +174,8 @@ public class VibeActivity extends AppCompatActivity {
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.i("Getting friends", "started");
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
                     for(DataSnapshot fSongs: dataSnapshot.child(friendid).child("songs").getChildren()){
@@ -173,6 +190,7 @@ public class VibeActivity extends AppCompatActivity {
                         vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
                 }
+                Log.i("Getting friends", "finished");
             }
 
             @Override

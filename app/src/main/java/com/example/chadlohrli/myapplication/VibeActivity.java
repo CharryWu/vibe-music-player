@@ -73,6 +73,7 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     public int matchWeek(String songTimestamp) {
+        Log.i("Timestampforsong", songTimestamp);
         Date curtime = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
         Date songTime = null;
@@ -90,6 +91,9 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     public double matchLocation(Location songLoc) {
+        Log.i("Lat", String.valueOf(songLoc.getLatitude()));
+        Log.i("Long", String.valueOf(songLoc.getLongitude()));
+
         double distance = songLoc.distanceTo(location);
         double locRating = 0;
         if (distance <= 304.8) {
@@ -110,7 +114,7 @@ public class VibeActivity extends AppCompatActivity {
 
         Location loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if (location != null) {
+        if (loc != null) {
             return loc;
         } else {
             Toast.makeText(getApplicationContext(), "Cannot Get Location", Toast.LENGTH_LONG).show();
@@ -137,13 +141,16 @@ public class VibeActivity extends AppCompatActivity {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
                     //snapshot.child("rating").getRef().setValue(newR);
+                    Log.i("Song current",snapshot.getKey());
+                    // next 3 uncomment
                     int wR = matchWeek(lp);
-                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), (float)wR);
+                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), wR);
                     SharedPrefs.updateLastPlayedWeek(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
 
+                    //uncomment the block
                     for(DataSnapshot locs: snapshot.child("location").getChildren()){
                         double lat = locs.child("lat").getValue(double.class);
-                        double lngt = locs.child("lngt").getValue(double.class);
+                        double lngt = locs.child("long").getValue(double.class);
                         Location playLoc = new Location("any");
                         playLoc.setLatitude(lat);
                         playLoc.setLongitude(lngt);
@@ -152,9 +159,9 @@ public class VibeActivity extends AppCompatActivity {
                             //snapshot.child("rating").getRef().setValue(rat);
                             SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
                             int curRate = pref.getInt("Rating", 0);
-                            double locR = 2;
+                            int locR = 2;
                             SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                    snapshot.getKey(), (float)curRate + (float)locR);
+                                    snapshot.getKey(), curRate + locR);
                             SharedPrefs.updateLocPlay(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
                             break;
                         }
@@ -183,19 +190,22 @@ public class VibeActivity extends AppCompatActivity {
         //get CURRENT USER ID HERE
         FirebaseUser currentUser = mAuth.getCurrentUser();
         final String curId = currentUser.getUid();
+        Log.i("ME curr", curId);
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
+                    Log.i("Friend curr", snapshot.getKey());
                     for(DataSnapshot fSongs: dataSnapshot.child(friendid).child("songs").getChildren()){
                         // GET ORIGINAL RATING IN NEWR
                         // int newR = myRef.child("songs").child(snapshot.getKey()).child("rating")
                         // CHANGE RATINGS BY ADDING 2
+                        Log.i("User sonng curr", fSongs.getKey());
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                snapshot.getKey(), (float)curRate + 2);
+                                snapshot.getKey(),curRate + 2);
                         SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
                         SongData song = new SongData(snapshot.getKey(), null, null, null,
                                 null, null, snapshot.child("url").getValue(String.class));

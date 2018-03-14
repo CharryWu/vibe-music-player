@@ -44,7 +44,7 @@
             android:name=".PickedAlbumActivity"
             android:parentActivityName=".AlbumActivity" />
         <activity
-            android:name=".FlashBackActivity"
+            android:name=".VibeActivity"
             android:parentActivityName=".MainActivity" />
 
         <service

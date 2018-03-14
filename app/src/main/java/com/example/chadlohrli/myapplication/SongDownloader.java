@@ -3,11 +3,13 @@ package com.example.chadlohrli.myapplication;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 
@@ -17,40 +19,100 @@ import static android.content.Context.DOWNLOAD_SERVICE;
 
 public class SongDownloader {
     //array to store URI's of download addresses after parsing from string to URI
-    private Uri[] uriArray;
+    private ArrayList<SongData> songList;
     private DownloadManager downloadManager;
-    private Context context;
+    //TODO move broadcast reciever into either vibe mode or music player
+    /**
+     BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+    long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+    //directory that song has been stored in
+    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 
-    public SongDownloader(String[] addressArray, Context context) {
-        this.context = context;
-        //create uriArray
-        uriArray = new Uri[addressArray.length];
-       //iterate through addressArray and parse strings into URIs. Then store in uriArray
-       for(int i = 0; i < uriArray.length; i++) {
-           Uri currentSongUri = Uri.parse(addressArray[i]);
-           uriArray[i] = currentSongUri;
-       }
+
+    DownloadManager.Query query = new DownloadManager.Query();
+    query.setFilterById(referenceId);
+    Cursor cursor = downloadManager.query(query);
+
+    if(cursor.moveToFirst()); {
+    //get description of download which contains position of downloaded song in song ArrayList passed in
+    String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
+    //convert downloadDescription to int
+    int songPosition = Integer.parseInt(downloadDescription);
+    Log.d("songPosition", Integer.toString(songPosition));
+
+    //get title of column which is the id of the song
+    String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
+    Log.d("songId", songId);
+
+    //TODO use songPosition to mark song as playable and remove progress bar in fragment
+    SongData song = songList.get(songPosition);
+
+    //parse song data into song
+    song = SongParser.parseSong(path, songId, getApplicationContext());
+
+
+    }
+    }
+    };
+     */
+    public SongDownloader(Context context) {
+        downloadManager = (DownloadManager)context.getSystemService(DOWNLOAD_SERVICE);
+
+        //TODO move this into music player/vibe mode
+        //registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    public void DownloadData(Uri[] uriArray) {
-        downloadManager  = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
-        for(int i = 0; i < uriArray.length; i++) {
-            Uri uri = uriArray[i];
-            DownloadManager.Request request = new DownloadManager.Request(uri);
-            request.setTitle("Song Download");
 
-            request.setDescription("Downloading Song");
+    public void setSongList(ArrayList<SongData> songList) {
+        this.songList = songList;
+    }
 
+    public void downloadVibeSongsPlaylist(ArrayList<SongData> songList) {
+        Iterator<SongData> it = songList.iterator();
 
+        //position of song in arraylist, passed into downloadSong and then the description of download
+        //to be able to tell which song was just downloaded
+        int position = 0;
+        while (it.hasNext()) {
+            SongData song = it.next();
+            String songId = song.getID();
+            String isDownloaded = song.checkIfDownloaded();
 
-            //set destination of downloaded file
-            //TODO check if uri.toString is ok
-            request.setDestinationInExternalFilesDir(context, "android.resource://test/raw/", uri.toString());
+            //Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
+            //if map size is 0, then song has not yet been downloaded
+            if(isDownloaded.equals("False"))
+                downloadSong(song, position);
+            position++;
 
-            downloadManager.enqueue(request);
         }
-
     }
+
+    public void downloadSong(SongData song, int position) {
+        Uri uri = Uri.parse("REPLACE WITH REAL URL");
+        //Uri uri = Uri.parse(song.getUrl);
+
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        String songId = song.getID();
+
+        //description will be position of song in list so that broadcast reciever knows which song was downloaded
+        request.setTitle(songId);
+        request.setDescription(Integer.toString(position));
+
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songId+".mp3");
+
+
+        request.allowScanningByMediaScanner();
+        request.setMimeType("audio/MP3");
+
+        downloadManager.enqueue(request);
+
+
+        //TODO update shared prefs
+    }
+
 
 
 

@@ -210,7 +210,13 @@ public class VibeActivity extends AppCompatActivity {
                         SongData song = new SongData(snapshot.getKey(), null, null, null,
                                 null, null, snapshot.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
-
+                        if (state == true) {
+                            song = createDownloadedSongData(song);
+                        }
+                        else {
+                            song.setIfDownloaded("False");
+                        }
+                        vibeSongs.add(song);
                         /**
                         if(!state) {
                             vibeSongs.add(song);

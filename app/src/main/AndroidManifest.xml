@@ -44,7 +44,7 @@
             android:name=".PickedAlbumActivity"
             android:parentActivityName=".AlbumActivity" />
         <activity
-            android:name=".FlashBackActivity"
+            android:name=".VibeActivity"
             android:parentActivityName=".MainActivity" />
 
         <service
@@ -53,7 +53,9 @@
             android:exported="true" />
 
         <activity android:name=".DownloadActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity">
+
+        </activity>
 
         <service
             android:name=".DownloadService"

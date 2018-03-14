@@ -184,8 +184,10 @@ public class MusicPlayer extends AppCompatActivity {
                 song = SongParser.parseSong(path, songId, getApplicationContext());
 
                 updateFragment();
+                SharedPrefs.updateDownloaded(getApplicationContext(), songId);
 
             }
+
         }
     };
 

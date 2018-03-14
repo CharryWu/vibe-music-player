@@ -17,6 +17,7 @@ public class SongData implements Serializable, Parcelable {
     private String song_title;
     private String song_artist;
     private String song_path;
+    private String isDownloaded;
     //private Bitmap album_image;
 
     public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath /*Bitmap albumImage*/) {
@@ -27,6 +28,7 @@ public class SongData implements Serializable, Parcelable {
         song_title = songTitle;
         song_artist = songArtist;
         song_path = songPath;
+        isDownloaded = "True";
         //album_image = albumImage;
     }
 
@@ -75,6 +77,9 @@ public class SongData implements Serializable, Parcelable {
         return song_path;
     }
 
+    public String checkIfDownloaded() {return isDownloaded;}
+    public void setIfDownloaded(String downloaded) {}
+
     //public Bitmap getImage() {return album_image;}
 
     @Override
@@ -90,6 +95,7 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_title);
         dest.writeString(song_artist);
         dest.writeString(song_path);
+        dest.writeString(isDownloaded);
     }
 
 }

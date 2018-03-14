@@ -47,8 +47,6 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
 
     public ArrayList<SongData> createSongs() {
 
-
-
         File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files",musicDirectory.exists()+"");
         Log.v("Files",musicDirectory.isDirectory()+"");

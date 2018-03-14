@@ -18,9 +18,11 @@ public class SongData implements Serializable, Parcelable {
     private String song_artist;
     private String song_path;
     private String isDownloaded;
+    private String url;
+    private int priority;
     //private Bitmap album_image;
 
-    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath /*Bitmap albumImage*/) {
+    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath, String url /*Bitmap albumImage*/) {
 
         id = songId;
         song_length = songLength;
@@ -29,6 +31,8 @@ public class SongData implements Serializable, Parcelable {
         song_artist = songArtist;
         song_path = songPath;
         isDownloaded = "True";
+        url = url;
+        priority = 0;
         //album_image = albumImage;
     }
 
@@ -97,6 +101,10 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_artist);
         dest.writeString(song_path);
         dest.writeString(isDownloaded);
+    }
+
+    public void setPriority(int priority){
+        priority = priority;
     }
 
 }

@@ -41,6 +41,14 @@ public class SharedPrefs {
 
     }
 
+    public static void saveDefault(Context context, String id) {
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        //if you need defaults
+        songadd.commit();
+
+    }
+
     public static void updateFavorite(Context context, String id, int songState) {
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
@@ -66,18 +74,66 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updatePriority(Context context, String id, int p) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Priority", p);
+
+        Log.i("Priority Updated", Integer.toString(p));
+        songadd.commit();
+    }
+
+    public static void updateFriendPlayed(Context context, String id, int played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Friend Played", played);
+
+        Log.i("Friend played Updated", Integer.toString(played));
+        songadd.commit();
+    }
+
+    public static void updateLocPlay(Context context, String id, int played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Loc Played", played);
+
+        Log.i("Loc played Updated", Integer.toString(played));
+        songadd.commit();
+    }
+
+    public static void updateLastPlayedWeek(Context context, String id, int played) {
+
+        SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putInt("Played this week", played);
+
+        Log.i("Week played Updated", Integer.toString(played));
+        songadd.commit();
+    }
+
     public static void updateURL(Context context, String id, String url){
 
         SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putString("URL",url);
+        songadd.putBoolean("downloaded",true);
 
         Log.i("URL Updated",url);
         songadd.commit();
-
-
     }
 
+    public static void updateDownloaded(Context context, String id){
+
+        SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("downloaded",true);
+
+        Log.i("Song Downloaded","done");
+        songadd.commit();
+    }
 
     public static Map<String, ?> getSongData(Context context, String id) {
 

@@ -99,7 +99,7 @@ public class SongParser {
 
             //Log.d("song title:", song_title);
 
-            song = new SongData(id, song_length, album_title, song_title, song_artist, song_path/*,album_image*/);
+            song = new SongData(id, song_length, album_title, song_title, song_artist, song_path, null/*,album_image*/);
 
 
         } catch (Exception e) {

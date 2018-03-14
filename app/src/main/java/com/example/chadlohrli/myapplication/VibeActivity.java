@@ -166,9 +166,19 @@ public class VibeActivity extends AppCompatActivity {
                         SongData song = new SongData(snapshot.getKey(), null, null, null,
                                 null, null, snapshot.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
+                        if (state == true) {
+                            song = createDownloadedSongData(song);
+                        }
+                        else {
+                            song.setIfDownloaded("False");
+                        }
+                        vibeSongs.add(song);
+
+                        /**
                         if(!state) {
                             vibeSongs.add(song);
                         }
+                         */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
@@ -200,9 +210,12 @@ public class VibeActivity extends AppCompatActivity {
                         SongData song = new SongData(snapshot.getKey(), null, null, null,
                                 null, null, snapshot.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
+
+                        /**
                         if(!state) {
                             vibeSongs.add(song);
                         }
+                         */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
                     }
@@ -272,5 +285,15 @@ public class VibeActivity extends AppCompatActivity {
             }
         });
         return songs;
+    }
+
+    public SongData createDownloadedSongData(SongData songData) {
+        String songId = songData.getID();
+        File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File[] fields = musicDirectory.listFiles();
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+        songData =  SongParser.parseSong(path, songId, getApplicationContext());
+        songData.setIfDownloaded("True");
+        return songData;
     }
 }

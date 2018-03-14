@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (canSend) {
-                    Intent intent = new Intent(MainActivity.this, FlashBackActivity.class);
+                    Intent intent = new Intent(MainActivity.this, VibeActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();

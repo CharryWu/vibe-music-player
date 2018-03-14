@@ -63,11 +63,18 @@ public class DownloadService extends Service {
     };
     */
     public DownloadService() {
-        downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
-
         //TODO move this into music player/vibe mode
         //registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+
+    }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -92,6 +99,7 @@ public class DownloadService extends Service {
 
             //Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
             //if map size is 0, then song has not yet been downloaded
+            Log.d("isDownloaded", isDownloaded);
             if(isDownloaded.equals("False"))
                 downloadSong(song, position);
             position++;

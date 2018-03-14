@@ -396,6 +396,8 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
+        Log.d("cur_song", songs.get(cur_song).getAlbum());
+
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;

@@ -1,5 +1,7 @@
 package com.example.chadlohrli.myapplication;
 
+import android.content.Intent;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,10 +15,10 @@ public class MockTime extends Date {
 
     public MockTime() {}
 
-    public static MockTime getInstance() { return new MockTime();}
 
-    @Override
-    public Date getTime() {
+    public Date test() {
+
+        //Intent input =
 
         //user set specific time
         if(input) {

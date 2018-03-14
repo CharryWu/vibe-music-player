@@ -3,12 +3,14 @@ package Tests;
 import android.location.Location;
 import android.support.test.rule.ActivityTestRule;
 
-import com.example.chadlohrli.myapplication.MockDateHelper;
+import com.example.chadlohrli.myapplication.MockTime;
 import com.example.chadlohrli.myapplication.VibeActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -19,6 +21,7 @@ import static junit.framework.Assert.assertEquals;
 public class VibeActivityTest {
     VibeActivity activity;
 
+    MockTime mockTime;
 
     @Rule
     public ActivityTestRule<VibeActivity> vibeActivity = new ActivityTestRule<VibeActivity>(VibeActivity.class);
@@ -29,7 +32,9 @@ public class VibeActivityTest {
 
     @Test
     public void testMatchWeek() {
-        activity.setDateHelper(new MockDateHelper());
+
+        Date testDate = mockTime.test();
+
         double result = vibeActivity.getActivity().matchWeek("2018.03.10.16.02.48");
         assertEquals(2, result, .01);
 

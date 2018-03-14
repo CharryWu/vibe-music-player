@@ -11,6 +11,4 @@ public class DateHelper {
         return Calendar.getInstance();
     }
 
-    public Date getDate() { return Calendar.getInstance().getTime(); }
-
 }

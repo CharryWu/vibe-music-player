@@ -31,7 +31,7 @@ public class SongData implements Serializable, Parcelable {
         song_artist = songArtist;
         song_path = songPath;
         isDownloaded = "True";
-        url = url;
+        this.url = url;
         priority = 0;
         //album_image = albumImage;
     }
@@ -81,6 +81,10 @@ public class SongData implements Serializable, Parcelable {
         return song_path;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     public String checkIfDownloaded() {return isDownloaded;}
 
     public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
@@ -100,7 +104,7 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_title);
         dest.writeString(song_artist);
         dest.writeString(song_path);
-        dest.writeString(isDownloaded);
+        //dest.writeString(isDownloaded);
     }
 
     public void setPriority(int priority){

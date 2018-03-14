@@ -109,9 +109,11 @@ public class MusicPlayer extends AppCompatActivity {
     private Location lkl;
 
     private MusicService musicService;
+    private DownloadService downloadService;
     private Intent playIntent;
+    private Intent downloadIntent;
     private boolean isBound = false;
-
+    private boolean downloadServiceIsBound = false;
     private Handler mHandler = new Handler();
     private LocalBroadcastManager bManager;
     private Location location;
@@ -136,7 +138,22 @@ public class MusicPlayer extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
-    BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(SONG_FINISHED)) {
+
+                String serviceJsonString = intent.getStringExtra("hi");
+                Log.d("Broadcast", serviceJsonString);
+                Log.d("current index",String.valueOf(cur_song));
+
+                playNextSong();
+
+            }
+        }
+    };
+
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
@@ -281,20 +298,27 @@ public class MusicPlayer extends AppCompatActivity {
         }
     };
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+    private ServiceConnection downloadConnection = new ServiceConnection() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(SONG_FINISHED)) {
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            downloadServiceIsBound = true;
+            DownloadService.DownloadBinder downloadBinder = (DownloadService.DownloadBinder)iBinder;
+            downloadService = downloadBinder.getService();
+            downloadService.setSongList(songs);
 
-                String serviceJsonString = intent.getStringExtra("hi");
-                Log.d("Broadcast", serviceJsonString);
-                Log.d("current index",String.valueOf(cur_song));
+            downloadService.downloadVibeSongsPlaylist();
 
-                playNextSong();
+        }
 
-            }
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            downloadServiceIsBound = false;
         }
     };
+
+
+
+
 
     // -- class specific methods -- //
     @Override
@@ -307,6 +331,11 @@ public class MusicPlayer extends AppCompatActivity {
             LocationHelper.getLatLong(getApplicationContext());
 
         }
+        if (downloadIntent == null) {
+            downloadIntent = new Intent(this, DownloadService.class);
+            bindService(downloadIntent, downloadConnection, Context.BIND_AUTO_CREATE);
+            startService(downloadIntent);
+        }
     }
 
     @Override
@@ -314,8 +343,16 @@ public class MusicPlayer extends AppCompatActivity {
         bManager.unregisterReceiver(bReceiver);
         stopService(playIntent);
         musicService = null;
+
+        unregisterReceiver(onDownloadComplete);
+        stopService(downloadIntent);
+        downloadService = null;
         super.onDestroy();
         unbindService(musicConnection);
+        unbindService(downloadConnection);
+
+
+
     }
 
 
@@ -359,8 +396,10 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
-        if(songs.get(cur_song).checkIfDownloaded().equals("False"))
+        if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
+            return;
+        }
 
         checkSongState(songs.get(cur_song));
 

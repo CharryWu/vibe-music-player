@@ -24,6 +24,8 @@ import java.util.UUID;
 public class DownloadService extends Service {
     private ArrayList<SongData> songList;
     private DownloadManager downloadManager;
+    private final IBinder downloadBinder = new DownloadBinder();
+
     //TODO move broadcast reciever into either vibe mode or music player
     /**
     BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
@@ -70,14 +72,14 @@ public class DownloadService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return downloadBinder;
     }
 
     public void setSongList(ArrayList<SongData> songList) {
         this.songList = songList;
     }
 
-    public void downloadVibeSongsPlaylist(ArrayList<SongData> songList) {
+    public void downloadVibeSongsPlaylist() {
         Iterator<SongData> it = songList.iterator();
 
         //position of song in arraylist, passed into downloadSong and then the description of download
@@ -98,7 +100,7 @@ public class DownloadService extends Service {
     }
 
     public void downloadSong(SongData song, int position) {
-        Uri uri = Uri.parse("REPLACE WITH REAL URL");
+        Uri uri = Uri.parse(song.getUrl());
         //Uri uri = Uri.parse(song.getUrl);
 
         DownloadManager.Request request = new DownloadManager.Request(uri);

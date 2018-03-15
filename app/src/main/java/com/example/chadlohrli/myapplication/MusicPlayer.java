@@ -31,6 +31,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -156,6 +157,11 @@ public class MusicPlayer extends AppCompatActivity {
     private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Toast toast = Toast.makeText(MusicPlayer.this,
+                    "Music Download Complete", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 25, 400);
+            toast.show();
+
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             //directory that song has been stored in
             String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
@@ -399,7 +405,6 @@ public class MusicPlayer extends AppCompatActivity {
 
         //TODO if current song has not been downloaded skip and play next song
         Log.d("cur_song", songs.get(cur_song).getAlbum());
-
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;

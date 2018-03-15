@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
@@ -131,14 +132,31 @@ public class VibeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.flashback);
         LocationHelper.getLatLong(getApplicationContext());
-        vibe();
+
+        //PASS finalRecURL to Download Service and start downloads
+        playFB = (ImageButton) findViewById(R.id.playfb);
+        playFB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                vibe();
+
+            }
+        });
     }
 
     protected void vibe(){
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
+
         //vibeSongs = createDownloadedSongs();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -282,25 +300,19 @@ public class VibeActivity extends AppCompatActivity {
             Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID());
         }
 
-        //PASS finalRecURL to Download Service and start downloads
-        playFB = (ImageButton) findViewById(R.id.playfb);
-        playFB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (vibeFinalPlaylist.size() == 0) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
-                    toast.show();
-                    onSupportNavigateUp();
-                }
+        if (vibeFinalPlaylist.size() == 0) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+            onSupportNavigateUp();
+        }
 
-                Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
-                intent.putExtra("SONGS", vibeFinalPlaylist);
-                intent.putExtra("CUR", 0);
-                intent.putExtra("caller", "VibeActivity");
-                VibeActivity.this.startActivity(intent);
-                finish();
-            }
-        });
+        Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
+        intent.putExtra("SONGS", vibeFinalPlaylist);
+        intent.putExtra("CUR", 0);
+        intent.putExtra("caller", "VibeActivity");
+        VibeActivity.this.startActivity(intent);
+        finish();
+
     }
 
     public ArrayList<SongData> createDownloadedSongs() {

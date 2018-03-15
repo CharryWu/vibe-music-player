@@ -83,9 +83,9 @@ public class SongAdapter extends BaseAdapter {
             undislikeBtn.setBackgroundColor(Color.RED);
             undislikeBtn.setText("X");
         }
+
         //if the current song as not been downloaded then make progressBar visible
-        if (currSong.checkIfDownloaded() == "False")
-            progressBar.setVisibility(View.VISIBLE);
+
 
         //get title and artist strings
         songView.setText(currSong.getTitle());

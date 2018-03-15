@@ -202,9 +202,6 @@ public class VibeActivity extends AppCompatActivity {
                         if (state == true) {
                             song = createDownloadedSongData(song);
                         }
-                        else {
-                            song.setIfDownloaded("False");
-                        }
                         vibeSongs.add(song);
 
                         /**
@@ -255,9 +252,7 @@ public class VibeActivity extends AppCompatActivity {
                         if (state == true) {
                             song = createDownloadedSongData(song);
                         }
-                        else {
-                            song.setIfDownloaded("False");
-                        }
+
                         vibeSongs.add(song);
                         /**
                         if(!state) {
@@ -348,7 +343,7 @@ public class VibeActivity extends AppCompatActivity {
         File[] fields = musicDirectory.listFiles();
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
         songData =  SongParser.parseSong(path, songId, getApplicationContext());
-        songData.setIfDownloaded("True");
+        //songData.setIfDownloaded("True");
         return songData;
     }
 }

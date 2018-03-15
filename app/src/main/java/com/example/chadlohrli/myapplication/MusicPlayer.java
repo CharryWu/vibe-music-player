@@ -404,11 +404,21 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
-        Log.d("cur_song", songs.get(cur_song).getID());
+        Log.d("cur_song", songs.get(cur_song).getAlbum());
+        SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
+        boolean downloaded = pref.getBoolean("downloaded", false);
+        if (downloaded == false) {
+            playNextSong();
+            //TODO return??
+        }
+        /**
+
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;
         }
+        */
+
 
         checkSongState(songs.get(cur_song));
 
@@ -428,7 +438,7 @@ public class MusicPlayer extends AppCompatActivity {
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
         setupPlayer(songs.get(cur_song));
-        SharedPreferences pref = getSharedPreferences("last song", MODE_PRIVATE);
+        pref = getSharedPreferences("last song", MODE_PRIVATE);
         SharedPreferences.Editor edit = pref.edit();
         edit.putString("song", songs.get(cur_song).getTitle());
         edit.putFloat("Latitude", (float)lat);
@@ -779,33 +789,6 @@ public class MusicPlayer extends AppCompatActivity {
     public int getDay() {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
-        return day;
-        /**
-        switch (day) {
-            case 0: return SUNDAY;
-            case 1: return MONDAY;
-            case 2: return TUESDAY;
-            case 3: return WEDNESDAY;
-            case 4: return THURSDAY;
-            case 5: return FRIDAY;
-            default: return SATURDAY;
-=======
-    protected int getDay() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        //Log.i("time of day", String.valueOf(timeofday));
-        //Log.i("dayinfuc", String.valueOf(day));
-        switch (day) {
-            case 2: return MONDAY;
-            case 3: return TUESDAY;
-            case 4: return WEDNESDAY;
-            case 5: return THURSDAY;
-            case 6: return FRIDAY;
-            case 7: return SATURDAY;
-            default: return SUNDAY;
->>>>>>> c61c2149ff710701e18976409192d844493deb3b
-
-        }
-         */
 
     }
 

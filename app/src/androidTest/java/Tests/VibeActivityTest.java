@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
@@ -34,8 +36,15 @@ public class VibeActivityTest {
     public void testMatchWeek() {
 
         Date testDate = mockTime.test();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 
-        double result = vibeActivity.getActivity().matchWeek("2018.03.10.16.02.48");
+        try {
+            testDate = sdf.parse("2018.03.14.16.32.28");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int result = vibeActivity.getActivity().matchWeek(String.valueOf(testDate.getTime()));
         assertEquals(2, result, .01);
 
         result = vibeActivity.getActivity().matchWeek("2018.01.10.16.02.49");

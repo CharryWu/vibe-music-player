@@ -162,6 +162,7 @@ public class VibeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 songFired = true;
+                Log.d("songs listener fired", "yes");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
@@ -233,6 +234,7 @@ public class VibeActivity extends AppCompatActivity {
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("users listener fired", "yes");
                 friendFired = true;
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();

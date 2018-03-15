@@ -17,7 +17,7 @@ public class SongData implements Serializable, Parcelable {
     private String song_title;
     private String song_artist;
     private String song_path;
-    private String isDownloaded = "True";
+    private String isDownloaded = "False";
     private String url;
     private int priority;
     //private Bitmap album_image;

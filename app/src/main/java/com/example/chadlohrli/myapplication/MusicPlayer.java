@@ -405,10 +405,19 @@ public class MusicPlayer extends AppCompatActivity {
 
         //TODO if current song has not been downloaded skip and play next song
         Log.d("cur_song", songs.get(cur_song).getAlbum());
+        SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
+        boolean downloaded = pref.getBoolean("downloaded", false);
+        if (downloaded == false) {
+            playNextSong();
+            //TODO return??
+        }
+        /**
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;
         }
+        */
+
 
         checkSongState(songs.get(cur_song));
 
@@ -428,7 +437,7 @@ public class MusicPlayer extends AppCompatActivity {
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
         setupPlayer(songs.get(cur_song));
-        SharedPreferences pref = getSharedPreferences("last song", MODE_PRIVATE);
+        pref = getSharedPreferences("last song", MODE_PRIVATE);
         SharedPreferences.Editor edit = pref.edit();
         edit.putString("song", songs.get(cur_song).getTitle());
         edit.putFloat("Latitude", (float)lat);

@@ -16,7 +16,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class SharedPrefs {
 
-    public static void saveSongData(Context context, String id, float latitude, float longitude, int day, int time, float rating, int state, int timesPlayed, String lastPlayed, int fav) {
+    public static void saveSongData(Context context, String id, float latitude, float longitude, int day, int time, int rating, int state, int timesPlayed, String lastPlayed, int fav) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
@@ -26,7 +26,7 @@ public class SharedPrefs {
         songadd.putFloat("Longitude", longitude);
         songadd.putInt("Day", day);
         songadd.putInt("Time", time);
-        songadd.putFloat("Rating", rating);
+        songadd.putInt("Rating", rating);
         songadd.putInt("State",state);
         songadd.putInt("Times played", timesPlayed);
         songadd.putString("Last played", lastPlayed);
@@ -64,13 +64,13 @@ public class SharedPrefs {
         songadd.commit();
     }
 
-    public static void updateRating(Context context, String id, float rating) {
+    public static void updateRating(Context context, String id, int rating) {
 
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
-        songadd.putFloat("Rating", rating);
+        songadd.putInt("Rating", rating);
 
-        Log.i("Rating Updated", Float.toString(rating));
+        Log.d("Rating Updated", Integer.toString(rating));
         songadd.commit();
     }
 
@@ -80,7 +80,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Priority", p);
 
-        Log.i("Priority Updated", Integer.toString(p));
+        Log.d("A Priority Updated", Integer.toString(p));
         songadd.commit();
     }
 
@@ -90,7 +90,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Friend Played", played);
 
-        Log.i("Friend played Updated", Integer.toString(played));
+        Log.d("A Friend played Updated", Integer.toString(played));
         songadd.commit();
     }
 
@@ -100,7 +100,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Loc Played", played);
 
-        Log.i("Loc played Updated", Integer.toString(played));
+        Log.d("Loc played Updated", Integer.toString(played));
         songadd.commit();
     }
 
@@ -110,7 +110,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Played this week", played);
 
-        Log.i("Week played Updated", Integer.toString(played));
+        Log.d("A Week played Updated", Integer.toString(played));
         songadd.commit();
     }
 
@@ -121,7 +121,7 @@ public class SharedPrefs {
         songadd.putString("URL",url);
         songadd.putBoolean("downloaded",true);
 
-        Log.i("URL Updated",url);
+        Log.d("A URL Updated",url);
         songadd.commit();
     }
 
@@ -131,7 +131,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putBoolean("downloaded",true);
 
-        Log.i("Song Downloaded","done");
+        Log.d("A Song Downloaded","done");
         songadd.commit();
     }
 

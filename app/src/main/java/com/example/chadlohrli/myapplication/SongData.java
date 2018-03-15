@@ -110,4 +110,17 @@ public class SongData implements Serializable, Parcelable {
         priority = priority;
     }
 
+    @Override
+    public boolean equals(Object other){
+        SongData sec = (SongData) other;
+        if(id.equals(sec.getID())){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

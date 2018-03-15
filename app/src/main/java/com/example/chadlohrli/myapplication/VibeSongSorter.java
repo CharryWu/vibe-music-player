@@ -37,8 +37,8 @@ public class VibeSongSorter implements Comparator<SongData> {
         SharedPreferences lpref = curContext.getSharedPreferences(lid, Context.MODE_PRIVATE);
         SharedPreferences rpref = curContext.getSharedPreferences(rid, Context.MODE_PRIVATE);
 
-        double lrate = (double) lpref.getFloat("Rating", 0);
-        double rrate = (double) rpref.getFloat("Rating", 0);
+        int lrate = lpref.getInt("Rating", 0);
+        int rrate = rpref.getInt("Rating", 0);
 
         int lLoc = lpref.getInt("Loc Played", 0);
         int rLoc = lpref.getInt("Loc Played", 0);

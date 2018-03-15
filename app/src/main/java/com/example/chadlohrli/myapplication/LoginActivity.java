@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     private void GFriends() {
         List<Person> connections = null;
         try{
-            PeopleService peopleService = PeopleAuth.setUp(LoginActivity.this, serverAuth);
+            PeopleService peopleService = eopleAuth.setUp(LoginActivity.this, serverAuth);
             ListConnectionsResponse response = peopleService.people().connections()
                     .list("people/me")
                     .setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers")

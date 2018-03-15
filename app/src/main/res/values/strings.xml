@@ -11,4 +11,7 @@
     <string name="gapi_client_id">25677911820-o69qhi2erbibj3kh6n6klf9g3o6jorm8.apps.googleusercontent.com</string>
     <string name="gapi_client_secret">m1m8x1apKZJJlzpwDpyRl7vg</string>
     <string name="gapi_redirect_url">urn:ietf:wg:oauth:2.0:oob</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

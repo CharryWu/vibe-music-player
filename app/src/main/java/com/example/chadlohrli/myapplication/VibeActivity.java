@@ -10,10 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-<<<<<<< HEAD
-=======
 import android.os.Environment;
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,10 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-<<<<<<< HEAD
-=======
 import java.io.File;
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -43,10 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-<<<<<<< HEAD
-=======
 import java.util.Comparator;
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -56,14 +47,6 @@ import java.util.Set;
 
 public class VibeActivity extends AppCompatActivity {
     private Location location;
-<<<<<<< HEAD
-    private DateHelper dateHelper;
-    private ArrayList<String> vibeList = new ArrayList<String>();
-    private ArrayList<String> vibeListURLs = new ArrayList<String>();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference();
-    private FirebaseAuth mAuth;
-=======
     private ArrayList<String> vibeList = new ArrayList<String>();
     private ArrayList<String> vibeListURLs = new ArrayList<String>();
 
@@ -76,7 +59,6 @@ public class VibeActivity extends AppCompatActivity {
     /*
     private Set<String> set;
     private ArrayList<String> finalRec;
-
     private Set<String> seturl;
     private ArrayList<String> finalRecURL;*/
 
@@ -84,7 +66,6 @@ public class VibeActivity extends AppCompatActivity {
     DatabaseReference myRef = database.getReference();
     private FirebaseAuth mAuth;
     private ImageButton playFB;
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -92,17 +73,8 @@ public class VibeActivity extends AppCompatActivity {
         return true;
     }
 
-<<<<<<< HEAD
-    public void setDateHelper(DateHelper dateHelper) {
-        this.dateHelper = dateHelper;
-    }
-
-
-    public int matchWeek(String songTimestamp) {
-=======
     public int matchWeek(String songTimestamp) {
         Log.d("A Timestampforsong", songTimestamp);
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
         Date curtime = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
         Date songTime = null;
@@ -120,10 +92,6 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     public double matchLocation(Location songLoc) {
-<<<<<<< HEAD
-        double distance = songLoc.distanceTo(location);
-        double locRating = 0;
-=======
         Log.d("A Lat for song", String.valueOf(songLoc.getLatitude()));
         Log.d("A Long for song", String.valueOf(songLoc.getLongitude()));
 
@@ -131,7 +99,6 @@ public class VibeActivity extends AppCompatActivity {
         double locRating = 0;
 
         Log.d("A Distance of song from phone", String.valueOf(distance));
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
         if (distance <= 304.8) {
             locRating += 2;
         }
@@ -150,13 +117,9 @@ public class VibeActivity extends AppCompatActivity {
 
         Location loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-<<<<<<< HEAD
-        if (location != null) {
-=======
         Log.d("Phone Lat", String.valueOf(loc.getLatitude()));
         Log.d("Phone Long", String.valueOf(loc.getLongitude()));
         if (loc != null) {
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
             return loc;
         } else {
             Toast.makeText(getApplicationContext(), "Cannot Get Location", Toast.LENGTH_LONG).show();
@@ -173,15 +136,6 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     protected void vibe(){
-<<<<<<< HEAD
-
-        setDateHelper(new DateHelper());
-        location = getLoc();
-        mAuth = FirebaseAuth.getInstance();
-        myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-=======
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
         //vibeSongs = createDownloadedSongs();
@@ -189,28 +143,10 @@ public class VibeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 songFired = true;
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
                     //snapshot.child("rating").getRef().setValue(newR);
-<<<<<<< HEAD
-                    int wR = matchWeek(lp);
-                    Log.i("week rating is: ", String.valueOf(wR));
-
-                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), (float)wR);
-
-                    for(DataSnapshot locs: snapshot.child("location").getChildren()){
-                        double lat = locs.child("lat").getValue(double.class);
-                        double lngt = locs.child("lngt").getValue(double.class);
-                        Location playLoc = new Location("any");
-                        playLoc.setLatitude(lat);
-                        playLoc.setLongitude(lngt);
-
-                        Log.i("Latitude:", String.valueOf(lat));
-                        Log.i("Longitude:", String.valueOf(lngt));
-
-=======
                     Log.d("A Song current",snapshot.getKey());
                     // next 3 uncomment
                     int wR = matchWeek(lp);
@@ -224,34 +160,20 @@ public class VibeActivity extends AppCompatActivity {
                         Location playLoc = new Location("any");
                         playLoc.setLatitude(lat);
                         playLoc.setLongitude(lngt);
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
                         if(matchLocation(playLoc) == 2){
                             //double rat = snapshot.child("rating").getValue(int.class) + matchLocation(playLoc);
                             //snapshot.child("rating").getRef().setValue(rat);
                             SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
                             int curRate = pref.getInt("Rating", 0);
-<<<<<<< HEAD
-                            double locR = 2;
-                            SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                    snapshot.getKey(), (float)curRate + (float)locR);
-=======
                             int locR = 2;
                             SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                     snapshot.getKey(), curRate + locR);
                             SharedPrefs.updateLocPlay(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
                             break;
                         }
                     }
                     SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
                     int curRate = pref.getInt("Rating", 0);
-<<<<<<< HEAD
-                    if(curRate > 0) {
-                        vibeList.add(snapshot.getKey());
-                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
-                    }
-                }
-=======
 
                     if(curRate > 0) {
                         SongData song = new SongData(snapshot.getKey(), null, null, null,
@@ -266,9 +188,9 @@ public class VibeActivity extends AppCompatActivity {
                         vibeSongs.add(song);
 
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -277,7 +199,6 @@ public class VibeActivity extends AppCompatActivity {
                 if(friendFired && songFired){
                     makePlaylist();
                 }
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
             }
 
             @Override
@@ -288,15 +209,6 @@ public class VibeActivity extends AppCompatActivity {
         //get CURRENT USER ID HERE
         FirebaseUser currentUser = mAuth.getCurrentUser();
         final String curId = currentUser.getUid();
-<<<<<<< HEAD
-        myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Log.i("Getting friends", "started");
-                for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
-                    String friendid = snapshot.getKey();
-=======
         Log.d("A ME curr", curId);
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -305,22 +217,10 @@ public class VibeActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
                     Log.d("A Friend curr", snapshot.getKey());
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
                     for(DataSnapshot fSongs: dataSnapshot.child(friendid).child("songs").getChildren()){
                         // GET ORIGINAL RATING IN NEWR
                         // int newR = myRef.child("songs").child(snapshot.getKey()).child("rating")
                         // CHANGE RATINGS BY ADDING 2
-<<<<<<< HEAD
-                        SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
-                        int curRate = pref.getInt("Rating", 0);
-                        SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                snapshot.getKey(), (float)curRate + 2);
-                        vibeList.add(snapshot.getKey());
-                        vibeListURLs.add(snapshot.child("url").getValue(String.class));
-                    }
-                }
-                Log.i("Getting friends", "finished");
-=======
                         Log.d("A User song curr", fSongs.getKey());
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
@@ -338,9 +238,9 @@ public class VibeActivity extends AppCompatActivity {
                         }
                         vibeSongs.add(song);
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -349,28 +249,12 @@ public class VibeActivity extends AppCompatActivity {
                         }
                     }
                 }
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-<<<<<<< HEAD
-
-        // Get unique song ids only
-        Set<String> set = new HashSet<String>(vibeList);
-        ArrayList<String> finalRec = new ArrayList<String>(set);
-
-        Set<String> seturl = new HashSet<String>(vibeListURLs);
-        ArrayList<String> finalRecURL = new ArrayList<String>(seturl);
-
-        //PASS finalRecURL to Download Service and start downloads
-
-
-    }
-}
-=======
     }
 
     protected void makePlaylist(){
@@ -378,7 +262,6 @@ public class VibeActivity extends AppCompatActivity {
         // Get unique song ids only
         /*set = new HashSet<String>(vibeList);
         finalRec = new ArrayList<String>(set);
-
         seturl = new HashSet<String>(vibeListURLs);
         finalRecURL = new ArrayList<String>(seturl);*/
 
@@ -451,4 +334,3 @@ public class VibeActivity extends AppCompatActivity {
         return songData;
     }
 }
->>>>>>> 5311f3c15f5acee8e6d7a96311cdaf859dde1b6a

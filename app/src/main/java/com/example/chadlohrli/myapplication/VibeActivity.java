@@ -216,6 +216,7 @@ public class VibeActivity extends AppCompatActivity {
                     }
                 }
                 if(friendFired && songFired){
+                    Log.i("makeplayist called from song area", "yep");
                     makePlaylist();
                 }
             }
@@ -263,10 +264,11 @@ public class VibeActivity extends AppCompatActivity {
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
-                        if(friendFired && songFired){
-                            makePlaylist();
-                        }
                     }
+                }
+                if(friendFired && songFired){
+                    Log.i("makeplayist called from user area", "yep");
+                    makePlaylist();
                 }
             }
 

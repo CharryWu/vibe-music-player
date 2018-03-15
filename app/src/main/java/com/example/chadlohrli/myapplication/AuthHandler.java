@@ -15,7 +15,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,11 +82,24 @@ public class AuthHandler implements Runnable {
         return emails;
     }
 
-    public void getDBExistEntryFromEmail(List<String> emails){
+    public void getDBExistEntryFromEmail(List<String> emails) {
+        for (String email : emails) {
+            ref.child("users").orderByChild("email").equalTo(email)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
-    public void setFriendListDB(){
+    public void setFriendListDB() {
 
     }
 

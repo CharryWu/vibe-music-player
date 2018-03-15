@@ -129,7 +129,7 @@ public class VibeActivity extends AppCompatActivity {
     protected void vibe(){
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
-        vibeSongs = createDownloadedSongs();
+        //vibeSongs = createDownloadedSongs();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

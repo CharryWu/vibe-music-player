@@ -88,6 +88,8 @@ public class SongData implements Serializable, Parcelable {
 
     public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
 
+    public void setUrl(String url) {this.url = url;}
+
     //public Bitmap getImage() {return album_image;}
 
     @Override

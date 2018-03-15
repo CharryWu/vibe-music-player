@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class AuthHandler implements Runnable {
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
     private DatabaseReference ref;
+    private ArrayList<String> friendKeys;
+    private int queryExecCnt;
+    private String currentUserKey;
 
     public AuthHandler(Context context, String code, DatabaseReference myRef) {
         if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
@@ -39,6 +43,8 @@ public class AuthHandler implements Runnable {
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
         ref = myRef;
+        friendKeys = new ArrayList<>();
+        queryExecCnt = 0;
     }
 
     public List<Person> getFriendList(String code) throws IOException {
@@ -75,7 +81,7 @@ public class AuthHandler implements Runnable {
     public List<String> getFriendEmails(List<Person> friends) {
         List<String> emails = new ArrayList<>();
         for (Person friend : friends) {
-            if (friend.getEmailAddresses().size() > 1)
+            if (friend.getEmailAddresses().size() > 0)
                 emails.add(friend.getEmailAddresses().get(0).getValue());
         }
 
@@ -83,24 +89,37 @@ public class AuthHandler implements Runnable {
     }
 
     public void getDBExistEntryFromEmail(List<String> emails) {
-        for (String email : emails) {
-            ref.child("users").orderByChild("email").equalTo(email)
-            .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    
-                }
+        final int terminateSize = emails.size();
+        for (final String email : emails) {
+            ref.child("users")
+                    .orderByChild("email").equalTo(email)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            queryExecCnt++;
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                            for (DataSnapshot entry : dataSnapshot.getChildren()) {
+                                friendKeys.add(entry.getKey());
 
-                }
-            });
+                                // Similar to executing callback when all queries has been processed
+                                if (queryExecCnt == terminateSize) {
+                                    setFriendListDB(friendKeys);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
         }
     }
 
-    public void setFriendListDB() {
-
+    public void setFriendListDB(ArrayList<String> keys) {
+        for(String key:keys){
+//            ref.child()
+        }
     }
 
     @Override
@@ -108,8 +127,8 @@ public class AuthHandler implements Runnable {
         try {
             List<Person> friendList = getFriendList(code);
             List<String> friendEmails = getFriendEmails(friendList);
-            for (Person p : friendList) {
-            }
+
+            getDBExistEntryFromEmail(friendEmails);
 
         } catch (Exception e) {
             Log.e("RequestFriendListRunnable.run()", "Exception");

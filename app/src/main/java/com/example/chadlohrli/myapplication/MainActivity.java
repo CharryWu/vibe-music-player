@@ -17,18 +17,26 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 
 import android.provider.Contacts;
 import android.support.annotation.NonNull;
 
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -137,16 +145,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.date:
+                DialogFragment dateFragment = new DatePickerFragment();
+                dateFragment.show(getSupportFragmentManager(), "date picker");
+                return true;
+            case R.id.time:
+                DialogFragment timeFragment = new TimePickerFragment();
+                timeFragment.show(getSupportFragmentManager(), "time picker");
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    public void setDate(int day, int month, int year) {
+        int currDay = day;
+        int currMonth = month;
+        int currYear = year;
+        String date = Integer.toString(currMonth) + "/" + Integer.toString(currDay) + "/" + Integer.toString(currYear);
+        Log.d("DATE IS ", date);
+    }
+
+    public void setTime(int hour, int minute) {
+        int currHour = hour;
+        int currMinute = minute;
+        String time = Integer.toString(currHour) + ":" + Integer.toString(currMinute);
+        Log.d("TIME IS ", time);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Context context = this.getApplicationContext();
+        //Testing Firebase Code
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
 
         String code = SharedPrefs.getServerCode(context);
 
         if (!code.equals(""))
             new Thread(new AuthHandler(context, code, myRef)).start();
-
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
@@ -218,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (canSend) {
-                    Intent intent = new Intent(MainActivity.this, FlashBackActivity.class);
+                    Intent intent = new Intent(MainActivity.this, VibeActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();
@@ -233,11 +281,6 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
             }
         });
-
-
-        //Testing Firebase Code
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
 
         /*
         String id = UUID.randomUUID().toString();

@@ -47,8 +47,6 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
 
     public ArrayList<SongData> createSongs() {
 
-
-
         File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files",musicDirectory.exists()+"");
         Log.v("Files",musicDirectory.isDirectory()+"");
@@ -100,9 +98,9 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         SongData song = songs.get(Integer.parseInt(view.getTag().toString()));
         Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
         if(map.get("State") != null){
-           if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
-               SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
-           }
+            if( ((Integer)map.get("State")).intValue() == state.DISLIKE.ordinal() ){
+                SharedPrefs.updateFavorite(getApplicationContext(),song.getID(),state.NEUTRAL.ordinal());
+            }
         }
 
 
@@ -255,4 +253,3 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
         //empty because spinner selections will never disappear
     }
 }
-

@@ -17,10 +17,12 @@ public class SongData implements Serializable, Parcelable {
     private String song_title;
     private String song_artist;
     private String song_path;
-    private String isDownloaded;
+    private String isDownloaded = "True";
+    private String url;
+    private int priority;
     //private Bitmap album_image;
 
-    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath /*Bitmap albumImage*/) {
+    public SongData(String songId, String songLength, String albumTitle, String songTitle, String songArtist, String songPath, String url /*Bitmap albumImage*/) {
 
         id = songId;
         song_length = songLength;
@@ -28,7 +30,8 @@ public class SongData implements Serializable, Parcelable {
         song_title = songTitle;
         song_artist = songArtist;
         song_path = songPath;
-        isDownloaded = "True";
+        this.url = url;
+        priority = 0;
         //album_image = albumImage;
     }
 
@@ -77,8 +80,13 @@ public class SongData implements Serializable, Parcelable {
         return song_path;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     public String checkIfDownloaded() {return isDownloaded;}
-    public void setIfDownloaded(String downloaded) {}
+
+    public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
 
     //public Bitmap getImage() {return album_image;}
 
@@ -98,4 +106,21 @@ public class SongData implements Serializable, Parcelable {
         //dest.writeString(isDownloaded);
     }
 
+    public void setPriority(int priority){
+        priority = priority;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        SongData sec = (SongData) other;
+        if(id.equals(sec.getID())){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

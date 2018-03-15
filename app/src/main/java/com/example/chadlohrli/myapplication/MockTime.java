@@ -16,9 +16,10 @@ public class MockTime extends Date {
     public MockTime() {}
 
 
-    public Date test() {
+    /*public Date test() {
 
         //Intent input =
+
 
         //user set specific time
         if(input) {
@@ -29,6 +30,6 @@ public class MockTime extends Date {
         else {
             return Calendar.getInstance().getTime();
         }
-    }
+    }*/
 
 }

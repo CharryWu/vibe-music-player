@@ -216,8 +216,8 @@ public class VibeActivity extends AppCompatActivity {
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                snapshot.getKey(),curRate + 2);
-                        SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
+                                fSongs.getKey(),curRate + 2);
+                        SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), fSongs.getKey(), 2);
                         SongData song = new SongData(fSongs.getKey(), null, null, null,
                                 null, null, snapshot.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
@@ -252,12 +252,15 @@ public class VibeActivity extends AppCompatActivity {
         setSong = new HashSet<SongData>(vibeSongs);
         vibeFinalPlaylist = new ArrayList<SongData>(setSong);
 
+        for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
+            Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i - 1).getID());
+        }
         Collections.sort(vibeFinalPlaylist, new VibeSongSorter(getApplicationContext()));
 
         Log.d("Vibe playlist size", String.valueOf(vibeFinalPlaylist.size()));
         for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
             vibeFinalPlaylist.get(i - 1).setPriority(i);
-            Log.d("Vibe playlist", vibeFinalPlaylist.get(i - 1).getID());
+            Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID());
         }
 
         //PASS finalRecURL to Download Service and start downloads

@@ -3,6 +3,7 @@ package com.example.chadlohrli.myapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.annotation.IntegerRes;
 import android.util.Log;
 
 import java.util.Map;
@@ -70,7 +71,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Rating", rating);
 
-        Log.d("Rating Updated", Integer.toString(rating));
+        Log.d("Rating Updated for song " + id, Integer.toString(rating));
         songadd.commit();
     }
 
@@ -80,7 +81,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Priority", p);
 
-        Log.d("A Priority Updated", Integer.toString(p));
+        Log.d("A Priority Updated", "Yes");
         songadd.commit();
     }
 
@@ -90,7 +91,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Friend Played", played);
 
-        Log.d("A Friend played Updated", Integer.toString(played));
+        Log.d("A Friend played Updated", "Yes");
         songadd.commit();
     }
 
@@ -100,7 +101,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Loc Played", played);
 
-        Log.d("Loc played Updated", Integer.toString(played));
+        Log.d("Loc played Updated", "Yes");
         songadd.commit();
     }
 
@@ -110,7 +111,7 @@ public class SharedPrefs {
         SharedPreferences.Editor songadd = newSong.edit();
         songadd.putInt("Played this week", played);
 
-        Log.d("A Week played Updated", Integer.toString(played));
+        Log.d("A Week played Updated", "yes");
         songadd.commit();
     }
 

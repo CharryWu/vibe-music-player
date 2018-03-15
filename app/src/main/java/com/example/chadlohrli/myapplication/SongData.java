@@ -95,7 +95,7 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_title);
         dest.writeString(song_artist);
         dest.writeString(song_path);
-        dest.writeString(isDownloaded);
+        //dest.writeString(isDownloaded);
     }
 
 }

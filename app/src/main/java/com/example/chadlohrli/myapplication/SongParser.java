@@ -100,6 +100,7 @@ public class SongParser {
             //Log.d("song title:", song_title);
 
             song = new SongData(id, song_length, album_title, song_title, song_artist, song_path, null/*,album_image*/);
+            //query shared preferences using this id and get the url
 
 
         } catch (Exception e) {

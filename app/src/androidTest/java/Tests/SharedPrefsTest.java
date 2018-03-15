@@ -1,4 +1,4 @@
-package Tests;
+/*package Tests;
 
 import android.content.Intent;
 import android.support.test.rule.ActivityTestRule;
@@ -16,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
-/**
- * Created by Kyle on 2/17/2018.
- */
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -95,3 +93,4 @@ public class SharedPrefsTest {
 
     }
 }
+*/

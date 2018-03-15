@@ -1,4 +1,4 @@
-package Tests;
+/*package Tests;
 
 import android.support.test.rule.ActivityTestRule;
 
@@ -92,3 +92,4 @@ public class SongAdapterTest {
     }
 
 }
+*/

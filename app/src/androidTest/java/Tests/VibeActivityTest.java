@@ -24,6 +24,7 @@ public class VibeActivityTest {
     VibeActivity activity;
 
     MockTime mockTime;
+    Date date;
 
     @Rule
     public ActivityTestRule<VibeActivity> vibeActivity = new ActivityTestRule<VibeActivity>(VibeActivity.class);
@@ -35,16 +36,16 @@ public class VibeActivityTest {
     @Test
     public void testMatchWeek() {
 
-        Date testDate = mockTime.test();
+        String testDate = mockTime.test();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 
         try {
-            testDate = sdf.parse("2018.03.14.16.32.28");
+            date = sdf.parse(testDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        int result = vibeActivity.getActivity().matchWeek(String.valueOf(testDate.getTime()));
+        int result = vibeActivity.getActivity().matchWeek(String.valueOf(date.getTime()));
         assertEquals(2, result, .01);
 
         result = vibeActivity.getActivity().matchWeek("2018.01.10.16.02.49");

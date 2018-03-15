@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<SongData> completeList = new ArrayList<SongData>();
 
     private BottomNavigationView bottomNav;
+    private static String date;
+    private static String timeStamp;
 
     @Override
     protected void onStart() {
@@ -169,15 +171,26 @@ public class MainActivity extends AppCompatActivity {
         int currDay = day;
         int currMonth = month;
         int currYear = year;
-        String date = Integer.toString(currMonth) + "/" + Integer.toString(currDay) + "/" + Integer.toString(currYear);
+        date = Integer.toString(currYear) + "." + Integer.toString(currMonth) + "" + Integer.toString(currDay);
         Log.d("DATE IS ", date);
+
     }
 
     public void setTime(int hour, int minute) {
         int currHour = hour;
         int currMinute = minute;
-        String time = Integer.toString(currHour) + ":" + Integer.toString(currMinute);
+        int currSec = 0;
+        timeStamp = Integer.toString(currHour) + "." + Integer.toString(currMinute) + "." + Integer.toString(currSec);
         Log.d("TIME IS ", time);
+
+    }
+
+    public static String getDate() {
+        return date;
+    }
+
+    public static String getTime() {
+        return timeStamp;
     }
 
     @Override

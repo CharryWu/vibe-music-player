@@ -2,6 +2,8 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -11,25 +13,33 @@ import java.util.Date;
 
 public class MockTime extends Date {
 
-    Date currTime;
+    String currTime;
+
+    String date = MainActivity.getDate();
+    String time = MainActivity.getTime();
 
     public MockTime() {}
 
 
-    /*public Date test() {
+    public String test() {
 
-        //Intent input =
-
-
-        //user set specific time
-        if(input) {
-            currTime = input;
-            return currTime;
+        if (date != null && time != null) {
+            currTime = (date + "." + time);
         }
 
         else {
-            return Calendar.getInstance().getTime();
+            Date test = Calendar.getInstance().getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+
+            try {
+                test = sdf.parse(String.valueOf(test));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            currTime = String.valueOf(test.getTime());
         }
-    }*/
+
+        return currTime;
+    }
 
 }

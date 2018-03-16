@@ -145,8 +145,8 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
 
                 String serviceJsonString = intent.getStringExtra("hi");
-                Log.d("Broadcast", serviceJsonString);
-                Log.d("current index",String.valueOf(cur_song));
+                //Log.d("Broadcast", serviceJsonString);
+                //Log.d("current index",String.valueOf(cur_song));
 
                 playNextSong();
 
@@ -177,11 +177,11 @@ public class MusicPlayer extends AppCompatActivity {
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
                 //convert downloadDescription to int
                 int songPosition = Integer.parseInt(downloadDescription);
-                Log.d("songPosition", Integer.toString(songPosition));
+                //Log.d("songPosition", Integer.toString(songPosition));
 
                 //get title of column which is the id of the song
                 String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                Log.d("songId", songId);
+                //Log.d("songId", songId);
 
                 //TODO use songPosition to mark song as playable and remove progress bar in fragment
                 SongData song = songs.get(songPosition);
@@ -404,7 +404,7 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
-        Log.d("cur_song", songs.get(cur_song).getAlbum());
+        Log.d("cur_song", songs.get(cur_song).getID());
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
         if (downloaded == false) {
@@ -789,7 +789,7 @@ public class MusicPlayer extends AppCompatActivity {
     public int getDay() {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
-
+        return day;
     }
 
 }

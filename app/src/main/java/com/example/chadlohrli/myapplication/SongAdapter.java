@@ -85,12 +85,16 @@ public class SongAdapter extends BaseAdapter {
         }
 
         //if the current song as not been downloaded then make progressBar visible
-
-
-        //get title and artist strings
-        songView.setText(currSong.getTitle());
-        String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();
-        artistView.setText(songAndAlbum);
+        if (currSong.getTitle() == null) {
+            progressBar.setVisibility(View.VISIBLE);
+            songView.setText("Download in Progress");
+        }
+        else {
+            //get title and artist strings
+            songView.setText(currSong.getTitle());
+            String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();
+            artistView.setText(songAndAlbum);
+        }
 
         //set position as tag
         songLay.setTag(i);

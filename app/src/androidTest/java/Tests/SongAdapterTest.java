@@ -72,8 +72,8 @@ public class SongAdapterTest {
         SharedPrefs.saveSongData(songListActivity.getActivity().getApplicationContext(),id,latitude,longitude,day,time,rating,lstate,timesPlayed, lastPlayed, fave);
         SharedPrefs.saveSongData(songListActivity.getActivity().getApplicationContext(),rid, rlatitude,rlongitude,rday,rtime,rrating,rstate,rtimesPlayed, rlastPlayed, rfave);
 
-        song1 = new SongData(id, "10", "lala", "everglow", "coldplay", "a");
-        song2 = new SongData(rid, "12", "lala2", "happier", "ed", "b");
+        song1 = new SongData(id, "10", "lala", "everglow", "coldplay", "a", "http://soundbible.com/grab.php?id=2200&type=mp3");
+        song2 = new SongData(rid, "12", "lala2", "happier", "ed", "b", "http://soundbible.com/grab.php?id=2190&type=mp3");
 
         songs.add(song1);
         songs.add(song2);

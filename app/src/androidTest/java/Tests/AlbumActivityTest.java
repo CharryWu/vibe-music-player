@@ -1,5 +1,6 @@
 package Tests;
 
+import android.os.Environment;
 import android.support.test.rule.ActivityTestRule;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,8 +45,9 @@ public class AlbumActivityTest {
 
     @Test
     public void testCreateSongs() {
-        Field[] fields = R.raw.class.getFields();
-        assertEquals(fields.length, songs.size());
+        File nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath());
+        File[] files = nf.listFiles();
+        assertEquals(files.length, songs.size());
     }
 
     @Test

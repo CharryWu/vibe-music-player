@@ -61,7 +61,6 @@ public class VibeActivity extends AppCompatActivity {
     /*
     private Set<String> set;
     private ArrayList<String> finalRec;
-
     private Set<String> seturl;
     private ArrayList<String> finalRecURL;*/
 
@@ -206,9 +205,9 @@ public class VibeActivity extends AppCompatActivity {
                         vibeSongs.add(song);
 
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -257,9 +256,9 @@ public class VibeActivity extends AppCompatActivity {
 
                         vibeSongs.add(song);
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -282,7 +281,6 @@ public class VibeActivity extends AppCompatActivity {
         // Get unique song ids only
         /*set = new HashSet<String>(vibeList);
         finalRec = new ArrayList<String>(set);
-
         seturl = new HashSet<String>(vibeListURLs);
         finalRecURL = new ArrayList<String>(seturl);*/
 

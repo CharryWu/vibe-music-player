@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<SongData> completeList = new ArrayList<SongData>();
 
     private BottomNavigationView bottomNav;
+    private static String date;
+    private static String timeStamp;
 
     @Override
     protected void onStart() {
@@ -100,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
         //update user
         //mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            TextView userEmail = (TextView)findViewById(R.id.userEmail);
+        if (currentUser != null) {
+            TextView userEmail = (TextView) findViewById(R.id.userEmail);
             userEmail.setText(currentUser.getEmail());
         }
 
@@ -169,21 +172,42 @@ public class MainActivity extends AppCompatActivity {
         int currDay = day;
         int currMonth = month;
         int currYear = year;
-        String date = Integer.toString(currMonth) + "/" + Integer.toString(currDay) + "/" + Integer.toString(currYear);
+        date = Integer.toString(currYear) + "." + Integer.toString(currMonth) + "" + Integer.toString(currDay);
         Log.d("DATE IS ", date);
+
     }
 
     public void setTime(int hour, int minute) {
         int currHour = hour;
         int currMinute = minute;
-        String time = Integer.toString(currHour) + ":" + Integer.toString(currMinute);
+        int currSec = 0;
+        timeStamp = Integer.toString(currHour) + "." + Integer.toString(currMinute) + "." + Integer.toString(currSec);
         Log.d("TIME IS ", time);
+
+    }
+
+    public static String getDate() {
+        return date;
+    }
+
+    public static String getTime() {
+        return timeStamp;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Context context = this.getApplicationContext();
+        //Testing Firebase Code
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+
+        String code = SharedPrefs.getServerCode(context);
+
+        if (!code.equals(""))
+            new Thread(new AuthHandler(context, code, myRef)).start();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
@@ -193,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
 
-        LocationHelper.getLatLong(getApplicationContext());
+        LocationHelper.getLatLong(context);
 
         //check permissions
         checkLocationPermission();
@@ -270,11 +294,6 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
             }
         });
-
-
-        //Testing Firebase Code
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
 
         /*
         String id = UUID.randomUUID().toString();
@@ -487,12 +506,10 @@ public class MainActivity extends AppCompatActivity {
 
             canDownload = false;
             return false;
-        }
-        else {
+        } else {
             canDownload = true;
             return true;
         }
-
 
 
     }

@@ -66,6 +66,7 @@ public class VibeSongSorter implements Comparator<SongData> {
             Log.i("Friend", "4" );
             return ((rFr > lFr)?1:-1);
         }
+        Log.i("Default", "5" );
         return 1;
     }
 

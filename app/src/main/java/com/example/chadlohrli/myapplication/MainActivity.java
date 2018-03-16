@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -102,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
         //update user
         //mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            TextView userEmail = (TextView)findViewById(R.id.userEmail);
+        if (currentUser != null) {
+            TextView userEmail = (TextView) findViewById(R.id.userEmail);
             userEmail.setText(currentUser.getEmail());
         }
 
@@ -198,6 +199,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Context context = this.getApplicationContext();
+        //Testing Firebase Code
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+
+        String code = SharedPrefs.getServerCode(context);
+
+        if (!code.equals(""))
+            new Thread(new AuthHandler(context, code, myRef)).start();
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
@@ -206,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
 
-        LocationHelper.getLatLong(getApplicationContext());
+        LocationHelper.getLatLong(context);
 
         //check permissions
         checkLocationPermission();
@@ -283,11 +294,6 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
             }
         });
-
-
-        //Testing Firebase Code
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
 
         /*
         String id = UUID.randomUUID().toString();
@@ -500,12 +506,10 @@ public class MainActivity extends AppCompatActivity {
 
             canDownload = false;
             return false;
-        }
-        else {
+        } else {
             canDownload = true;
             return true;
         }
-
 
 
     }

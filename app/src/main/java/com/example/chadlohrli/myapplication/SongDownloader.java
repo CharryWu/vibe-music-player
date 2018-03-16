@@ -85,7 +85,7 @@ public class SongDownloader {
         while (it.hasNext()) {
             SongData song = it.next();
             String songId = song.getID();
-            String isDownloaded = song.checkIfDownloaded();
+            String isDownloaded = "True";
 
             //Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
             //if map size is 0, then song has not yet been downloaded

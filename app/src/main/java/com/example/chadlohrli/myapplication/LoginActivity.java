@@ -52,17 +52,12 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
-
-
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
             }
         });
-
-
-
     }
 
     /*
@@ -81,12 +76,12 @@ public class LoginActivity extends AppCompatActivity {
     */
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null){
+        if (currentUser != null) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(intent);
         }
@@ -95,8 +90,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void updateUI(FirebaseUser acct){
-        if(acct != null){
+    private void updateUI(FirebaseUser acct) {
+        if (acct != null) {
 
             //Toast.makeText(LoginActivity.this, "Hello: " + acct.getDisplayName(),Toast.LENGTH_LONG).show();
             //Toast.makeText(LoginActivity.this, "Hello: " + acct.getEmail(),Toast.LENGTH_LONG).show();
@@ -121,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
         findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
@@ -131,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
     }
 
     @Override
@@ -149,15 +143,13 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("Google Sign in", "here");
 
                 firebaseAuthWithGoogle(account);
-                Log.d("firebase:", "here");
-                new Thread(new AuthHandler(this.getApplicationContext(),account.getServerAuthCode())).start();
+                SharedPrefs.saveServerCode(this.getApplicationContext(),account.getServerAuthCode());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.e("Failed", e.getMessage());
-                // ...
                 findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
-            } catch (Exception e){
-                Log.e("Login:","Exception");
+            } catch (Exception e) {
+                Log.e("Login:", "Exception");
             }
         }
     }
@@ -179,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this,"Authentication failed",Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
 

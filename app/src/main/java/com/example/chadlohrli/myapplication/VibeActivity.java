@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
@@ -56,6 +57,7 @@ public class VibeActivity extends AppCompatActivity {
     private boolean friendFired = false;
     private boolean songFired = false;
 
+    private ArrayList<SongData> trys = new ArrayList<SongData>();
     /*
     private Set<String> set;
     private ArrayList<String> finalRec;
@@ -130,19 +132,37 @@ public class VibeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.flashback);
         LocationHelper.getLatLong(getApplicationContext());
-        vibe();
+
+        //PASS finalRecURL to Download Service and start downloads
+        playFB = (ImageButton) findViewById(R.id.playfb);
+        playFB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                vibe();
+
+            }
+        });
     }
 
     protected void vibe(){
         location = getLoc();
         mAuth = FirebaseAuth.getInstance();
+
         //vibeSongs = createDownloadedSongs();
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 songFired = true;
+                Log.d("songs listener fired", "yes");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
@@ -182,9 +202,6 @@ public class VibeActivity extends AppCompatActivity {
                         if (state == true) {
                             song = createDownloadedSongData(song);
                         }
-                        else {
-                            song.setIfDownloaded("False");
-                        }
                         vibeSongs.add(song);
 
                         /**
@@ -197,6 +214,7 @@ public class VibeActivity extends AppCompatActivity {
                     }
                 }
                 if(friendFired && songFired){
+                    Log.i("makeplayist called from song area", "yep");
                     makePlaylist();
                 }
             }
@@ -213,6 +231,7 @@ public class VibeActivity extends AppCompatActivity {
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("users listener fired", "yes");
                 friendFired = true;
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
@@ -224,18 +243,17 @@ public class VibeActivity extends AppCompatActivity {
                         Log.d("A User song curr", fSongs.getKey());
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
+                        Log.d("For song" + fSongs.getKey(), String.valueOf(curRate));
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                 fSongs.getKey(),curRate + 2);
                         SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), fSongs.getKey(), 2);
                         SongData song = new SongData(fSongs.getKey(), null, null, null,
-                                null, null, snapshot.child("url").getValue(String.class));
+                                null, null, fSongs.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
                         if (state == true) {
                             song = createDownloadedSongData(song);
                         }
-                        else {
-                            song.setIfDownloaded("False");
-                        }
+
                         vibeSongs.add(song);
                         /**
                          if(!state) {
@@ -244,10 +262,11 @@ public class VibeActivity extends AppCompatActivity {
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
-                        if(friendFired && songFired){
-                            makePlaylist();
-                        }
                     }
+                }
+                if(friendFired && songFired){
+                    Log.i("makeplayist called from user area", "yep");
+                    makePlaylist();
                 }
             }
 
@@ -267,38 +286,39 @@ public class VibeActivity extends AppCompatActivity {
 
         Log.d("Vibe song playlist before uniquing", String.valueOf(vibeSongs.size()));
         setSong = new HashSet<SongData>(vibeSongs);
-        vibeFinalPlaylist = new ArrayList<SongData>(setSong);
 
-        for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
-            Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i - 1).getID());
+        trys = createDownloadedSongs();
+        vibeFinalPlaylist = new ArrayList<SongData>(setSong);
+        for(int i = 0; i < trys.size(); i++){
+            Log.d("try", trys.get(i).getID());
+        }
+
+        for(int i = 0; i < vibeFinalPlaylist.size(); i++){
+           Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i).getID());
         }
         Collections.sort(vibeFinalPlaylist, new VibeSongSorter(getApplicationContext()));
 
         Log.d("Vibe playlist size", String.valueOf(vibeFinalPlaylist.size()));
         for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
             vibeFinalPlaylist.get(i - 1).setPriority(i);
+            SharedPrefs.setZero(VibeActivity.this.getApplicationContext(),
+                    vibeFinalPlaylist.get(i-1).getID());
             Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID());
         }
 
-        //PASS finalRecURL to Download Service and start downloads
-        playFB = (ImageButton) findViewById(R.id.playfb);
-        playFB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (vibeFinalPlaylist.size() == 0) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
-                    toast.show();
-                    onSupportNavigateUp();
-                }
+        if (vibeFinalPlaylist.size() == 0) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Play Songs First Before Using Flashback!", Toast.LENGTH_LONG);
+            toast.show();
+            onSupportNavigateUp();
+        }
 
-                Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
-                intent.putExtra("SONGS", vibeFinalPlaylist);
-                intent.putExtra("CUR", 0);
-                intent.putExtra("caller", "VibeActivity");
-                VibeActivity.this.startActivity(intent);
-                finish();
-            }
-        });
+        Intent intent = new Intent(VibeActivity.this, MusicPlayer.class);
+        intent.putExtra("SONGS", vibeFinalPlaylist);
+        intent.putExtra("CUR", 0);
+        intent.putExtra("caller", "VibeActivity");
+        VibeActivity.this.startActivity(intent);
+        finish();
+
     }
 
     public ArrayList<SongData> createDownloadedSongs() {
@@ -330,7 +350,7 @@ public class VibeActivity extends AppCompatActivity {
         File[] fields = musicDirectory.listFiles();
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
         songData =  SongParser.parseSong(path, songId, getApplicationContext());
-        songData.setIfDownloaded("True");
+        //songData.setIfDownloaded("True");
         return songData;
     }
 }

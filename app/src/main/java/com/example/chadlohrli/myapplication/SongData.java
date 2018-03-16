@@ -17,7 +17,7 @@ public class SongData implements Serializable, Parcelable {
     private String song_title;
     private String song_artist;
     private String song_path;
-    private String isDownloaded = "True";
+
     private String url;
     private int priority;
     //private Bitmap album_image;
@@ -42,6 +42,7 @@ public class SongData implements Serializable, Parcelable {
         song_title = in.readString();
         song_artist = in.readString();
         song_path = in.readString();
+        url = in.readString();
     }
 
     public static final Creator<SongData> CREATOR = new Creator<SongData>() {
@@ -84,9 +85,11 @@ public class SongData implements Serializable, Parcelable {
         return url;
     }
 
-    public String checkIfDownloaded() {return isDownloaded;}
+   // public String checkIfDownloaded() {}
 
-    public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
+    //public void setIfDownloaded(String downloaded) {this.isDownloaded = downloaded;}
+
+    public void setUrl(String url) {this.url = url;}
 
     //public Bitmap getImage() {return album_image;}
 
@@ -103,6 +106,7 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_title);
         dest.writeString(song_artist);
         dest.writeString(song_path);
+        dest.writeString(url);
         //dest.writeString(isDownloaded);
     }
 

@@ -15,26 +15,39 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class AuthHandler implements Runnable{
+public class AuthHandler implements Runnable {
     private String code;
     private Context context;
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
+    private DatabaseReference ref;
+    private ArrayList<String> friendKeys;
+    private int queryExecCnt;
+    private String currentUserKey;
 
-    public AuthHandler(Context context,String code){
-        if(code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
+    public AuthHandler(Context context, String code, DatabaseReference myRef) {
+        if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
+        ref = myRef;
+        friendKeys = new ArrayList<>();
+        queryExecCnt = 0;
     }
 
-    public List<Person> getFriendList(String code) throws IOException{
+    public List<Person> getFriendList(String code) throws IOException {
         // Go to the Google API Console, open your application's
         // credentials page, and copy the client ID and client secret.
         // Then paste them into the following code.
@@ -65,12 +78,60 @@ public class AuthHandler implements Runnable{
         return response.getConnections();
     }
 
+    public List<String> getFriendEmails(List<Person> friends) {
+        List<String> emails = new ArrayList<>();
+        for (Person friend : friends) {
+            if (friend.getEmailAddresses().size() > 0)
+                emails.add(friend.getEmailAddresses().get(0).getValue());
+        }
+
+        return emails;
+    }
+
+    public void getDBExistEntryFromEmail(List<String> emails) {
+        final int terminateSize = emails.size();
+        for (final String email : emails) {
+            ref.child("users")
+                    .orderByChild("email").equalTo(email)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            queryExecCnt++;
+
+                            for (DataSnapshot entry : dataSnapshot.getChildren()) {
+                                friendKeys.add(entry.getKey());
+
+                                // Similar to executing callback when all queries has been processed
+                                if (queryExecCnt == terminateSize) {
+                                    setFriendListDB(friendKeys);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+    }
+
+    public void setFriendListDB(ArrayList<String> keys) {
+        for(String key:keys){
+//            ref.child()
+        }
+    }
+
     @Override
-    public void run(){
-        try{
-            getFriendList(code);
-        }catch (Exception e){
-            Log.e("RequestFriendListRunnable.run()","Exception");
+    public void run() {
+        try {
+            List<Person> friendList = getFriendList(code);
+            List<String> friendEmails = getFriendEmails(friendList);
+
+            getDBExistEntryFromEmail(friendEmails);
+
+        } catch (Exception e) {
+            Log.e("RequestFriendListRunnable.run()", "Exception");
         }
     }
 }

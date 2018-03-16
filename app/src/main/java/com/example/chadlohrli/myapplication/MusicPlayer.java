@@ -2,6 +2,7 @@ package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
@@ -18,6 +20,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -38,6 +41,12 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +55,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 ;
 //int timesPlayed;
@@ -99,12 +109,15 @@ public class MusicPlayer extends AppCompatActivity {
     private Location lkl;
 
     private MusicService musicService;
+    private DownloadService downloadService;
     private Intent playIntent;
+    private Intent downloadIntent;
     private boolean isBound = false;
-
+    private boolean downloadServiceIsBound = false;
     private Handler mHandler = new Handler();
     private LocalBroadcastManager bManager;
     private Location location;
+    private String locationName;
 
     private FragmentManager fm;
     private SongProgressFragment fragment;
@@ -120,10 +133,73 @@ public class MusicPlayer extends AppCompatActivity {
     String timeStamp;
     private int fav;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(SONG_FINISHED)) {
+
+                String serviceJsonString = intent.getStringExtra("hi");
+                Log.d("Broadcast", serviceJsonString);
+                Log.d("current index",String.valueOf(cur_song));
+
+                playNextSong();
+
+            }
+        }
+    };
+
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //directory that song has been stored in
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+
+
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(referenceId);
+            DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            Cursor cursor = downloadManager.query(query);
+
+            if(cursor.moveToFirst()); {
+                //get description of download which contains position of downloaded song in song ArrayList passed in
+                String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
+                //convert downloadDescription to int
+                int songPosition = Integer.parseInt(downloadDescription);
+                Log.d("songPosition", Integer.toString(songPosition));
+
+                //get title of column which is the id of the song
+                String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
+                Log.d("songId", songId);
+
+                //TODO use songPosition to mark song as playable and remove progress bar in fragment
+                SongData song = songs.get(songPosition);
+
+                //parse song data into song
+                song = SongParser.parseSong(path, songId, getApplicationContext());
+
+                updateFragment();
+                SharedPrefs.updateDownloaded(getApplicationContext(), songId);
+
+            }
+
+        }
+    };
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
+
+        //register download broadcast reciever
+        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -150,6 +226,15 @@ public class MusicPlayer extends AppCompatActivity {
         initListeners();
         initBroadcast();
         //initLocation();
+
+        initDB();
+    }
+
+    public void initDB(){
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
     }
 
     public void songPicked(View view) {
@@ -161,7 +246,6 @@ public class MusicPlayer extends AppCompatActivity {
                 SharedPrefs.updateFavorite(getApplicationContext(), song.getID(), state.NEUTRAL.ordinal());
             }
         }
-
         setSong(Integer.parseInt(view.getTag().toString()));
         playSong();
     }
@@ -216,20 +300,27 @@ public class MusicPlayer extends AppCompatActivity {
         }
     };
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+    private ServiceConnection downloadConnection = new ServiceConnection() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(SONG_FINISHED)) {
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            downloadServiceIsBound = true;
+            DownloadService.DownloadBinder downloadBinder = (DownloadService.DownloadBinder)iBinder;
+            downloadService = downloadBinder.getService();
+            downloadService.setSongList(songs);
 
-                String serviceJsonString = intent.getStringExtra("hi");
-                Log.d("Broadcast", serviceJsonString);
-                Log.d("current index",String.valueOf(cur_song));
+            downloadService.downloadVibeSongsPlaylist();
 
-                playNextSong();
+        }
 
-            }
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            downloadServiceIsBound = false;
         }
     };
+
+
+
+
 
     // -- class specific methods -- //
     @Override
@@ -242,6 +333,11 @@ public class MusicPlayer extends AppCompatActivity {
             LocationHelper.getLatLong(getApplicationContext());
 
         }
+        if (downloadIntent == null) {
+            downloadIntent = new Intent(this, DownloadService.class);
+            bindService(downloadIntent, downloadConnection, Context.BIND_AUTO_CREATE);
+            startService(downloadIntent);
+        }
     }
 
     @Override
@@ -249,14 +345,16 @@ public class MusicPlayer extends AppCompatActivity {
         bManager.unregisterReceiver(bReceiver);
         stopService(playIntent);
         musicService = null;
+
+        unregisterReceiver(onDownloadComplete);
+        stopService(downloadIntent);
+        downloadService = null;
         super.onDestroy();
         unbindService(musicConnection);
+        unbindService(downloadConnection);
 
-        /*
-        Intent intent = new Intent();
-        intent.putExtra("SONGPLAYING", cur_song);
-        this.startActivity(intent);
-         **/
+
+
     }
 
 
@@ -298,6 +396,14 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     public void playSong() {
+
+        //TODO if current song has not been downloaded skip and play next song
+        //Log.d("cur_song", songs.get(cur_song).getAlbum());
+
+        if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
+            playNextSong();
+            return;
+        }
 
         checkSongState(songs.get(cur_song));
 
@@ -373,13 +479,48 @@ public class MusicPlayer extends AppCompatActivity {
 
     public void saveSong(SongData song) {
         Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
+
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
             timesPlayed++;
         }
 
+        String url = "";
+        if(map.get("URL") != null){
+            url = map.get("URL").toString();
+        }
+
         SharedPrefs.saveSongData(getApplicationContext(), song.getID(), (float)lat, (float)lng, day, timeofday, 0, songState, timesPlayed, timeStamp, fav);
+
+        //Save song object to firebase
+        DatabaseReference userRef;
+        DatabaseReference songRef = myRef.child("songs").child(song.getID());
+        songRef.child("lastPlayed").setValue(timeStamp);
+        songRef.child("url").setValue(url);
+
+        //location
+        String locUID = String.valueOf(String.valueOf(lat + lng).hashCode());
+        songRef.child("location").child(locUID).child("lat").setValue((float)lat);
+        songRef.child("location").child(locUID).child("long").setValue((float)lng);
+
+        /*
+        if(location != null){
+            songRef.child("location").child(locUID).child(locationName).setValue(true);
+        }
+        */
+
+        //save song to user
+        if(currentUser!= null) {
+            songRef.child("user").child(currentUser.getUid()).setValue(true);
+
+            userRef = myRef.child("users").child(currentUser.getUid());
+            userRef.child("songs").child(song.getID()).setValue(true);
+
+        }else {
+            songRef.child("user").child(UUID.randomUUID().toString()).setValue(true);
+        }
+
 
     }
 
@@ -587,7 +728,8 @@ public class MusicPlayer extends AppCompatActivity {
                     List<Address> listAddresses = geocoder.getFromLocation(lat, lng, 1);
                     if(null!=listAddresses&&listAddresses.size()>0){
                         String loc_name = String.valueOf(listAddresses.get(0).getAddressLine(0));
-                        locationTitle.setText(loc_name);
+                        locationName = loc_name;
+                        locationTitle.setText(locationName);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.example.chadlohrli.myapplication;
+/*package com.example.chadlohrli.myapplication;
 
 import android.Manifest;
 import android.content.Context;
@@ -124,18 +124,9 @@ public class FlashBackActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //Toast.makeText(getApplicationContext(), "permissions messed up", Toast.LENGTH_LONG).show();
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 100);
 
-            //return;
         }
 
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -215,23 +206,7 @@ public class FlashBackActivity extends AppCompatActivity {
             onSupportNavigateUp();
             return;
         }
-        Collections.sort(flashbackList, new SongSorter(getApplicationContext()));
-
-        /*if(!flashbackList.isEmpty()) {
-            Iterator<SongData> iter = flashbackList.iterator();
-            for (SongData songelem : flashbackList) {
-                String id = songelem.getID();
-                SharedPreferences pref = getSharedPreferences(id, MODE_PRIVATE);
-                int fav = pref.getInt("fav", 0);
-                if (fav == -1) {
-                    flashbackList.remove(songelem);
-                }
-            }
-        }*/
-        //commented out listview of all flashback songs
-        /*songlist = (ListView) findViewById(R.id.song_list);
-        SongAdapter songadt = new SongAdapter(this, flashbackList);
-        songlist.setAdapter(songadt);*/
+        Collections.sort(flashbackList, new SongSorter(getApplicationContext()))
         playFB = (ImageButton) findViewById(R.id.playfb);
 
         playFB.setOnClickListener(new View.OnClickListener() {
@@ -265,12 +240,6 @@ public class FlashBackActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.flashback);
-        flashback();
-    }*/
-}
+}*/
 
 

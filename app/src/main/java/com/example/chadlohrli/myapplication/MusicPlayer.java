@@ -70,6 +70,7 @@ public class MusicPlayer extends AppCompatActivity {
     private DateHelper dateHelper;
 
 
+    private int d = 0;
     //public int timesPlayed;
     private ImageView albumCover;
     private TextView locationTitle;
@@ -172,6 +173,10 @@ public class MusicPlayer extends AppCompatActivity {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Cursor cursor = downloadManager.query(query);
 
+            d++;
+            if(d == 3){
+                d = 6;
+            }
             if(cursor.moveToFirst()); {
                 //get description of download which contains position of downloaded song in song ArrayList passed in
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));

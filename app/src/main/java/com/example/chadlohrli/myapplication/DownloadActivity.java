@@ -62,15 +62,14 @@ public class DownloadActivity extends AppCompatActivity {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Cursor cursor = downloadManager.query(query);
 
-            if (cursor.moveToFirst()) ;
-            {
+            if (cursor.moveToFirst()) {
                 //get description of download which is id if song was zip
                 String id = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
 
 
                 //get title of column which is "zip" if file was zip file
                 String typeOfDownload = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                if (typeOfDownload == "zip") {
+                if (typeOfDownload.equals("zip")) {
                     try {
                         unzip(id);
                     }

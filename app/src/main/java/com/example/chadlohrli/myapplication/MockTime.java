@@ -22,8 +22,8 @@ public class MockTime extends Date {
         date = MainActivity.getDate();
         time = MainActivity.getTime();
 
-        Log.i("date returned", date);
-        Log.i("time returned", time);
+       // Log.i("date returned", date);
+       // Log.i("time returned", time);
     }
 
 

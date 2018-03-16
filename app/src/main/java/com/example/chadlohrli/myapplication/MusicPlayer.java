@@ -305,10 +305,9 @@ public class MusicPlayer extends AppCompatActivity {
         myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     //get all id and find matching one
+                    Log.d("songid", snapshot.getKey());
                     if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
 
                         lp = snapshot.child("lastPlayed").getValue(String.class);
@@ -319,8 +318,9 @@ public class MusicPlayer extends AppCompatActivity {
                             user = users.getKey();
                             Log.d("user", user);
                         }
+                        break;
                     }
-                    break;
+
                 }
 
                 if (user != null) {
@@ -333,6 +333,8 @@ public class MusicPlayer extends AppCompatActivity {
                                 if (names.getKey().equals(user)) {
                                     user = names.child("username").getValue().toString();
                                     Log.d("user name", user);
+                                    dpDate = lp + " by " + user;
+                                    placeDate.setText(dpDate);
                                     break;
                                 }
                             }

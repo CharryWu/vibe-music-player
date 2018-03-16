@@ -16,6 +16,18 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class SharedPrefs {
+    public static void saveServerCode(Context context, String code){
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                context.getString(R.string.sharedpref_servercode_key),MODE_PRIVATE).edit();
+        editor.putString("code",code);
+        editor.commit();
+    }
+
+    public static String getServerCode(Context context){
+        return context
+                .getSharedPreferences(context.getString(R.string.sharedpref_servercode_key),MODE_PRIVATE)
+                .getString("code", "");
+    }
 
     public static void saveSongData(Context context, String id, float latitude, float longitude, int day, int time, int rating, int state, int timesPlayed, String lastPlayed, int fav) {
 

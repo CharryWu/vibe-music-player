@@ -1,6 +1,7 @@
 package com.example.chadlohrli.myapplication;
 
 import android.content.Intent;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,30 +14,38 @@ import java.util.Date;
 
 public class MockTime extends Date {
 
-    String currTime;
+    static String currTime;
 
-    String date = MainActivity.getDate();
-    String time = MainActivity.getTime();
+    static String date, time;
 
-    public MockTime() {}
+    public MockTime() {
+        date = MainActivity.getDate();
+        time = MainActivity.getTime();
+
+        Log.i("date returned", date);
+        Log.i("time returned", time);
+    }
 
 
-    public String test() {
+    public static String changeTime() {
 
         if (date != null && time != null) {
             currTime = (date + "." + time);
         }
 
         else {
-            Date test = Calendar.getInstance().getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+                /*Date test = Calendar.getInstance().getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 
-            try {
-                test = sdf.parse(String.valueOf(test));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            currTime = String.valueOf(test.getTime());
+                try {
+                    test = sdf.parse(String.valueOf(test));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }*/
+            currTime = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+            //currTime = String.valueOf(test.getTime());
+            Log.i("currTime from mockTime", currTime);
         }
 
         return currTime;

@@ -53,6 +53,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -147,6 +148,9 @@ public class MusicPlayer extends AppCompatActivity {
     private DataSnapshot snapshot;
 
     private String user, lp, dpDate;
+    MockTime mockTime = new MockTime();
+
+
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
@@ -226,7 +230,10 @@ public class MusicPlayer extends AppCompatActivity {
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
-        timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        //timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+        timeStamp = mockTime.changeTime();
+        Log.i("timeStamp is:", timeStamp);
 
 
 

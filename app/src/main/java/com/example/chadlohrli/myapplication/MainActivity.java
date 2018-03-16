@@ -170,9 +170,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setDate(int day, int month, int year) {
         int currDay = day;
-        int currMonth = month;
+        int currMonth = month+1;
         int currYear = year;
-        date = Integer.toString(currYear) + "." + Integer.toString(currMonth) + "" + Integer.toString(currDay);
+        String zero = Integer.toString(0);
+        date = Integer.toString(currYear) + "." + zero + Integer.toString(currMonth) + "." + Integer.toString(currDay);
         Log.d("DATE IS ", date);
 
     }
@@ -180,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
     public void setTime(int hour, int minute) {
         int currHour = hour;
         int currMinute = minute;
-        int currSec = 0;
+        int currSec = 00;
         timeStamp = Integer.toString(currHour) + "." + Integer.toString(currMinute) + "." + Integer.toString(currSec);
-        Log.d("TIME IS ", time);
+        Log.d("TIME IS ", timeStamp);
 
     }
 

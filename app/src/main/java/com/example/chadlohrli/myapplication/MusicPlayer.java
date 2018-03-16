@@ -45,8 +45,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -82,6 +86,8 @@ public class MusicPlayer extends AppCompatActivity {
     private Button favBtn;
     private TextView startTime;
     private TextView endTime;
+    private TextView placeDate;
+
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -138,6 +144,9 @@ public class MusicPlayer extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private DataSnapshot snapshot;
+
+    private String user, lp, dpDate;
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
@@ -219,8 +228,12 @@ public class MusicPlayer extends AppCompatActivity {
         cur_song = getIntent().getIntExtra("CUR",0);
         timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
+
+
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
+
+        placeDate = (TextView) findViewById(R.id.place_date);
 
 
         //display song for aesthetics
@@ -278,6 +291,69 @@ public class MusicPlayer extends AppCompatActivity {
         fragment = new SongProgressFragment();
         fragment.setArguments(bundle);
         fm.beginTransaction().replace(R.id.mainLay, fragment).commit();
+    }
+
+    public void updatePlaceDate() {
+
+        myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    //get all id and find matching one
+                    if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
+
+                        lp = snapshot.child("lastPlayed").getValue(String.class);
+
+                        Log.d("time is ", lp);
+
+                        for (DataSnapshot users : snapshot.child("user").getChildren()) {
+                            user = users.getKey();
+                            Log.d("user", user);
+                        }
+                    }
+                    break;
+                }
+
+                if (user != null) {
+                    myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot names : dataSnapshot.getChildren()) {
+                                //get all id and find matching one
+                                if (names.getKey().equals(user)) {
+                                    user = names.child("username").getValue().toString();
+                                    Log.d("user name", user);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
+                else {
+                    user = "No one";
+                }
+                if (lp == null) {
+                    lp = "No where";
+                }
+                dpDate = lp + " by " + user;
+                placeDate.setText(dpDate);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+
+
     }
 
     public void setDateHelper(DateHelper dateHelper) {
@@ -435,6 +511,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         updateFragment();
         Log.d("Songs size",String.valueOf(songs.size()));
+        updatePlaceDate();
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();

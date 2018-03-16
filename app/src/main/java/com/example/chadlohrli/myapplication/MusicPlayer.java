@@ -506,6 +506,7 @@ public class MusicPlayer extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
         if (downloaded == false){
+            Log.d("PNSWORK", "MEH");
             playNextSong();
         }
         playSong();

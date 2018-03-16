@@ -316,7 +316,7 @@ public class VibeActivity extends AppCompatActivity {
             Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID() + " " + curRate + " " + curLoc + " " + curWeek + " " + curF);
         }
 
-        for(int i = 1; i < vibeFinalPlaylist.size(); i++){
+        for(int i = 0; i < vibeFinalPlaylist.size(); i++){
             vibeFinalPlaylist.get(i).setPriority(i);
             SharedPrefs.setZero(VibeActivity.this.getApplicationContext(),
                     vibeFinalPlaylist.get(i).getID());

@@ -61,7 +61,6 @@ public class VibeActivity extends AppCompatActivity {
     /*
     private Set<String> set;
     private ArrayList<String> finalRec;
-
     private Set<String> seturl;
     private ArrayList<String> finalRecURL;*/
 
@@ -163,6 +162,7 @@ public class VibeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 songFired = true;
+                Log.d("songs listener fired", "yes");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String lp = snapshot.child("lastPlayed").getValue(String.class);
                     //int newR = snapshot.child("rating").getValue(int.class) + matchWeek(lp);
@@ -205,9 +205,9 @@ public class VibeActivity extends AppCompatActivity {
                         vibeSongs.add(song);
 
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -231,6 +231,7 @@ public class VibeActivity extends AppCompatActivity {
         myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("users listener fired", "yes");
                 friendFired = true;
                 for (DataSnapshot snapshot : dataSnapshot.child(curId).child("friends").getChildren()) {
                     String friendid = snapshot.getKey();
@@ -242,11 +243,12 @@ public class VibeActivity extends AppCompatActivity {
                         Log.d("A User song curr", fSongs.getKey());
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
+                        Log.d("For song" + fSongs.getKey(), String.valueOf(curRate));
                         SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
                                 fSongs.getKey(),curRate + 2);
                         SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), fSongs.getKey(), 2);
                         SongData song = new SongData(fSongs.getKey(), null, null, null,
-                                null, null, snapshot.child("url").getValue(String.class));
+                                null, null, fSongs.child("url").getValue(String.class));
                         boolean state = pref.getBoolean("downloaded", false);
                         if (state == true) {
                             song = createDownloadedSongData(song);
@@ -254,9 +256,9 @@ public class VibeActivity extends AppCompatActivity {
 
                         vibeSongs.add(song);
                         /**
-                        if(!state) {
-                            vibeSongs.add(song);
-                        }
+                         if(!state) {
+                         vibeSongs.add(song);
+                         }
                          */
                         //vibeList.add(snapshot.getKey());
                         //vibeListURLs.add(snapshot.child("url").getValue(String.class));
@@ -279,7 +281,6 @@ public class VibeActivity extends AppCompatActivity {
         // Get unique song ids only
         /*set = new HashSet<String>(vibeList);
         finalRec = new ArrayList<String>(set);
-
         seturl = new HashSet<String>(vibeListURLs);
         finalRecURL = new ArrayList<String>(seturl);*/
 
@@ -300,6 +301,8 @@ public class VibeActivity extends AppCompatActivity {
         Log.d("Vibe playlist size", String.valueOf(vibeFinalPlaylist.size()));
         for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
             vibeFinalPlaylist.get(i - 1).setPriority(i);
+            SharedPrefs.setZero(VibeActivity.this.getApplicationContext(),
+                    vibeFinalPlaylist.get(i-1).getID());
             Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID());
         }
 

@@ -16,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
-/**
- * Created by Kyle on 2/17/2018.
- */
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +27,7 @@ public class SharedPrefsTest {
     private float longitude;
     private int day;
     private int time;
-    private float rating;
+    private int rating;
     private int state;
     private int timesPlayed;
     private int fave;
@@ -69,7 +67,7 @@ public class SharedPrefsTest {
         float savedLongitude = (Float) map.get("Longitude");
         int savedDay = (Integer) map.get("Day");
         int savedTime = (Integer) map.get("Time");
-        float savedRating = (Float) map.get("Rating");
+        int savedRating = (Integer) map.get("Rating");
         int savedState = (Integer) map.get("State");
         int savedTimesPlayed = (Integer) map.get("Times played");
         String savedlastPlayed = (String) map.get("Last played");

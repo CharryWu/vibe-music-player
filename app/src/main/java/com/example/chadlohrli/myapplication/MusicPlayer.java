@@ -145,8 +145,8 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
 
                 String serviceJsonString = intent.getStringExtra("hi");
-                Log.d("Broadcast", serviceJsonString);
-                Log.d("current index",String.valueOf(cur_song));
+                //Log.d("Broadcast", serviceJsonString);
+                //Log.d("current index",String.valueOf(cur_song));
 
                 playNextSong();
 
@@ -177,11 +177,11 @@ public class MusicPlayer extends AppCompatActivity {
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
                 //convert downloadDescription to int
                 int songPosition = Integer.parseInt(downloadDescription);
-                Log.d("songPosition", Integer.toString(songPosition));
+                //Log.d("songPosition", Integer.toString(songPosition));
 
                 //get title of column which is the id of the song
                 String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                Log.d("songId", songId);
+                //Log.d("songId", songId);
 
                 //TODO use songPosition to mark song as playable and remove progress bar in fragment
                 SongData song = songs.get(songPosition);
@@ -405,6 +405,9 @@ public class MusicPlayer extends AppCompatActivity {
 
         //TODO if current song has not been downloaded skip and play next song
         //Log.d("cur_song", songs.get(cur_song).getAlbum());
+
+
+
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
         if (downloaded == false) {
@@ -412,6 +415,7 @@ public class MusicPlayer extends AppCompatActivity {
             //TODO return??
         }
         /**
+
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;
@@ -789,33 +793,6 @@ public class MusicPlayer extends AppCompatActivity {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
         return day;
-        /**
-        switch (day) {
-            case 0: return SUNDAY;
-            case 1: return MONDAY;
-            case 2: return TUESDAY;
-            case 3: return WEDNESDAY;
-            case 4: return THURSDAY;
-            case 5: return FRIDAY;
-            default: return SATURDAY;
-=======
-    protected int getDay() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        //Log.i("time of day", String.valueOf(timeofday));
-        //Log.i("dayinfuc", String.valueOf(day));
-        switch (day) {
-            case 2: return MONDAY;
-            case 3: return TUESDAY;
-            case 4: return WEDNESDAY;
-            case 5: return THURSDAY;
-            case 6: return FRIDAY;
-            case 7: return SATURDAY;
-            default: return SUNDAY;
->>>>>>> c61c2149ff710701e18976409192d844493deb3b
-
-        }
-         */
-
     }
 
 }

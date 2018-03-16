@@ -32,6 +32,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -202,7 +203,13 @@ public class MusicPlayer extends AppCompatActivity {
                 //parse song data into song
                 song = SongParser.parseSong(path, songId, getApplicationContext());
                 songs.set(songPosition, song);
-                updateFragment();
+
+                //Update the array list after downloading
+                ListView toFill = (ListView) findViewById(R.id.listView);
+                SongAdapter songAdapter = new SongAdapter(getApplicationContext(), songs);
+                toFill.setAdapter(songAdapter);
+
+                //updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
 
                 if(firstSongDownloaded == false) {

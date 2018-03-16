@@ -22,6 +22,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -44,6 +55,12 @@ public class DownloadActivity extends AppCompatActivity {
     private Button downloadAlbumButton;
     private String id;
     private final int BUFFER_SIZE = 8192;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private String TAG = "Google";
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
 
     BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -77,6 +94,10 @@ public class DownloadActivity extends AppCompatActivity {
                         String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
                         String zipFilePath = path + "/" + id;
                         unzip(zipFilePath, downloadDirectoryPath);
+                        toast = Toast.makeText(DownloadActivity.this,
+                                "Album Unzipped", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.TOP, 25, 400);
+                        toast.show();
                     }
                     catch (Exception e) {
                         Log.e("zip doesnt work", "zip");
@@ -151,6 +172,8 @@ public class DownloadActivity extends AppCompatActivity {
 
         //http://soundbible.com/grab.php?id=2200&type=mp3
         //http://soundbible.com/grab.php?id=2190&type=mp3
+        //album
+        //https://www.dropbox.com/s/pd8bcp31w6hjiqj/in-which-we-drift-endlessly.zip?dl=1
         File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files", musicDirectory.exists() + "");
         Log.v("Files", musicDirectory.isDirectory() + "");
@@ -229,12 +252,13 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
 
-    public void renameSong() {
+    public void renameSong(String newUrl, String id) {
 
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 
         SongData song = SongParser.parseSong(path, id, this);
 
+        /**
         Log.i("PREV SONG ID", song.getID());
 
 
@@ -245,19 +269,52 @@ public class DownloadActivity extends AppCompatActivity {
         newId = String.valueOf(newId.hashCode());
 
         Log.i("NEW SONG ID", newId);
+        */
+        String newId = String.valueOf(newUrl.hashCode());
+        //TODO save in shared preferences to mark as downloaded
+        //TODO upload new url to firebase
+
 
         File of = new File(song.getPath());
 
 
         //This Saves to internal storage
         File nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC
-        ).getAbsolutePath() + "/" + newId + ".mp3");
+        ).getAbsolutePath() + "/" + newId);
 
         nf.getAbsolutePath();
 
         boolean f = of.renameTo(nf);
 
 
+    }
+
+    public void uploadNewUrlToFirebase(Uri file, final String songId) {
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/mpeg").build();
+        StorageReference mStorageRef;
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        StorageReference riversRef = mStorageRef.child("song" + "/" + songId);
+
+        riversRef.putFile(file,metadata)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Log.i("Success URL",downloadUrl.toString());
+                        //TODO update shared prefs with new url
+                        SharedPrefs.updateURL(getApplicationContext(), songId, downloadUrl.toString());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
+                        Log.i("Fail","Failed");
+                    }
+                });
     }
 
     public void unzip(String zipFilePath, String songDirectory) throws IOException {

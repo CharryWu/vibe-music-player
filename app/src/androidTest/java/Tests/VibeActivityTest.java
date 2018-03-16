@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by sungeun on 3/11/18.
@@ -24,7 +25,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class VibeActivityTest {
     VibeActivity activity;
-    MainActivity main;
+
 
     MockTime mockTime = new MockTime();
     Date date;
@@ -36,6 +37,7 @@ public class VibeActivityTest {
     @Before
     public void setup() {
         activity = vibeActivity.getActivity();
+        activity.vibe();
         curr_loc = new Location("");
         curr_loc.setLatitude(37.422);
         curr_loc.setLongitude(-122.084);
@@ -69,6 +71,12 @@ public class VibeActivityTest {
     public void testMatchLocation() {
         double result = vibeActivity.getActivity().matchLocation(curr_loc);
         assertEquals(2, result, .01);
+
+        curr_loc.setLatitude(0);
+        curr_loc.setLongitude(0);
+        result = vibeActivity.getActivity().matchLocation(curr_loc);
+        assertEquals(0, result, .01);
+
     }
 
 }

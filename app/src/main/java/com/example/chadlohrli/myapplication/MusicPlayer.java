@@ -73,7 +73,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     private DateHelper dateHelper;
-
+    private boolean firstSongDownloaded = false;
 
     //public int timesPlayed;
     private ImageView albumCover;
@@ -201,9 +201,14 @@ public class MusicPlayer extends AppCompatActivity {
 
                 //parse song data into song
                 song = SongParser.parseSong(path, songId, getApplicationContext());
-
+                songs.set(songPosition, song);
                 updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
+
+                if(firstSongDownloaded == false) {
+                    firstSongDownloaded = true;
+
+                }
 
             }
 
@@ -489,8 +494,10 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
+        //Log.d("cur_song", songs.get(cur_song).getAlbum());
 
-        Log.d("cur_song", songs.get(cur_song).getID());
+
+
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
         if (downloaded == false) {

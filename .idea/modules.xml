@@ -4,7 +4,8 @@
     <modules>
       <module fileurl="file://C:\Users\Kartik\Desktop\cse-110-team-project-team-5\CSE110.iml" filepath="C:\Users\Kartik\Desktop\cse-110-team-project-team-5\CSE110.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cse-110-team-project-team-5.iml" filepath="$PROJECT_DIR$/cse-110-team-project-team-5.iml" />
+      <module fileurl="file://C:\Users\Kyle\Documents\Vibe\cse-110-team-project-team-5-vibe\cse-110-team-project-team-5.iml" filepath="C:\Users\Kyle\Documents\Vibe\cse-110-team-project-team-5-vibe\cse-110-team-project-team-5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cse-110-team-project-team-5-vibe.iml" filepath="$PROJECT_DIR$/cse-110-team-project-team-5-vibe.iml" />
       <module fileurl="file://C:\Users\Kartik\Desktop\cse-110-team-project-team-5\cse-110-team-project-team-5-vibe.iml" filepath="C:\Users\Kartik\Desktop\cse-110-team-project-team-5\cse-110-team-project-team-5-vibe.iml" />
     </modules>
   </component>

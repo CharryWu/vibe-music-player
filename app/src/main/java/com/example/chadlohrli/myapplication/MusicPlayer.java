@@ -68,7 +68,7 @@ public class MusicPlayer extends AppCompatActivity {
 
 
     private DateHelper dateHelper;
-
+    private boolean firstSongDownloaded = false;
 
     //public int timesPlayed;
     private ImageView albumCover;
@@ -191,6 +191,11 @@ public class MusicPlayer extends AppCompatActivity {
 
                 updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
+
+                if(firstSongDownloaded == false) {
+                    firstSongDownloaded = true;
+
+                }
 
             }
 

@@ -340,7 +340,7 @@ public class MusicPlayer extends AppCompatActivity {
                     user = "No one";
                 }
                 if (lp == null) {
-                    lp = "No where";
+                    lp = "Last Played no where";
                 }
                 dpDate = lp + " by " + user;
                 placeDate.setText(dpDate);

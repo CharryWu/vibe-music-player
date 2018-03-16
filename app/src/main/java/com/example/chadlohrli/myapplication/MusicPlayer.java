@@ -200,8 +200,11 @@ public class MusicPlayer extends AppCompatActivity {
                     firstSongDownloaded = true;
 
                 }
-                if(song.getPriority() < cur_song) {
+                if(song.getPriority() <= cur_song) {
                     psong = song.getPriority();
+                }
+                if(d == 1){
+                    cur_song = song.getPriority();
                 }
             }
 
@@ -232,15 +235,6 @@ public class MusicPlayer extends AppCompatActivity {
 
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
-
-        /*for(SongData es: songs) {
-            SharedPreferences pref = getSharedPreferences(es.getID(), MODE_PRIVATE);
-            boolean downloaded = pref.getBoolean("downloaded", false);
-            if (downloaded == true) {
-                d++;
-                //TODO return??
-            }
-        }*/
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -315,8 +309,27 @@ public class MusicPlayer extends AppCompatActivity {
             mediaPlayer = musicService.getPlayer();
             isBound = true;
 
-            playSong();
-
+            for(SongData es: songs) {
+                SharedPreferences pref = getSharedPreferences(es.getID(), MODE_PRIVATE);
+                boolean downloaded = pref.getBoolean("downloaded", false);
+                if (downloaded == true) {
+                    d++;
+                }
+            }
+            if(d == 0){
+                Toast toast = Toast.makeText(getApplicationContext(), "Downloads in progress!",
+                        Toast.LENGTH_LONG);
+                toast.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playSong();
+                    }
+                }, 10000);
+            } else {
+                playSong();
+            }
         }
 
         @Override

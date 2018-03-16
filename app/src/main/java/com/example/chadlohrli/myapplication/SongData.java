@@ -113,6 +113,9 @@ public class SongData implements Serializable, Parcelable {
     public void setPriority(int priority){
         priority = priority;
     }
+    public int getPriority(){
+        return priority;
+    }
 
     @Override
     public boolean equals(Object other){

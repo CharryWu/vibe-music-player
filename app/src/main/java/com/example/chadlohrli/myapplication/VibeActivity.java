@@ -171,9 +171,9 @@ public class VibeActivity extends AppCompatActivity {
                     // next 3 uncomment
                     SharedPreferences pr = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
                     int cR = pr.getInt("Rating", 0);
-                    int wR = matchWeek(lp) + cR;
-                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), wR);
-                    SharedPrefs.updateLastPlayedWeek(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
+                    int wR = matchWeek(lp);
+                    SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), wR + cR);
+                    SharedPrefs.updateLastPlayedWeek(VibeActivity.this.getApplicationContext(), snapshot.getKey(), wR);
 
                     //uncomment the block
                     for(DataSnapshot locs: snapshot.child("location").getChildren()){
@@ -192,6 +192,8 @@ public class VibeActivity extends AppCompatActivity {
                                     snapshot.getKey(), curRate + locR);
                             SharedPrefs.updateLocPlay(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
                             break;
+                        } else{
+                            SharedPrefs.updateLocPlay(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 0);
                         }
                     }
                     SharedPreferences pref = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
@@ -242,29 +244,32 @@ public class VibeActivity extends AppCompatActivity {
                         // GET ORIGINAL RATING IN NEWR
                         // int newR = myRef.child("songs").child(snapshot.getKey()).child("rating")
                         // CHANGE RATINGS BY ADDING 2
+
                         Log.d("A User song curr", fSongs.getKey());
                         SharedPreferences pref = getSharedPreferences(fSongs.getKey(), MODE_PRIVATE);
                         int curRate = pref.getInt("Rating", 0);
-                        Log.d("For song" + fSongs.getKey(), String.valueOf(curRate));
-                        SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
-                                fSongs.getKey(),curRate + 2);
-                        SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), fSongs.getKey(), 2);
-                        SongData song = new SongData(fSongs.getKey(), null, null, null,
-                                null, null, fSongs.child("url").getValue(String.class));
-                        boolean state = pref.getBoolean("downloaded", false);
-                        if (state == true) {
-                            song = createDownloadedSongData(song);
-                        }
+                        int curP = pref.getInt("Friend Played", 0);
+                        if(curP == 0) {
+                            Log.d("For song" + fSongs.getKey(), String.valueOf(curRate));
+                            SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(),
+                                    fSongs.getKey(), curRate + 2);
+                            SharedPrefs.updateFriendPlayed(VibeActivity.this.getApplicationContext(), fSongs.getKey(), 2);
+                            SongData song = new SongData(fSongs.getKey(), null, null, null,
+                                    null, null, fSongs.child("url").getValue(String.class));
+                            boolean state = pref.getBoolean("downloaded", false);
+                            if (state == true) {
+                                song = createDownloadedSongData(song);
+                            }
 
-                        vibeSongs.add(song);
-                        break;
-                        /**
-                         if(!state) {
-                         vibeSongs.add(song);
-                         }
-                         */
-                        //vibeList.add(snapshot.getKey());
-                        //vibeListURLs.add(snapshot.child("url").getValue(String.class));
+                            vibeSongs.add(song);
+                            /**
+                             if(!state) {
+                             vibeSongs.add(song);
+                             }
+                             */
+                            //vibeList.add(snapshot.getKey());
+                            //vibeListURLs.add(snapshot.child("url").getValue(String.class));
+                        }
                     }
                 }
                 if(friendFired && songFired){

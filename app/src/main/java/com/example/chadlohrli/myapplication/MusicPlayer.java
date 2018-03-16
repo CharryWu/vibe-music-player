@@ -71,6 +71,7 @@ public class MusicPlayer extends AppCompatActivity {
     private boolean firstSongDownloaded = false;
 
     private int d = 0;
+    private int psong = -1;
     //public int timesPlayed;
     private ImageView albumCover;
     private TextView locationTitle;
@@ -174,9 +175,7 @@ public class MusicPlayer extends AppCompatActivity {
             Cursor cursor = downloadManager.query(query);
 
             d++;
-            if(d == 3){
-                d = 6;
-            }
+
             if(cursor.moveToFirst()); {
                 //get description of download which contains position of downloaded song in song ArrayList passed in
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
@@ -201,7 +200,9 @@ public class MusicPlayer extends AppCompatActivity {
                     firstSongDownloaded = true;
 
                 }
-
+                if(song.getPriority() < cur_song) {
+                    psong = song.getPriority();
+                }
             }
 
         }
@@ -232,6 +233,14 @@ public class MusicPlayer extends AppCompatActivity {
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
 
+        /*for(SongData es: songs) {
+            SharedPreferences pref = getSharedPreferences(es.getID(), MODE_PRIVATE);
+            boolean downloaded = pref.getBoolean("downloaded", false);
+            if (downloaded == true) {
+                d++;
+                //TODO return??
+            }
+        }*/
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -416,7 +425,9 @@ public class MusicPlayer extends AppCompatActivity {
         //TODO if current song has not been downloaded skip and play next song
         //Log.d("cur_song", songs.get(cur_song).getAlbum());
 
-
+        /*if(d == 0){
+            return;
+        }*/
 
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
@@ -471,8 +482,13 @@ public class MusicPlayer extends AppCompatActivity {
             onSupportNavigateUp();
         }
 
+
         Log.d("new index",String.valueOf(cur_song));
 
+        if(psong != -1){
+            cur_song = psong;
+        }
+        psong = -1;
         playSong();
 
 

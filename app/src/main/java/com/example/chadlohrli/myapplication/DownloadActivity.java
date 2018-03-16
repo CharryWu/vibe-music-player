@@ -71,7 +71,9 @@ public class DownloadActivity extends AppCompatActivity {
                 String typeOfDownload = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
                 if (typeOfDownload.equals("zip")) {
                     try {
-                        unzip(id);
+                        String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+                        String zipFilePath = downloadDirectoryPath+ "/" + id;
+                        unzip(zipFilePath, downloadDirectoryPath);
                     }
                     catch (Exception e) {
                         Log.e("zip doesnt work", "zip");
@@ -255,50 +257,56 @@ public class DownloadActivity extends AppCompatActivity {
 
     }
 
-    public void unzip(String zipId) throws IOException {
-        String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-        String zipFilePath = downloadDirectoryPath+zipId;
+    public void unzip(String zipFilePath, String songDirectory) throws IOException {
+        /**
+         try {
+         File f = new File(songDirectory);
+         if(!f.isDirectory()) {
+         f.mkdirs();
+         }
+         ZipInputStream zin = new ZipInputStream(new FileInputStream(zipFilePath));
+         try {
+         ZipEntry ze = null;
+         while ((ze = zin.getNextEntry()) != null) {
+         String path = songDirectory + "/" + ze.getName();
 
-        String songDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+         if (ze.isDirectory()) {
+         File unzipFile = new File(path);
+         if(!unzipFile.isDirectory()) {
+         unzipFile.mkdirs();
+         }
+         }
+         else {
+         FileOutputStream fout = new FileOutputStream(path, false);
+         try {
+         for (int c = zin.read(); c != -1; c = zin.read()) {
+         fout.write(c);
+         }
+         zin.closeEntry();
+         }
+         catch (Exception i) {
+         Log.e("Exception", "exception in first finally");
+         }
+         finally {
+         fout.close();
+         }
+         }
+         }
+         }
+         catch (Exception e) {
+         Log.e("Exception", "exception in second");
+         }
+         finally {
+         zin.close();
+         }
+         }
+         catch (Exception e) {
+         Log.e("Unzipping problem", "Unzip exception", e);
+         }
+         }
+         */
 
-        try {
-            File f = new File(songDirectory);
-            if(!f.isDirectory()) {
-                f.mkdirs();
-            }
-            ZipInputStream zin = new ZipInputStream(new FileInputStream(zipFilePath));
-            try {
-                ZipEntry ze = null;
-                while ((ze = zin.getNextEntry()) != null) {
-                    String path = songDirectory + ze.getName();
-
-                    if (ze.isDirectory()) {
-                        File unzipFile = new File(path);
-                        if(!unzipFile.isDirectory()) {
-                            unzipFile.mkdirs();
-                        }
-                    }
-                    else {
-                        FileOutputStream fout = new FileOutputStream(path, false);
-                        try {
-                            for (int c = zin.read(); c != -1; c = zin.read()) {
-                                fout.write(c);
-                            }
-                            zin.closeEntry();
-                        }
-                        finally {
-                            fout.close();
-                        }
-                    }
-                }
-            }
-            finally {
-                zin.close();
-            }
-        }
-        catch (Exception e) {
-            Log.e("Unzipping problem", "Unzip exception", e);
-        }
     }
+
 
 }

@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,6 +43,7 @@ public class DownloadActivity extends AppCompatActivity {
     private Button downloadButton;
     private Button downloadAlbumButton;
     private String id;
+    private final int BUFFER_SIZE = 8192;
 
 
     BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -54,7 +57,7 @@ public class DownloadActivity extends AppCompatActivity {
 
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             //directory that song has been stored in
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
 
 
             DownloadManager.Query query = new DownloadManager.Query();
@@ -72,7 +75,7 @@ public class DownloadActivity extends AppCompatActivity {
                 if (typeOfDownload.equals("zip")) {
                     try {
                         String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
-                        String zipFilePath = downloadDirectoryPath+ "/" + id;
+                        String zipFilePath = path + "/" + id;
                         unzip(zipFilePath, downloadDirectoryPath);
                     }
                     catch (Exception e) {
@@ -258,6 +261,62 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     public void unzip(String zipFilePath, String songDirectory) throws IOException {
+        int size;
+        byte[] buffer = new byte[BUFFER_SIZE];
+
+        try {
+            if ( !songDirectory.endsWith(File.separator) ) {
+                songDirectory += File.separator;
+            }
+            File f = new File(songDirectory);
+            if(!f.isDirectory()) {
+                f.mkdirs();
+            }
+            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFilePath), BUFFER_SIZE));
+            try {
+                ZipEntry ze = null;
+                while ((ze = zin.getNextEntry()) != null) {
+                    String path = songDirectory + ze.getName();
+                    File unzipFile = new File(path);
+
+                    if (ze.isDirectory()) {
+                        if(!unzipFile.isDirectory()) {
+                            unzipFile.mkdirs();
+                        }
+                    } else {
+                        // check for and create parent directories if they don't exist
+                        File parentDir = unzipFile.getParentFile();
+                        if ( null != parentDir ) {
+                            if ( !parentDir.isDirectory() ) {
+                                parentDir.mkdirs();
+                            }
+                        }
+
+                        // unzip the file
+                        FileOutputStream out = new FileOutputStream(unzipFile, false);
+                        BufferedOutputStream fout = new BufferedOutputStream(out, BUFFER_SIZE);
+                        try {
+                            while ( (size = zin.read(buffer, 0, BUFFER_SIZE)) != -1 ) {
+                                fout.write(buffer, 0, size);
+                            }
+
+                            zin.closeEntry();
+                        }
+                        finally {
+                            fout.flush();
+                            fout.close();
+                        }
+                    }
+                }
+            }
+            finally {
+                zin.close();
+            }
+        }
+        catch (Exception e) {
+            Log.e("unzip exception", "Unzip exception", e);
+        }
+
         /**
          try {
          File f = new File(songDirectory);

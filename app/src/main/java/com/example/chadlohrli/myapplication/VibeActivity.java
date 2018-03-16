@@ -57,6 +57,7 @@ public class VibeActivity extends AppCompatActivity {
     private boolean friendFired = false;
     private boolean songFired = false;
 
+    private ArrayList<SongData> trys = new ArrayList<SongData>();
     /*
     private Set<String> set;
     private ArrayList<String> finalRec;
@@ -287,10 +288,15 @@ public class VibeActivity extends AppCompatActivity {
 
         Log.d("Vibe song playlist before uniquing", String.valueOf(vibeSongs.size()));
         setSong = new HashSet<SongData>(vibeSongs);
-        vibeFinalPlaylist = new ArrayList<SongData>(setSong);
 
-        for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
-            Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i - 1).getID());
+        trys = createDownloadedSongs();
+        vibeFinalPlaylist = new ArrayList<SongData>(setSong);
+        for(int i = 0; i < trys.size(); i++){
+            Log.d("try", trys.get(i).getID());
+        }
+
+        for(int i = 0; i < vibeFinalPlaylist.size(); i++){
+           Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i).getID());
         }
         Collections.sort(vibeFinalPlaylist, new VibeSongSorter(getApplicationContext()));
 

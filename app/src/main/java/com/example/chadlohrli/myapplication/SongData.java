@@ -42,6 +42,7 @@ public class SongData implements Serializable, Parcelable {
         song_title = in.readString();
         song_artist = in.readString();
         song_path = in.readString();
+        url = in.readString();
     }
 
     public static final Creator<SongData> CREATOR = new Creator<SongData>() {
@@ -105,6 +106,7 @@ public class SongData implements Serializable, Parcelable {
         dest.writeString(song_title);
         dest.writeString(song_artist);
         dest.writeString(song_path);
+        dest.writeString(url);
         //dest.writeString(isDownloaded);
     }
 

@@ -28,6 +28,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -52,12 +53,13 @@ public class ListViewEspressoTest {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        /*
         try {
             Thread.sleep(3548770);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+*/
         DataInteraction linearLayout = onData(anything())
                 .inAdapterView(allOf(withId(R.id.songlist),
                         childAtPosition(
@@ -69,12 +71,13 @@ public class ListViewEspressoTest {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        /*
         try {
             Thread.sleep(3592258);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+*/
         ViewInteraction appCompatImageButton = onView(
                 allOf(withId(R.id.playBtn),
                         childAtPosition(
@@ -88,12 +91,13 @@ public class ListViewEspressoTest {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+*/
         ViewInteraction appCompatButton4 = onView(
                 allOf(withId(R.id.carrot), withText("⌃"),
                         childAtPosition(
@@ -108,12 +112,13 @@ public class ListViewEspressoTest {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+*/
         ViewInteraction listView = onView(
                 allOf(withId(R.id.listView),
                         childAtPosition(
@@ -122,8 +127,7 @@ public class ListViewEspressoTest {
                                         0),
                                 0),
                         isDisplayed()));
-        listView.check(matches(isDisplayed()));
-
+        onView(withId(R.id.listView)).check(matches((isDisplayed())));
     }
 
     private static Matcher<View> childAtPosition(

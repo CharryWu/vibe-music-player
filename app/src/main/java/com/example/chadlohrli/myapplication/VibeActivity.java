@@ -153,8 +153,9 @@ public class VibeActivity extends AppCompatActivity {
         });
     }
 
-    protected void vibe(){
+    public void vibe(){
         location = getLoc();
+        Log.d("VIBE", location.toString());
         mAuth = FirebaseAuth.getInstance();
 
         //vibeSongs = createDownloadedSongs();

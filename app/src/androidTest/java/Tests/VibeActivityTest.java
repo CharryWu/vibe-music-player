@@ -28,19 +28,19 @@ public class VibeActivityTest {
 
     MockTime mockTime = new MockTime();
     Date date;
+    Location curr_loc;
 
     @Rule
     public ActivityTestRule<VibeActivity> vibeActivity = new ActivityTestRule<VibeActivity>(VibeActivity.class);
 
-    @Rule
-    public ActivityTestRule<MainActivity> mainActivity = new ActivityTestRule<MainActivity>(MainActivity.class);
-
     @Before
     public void setup() {
-        main = mainActivity.getActivity();
         activity = vibeActivity.getActivity();
+        curr_loc = new Location("");
+        curr_loc.setLatitude(37.422);
+        curr_loc.setLongitude(-122.084);
+
     };
-    //Location curr_loc = activity.getLoc();
 
     @Test
     public void testMatchWeek() {
@@ -59,13 +59,16 @@ public class VibeActivityTest {
 */
         int result = vibeActivity.getActivity().matchWeek("2018.01.10.16.02.49");
         assertEquals(0, result, .01);
+
+        result = vibeActivity.getActivity().matchWeek("2018.03.15.16.02.49");
+        assertEquals(2, result, .01);
     }
 
     //match location
-   /* @Test
+    @Test
     public void testMatchLocation() {
         double result = vibeActivity.getActivity().matchLocation(curr_loc);
         assertEquals(2, result, .01);
     }
-    */
+
 }

@@ -76,7 +76,7 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     public int matchWeek(String songTimestamp) {
-        Log.d("A Timestampforsong", songTimestamp);
+        //Log.d("A Timestampforsong", songTimestamp);
         Date curtime = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
         Date songTime = null;
@@ -94,13 +94,13 @@ public class VibeActivity extends AppCompatActivity {
     }
 
     public double matchLocation(Location songLoc) {
-        Log.d("A Lat for song", String.valueOf(songLoc.getLatitude()));
-        Log.d("A Long for song", String.valueOf(songLoc.getLongitude()));
+        //Log.d("A Lat for song", String.valueOf(songLoc.getLatitude()));
+        //Log.d("A Long for song", String.valueOf(songLoc.getLongitude()));
 
         double distance = songLoc.distanceTo(location);
         double locRating = 0;
 
-        Log.d("A Distance of song from phone", String.valueOf(distance));
+        //Log.d("A Distance of song from phone", String.valueOf(distance));
         if (distance <= 304.8) {
             locRating += 2;
         }
@@ -169,7 +169,9 @@ public class VibeActivity extends AppCompatActivity {
                     //snapshot.child("rating").getRef().setValue(newR);
                     Log.d("A Song current",snapshot.getKey());
                     // next 3 uncomment
-                    int wR = matchWeek(lp);
+                    SharedPreferences pr = getSharedPreferences(snapshot.getKey(), MODE_PRIVATE);
+                    int cR = pr.getInt("Rating", 0);
+                    int wR = matchWeek(lp) + cR;
                     SharedPrefs.updateRating(VibeActivity.this.getApplicationContext(), snapshot.getKey(), wR);
                     SharedPrefs.updateLastPlayedWeek(VibeActivity.this.getApplicationContext(), snapshot.getKey(), 2);
 
@@ -255,6 +257,7 @@ public class VibeActivity extends AppCompatActivity {
                         }
 
                         vibeSongs.add(song);
+                        break;
                         /**
                          if(!state) {
                          vibeSongs.add(song);
@@ -289,21 +292,29 @@ public class VibeActivity extends AppCompatActivity {
 
         trys = createDownloadedSongs();
         vibeFinalPlaylist = new ArrayList<SongData>(setSong);
-        for(int i = 0; i < trys.size(); i++){
+        /*for(int i = 0; i < trys.size(); i++){
             Log.d("try", trys.get(i).getID());
         }
 
         for(int i = 0; i < vibeFinalPlaylist.size(); i++){
            Log.d("Vibe playlist before sort", vibeFinalPlaylist.get(i).getID());
-        }
+        }*/
         Collections.sort(vibeFinalPlaylist, new VibeSongSorter(getApplicationContext()));
 
         Log.d("Vibe playlist size", String.valueOf(vibeFinalPlaylist.size()));
         for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
+            SharedPreferences pref = getSharedPreferences(vibeFinalPlaylist.get(i - 1).getID(), MODE_PRIVATE);
+            String curRate = String.valueOf(pref.getInt("Rating", 0));
+            String curLoc = String.valueOf(pref.getInt("Loc Played", 0));
+            String curWeek = String.valueOf(pref.getInt("Played this week", 0));
+            String curF = String.valueOf(pref.getInt("Friend Played", 0));
+            Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID() + " " + curRate + " " + curLoc + " " + curWeek + " " + curF);
+        }
+
+        for(int i = 1; i <= vibeFinalPlaylist.size(); i++){
             vibeFinalPlaylist.get(i - 1).setPriority(i);
             SharedPrefs.setZero(VibeActivity.this.getApplicationContext(),
                     vibeFinalPlaylist.get(i-1).getID());
-            Log.d("Vibe playlist after sort", vibeFinalPlaylist.get(i - 1).getID());
         }
 
         if (vibeFinalPlaylist.size() == 0) {

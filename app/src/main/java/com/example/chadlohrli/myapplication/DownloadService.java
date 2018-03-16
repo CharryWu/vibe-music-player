@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
@@ -95,12 +96,12 @@ public class DownloadService extends Service {
         while (it.hasNext()) {
             SongData song = it.next();
             String songId = song.getID();
-            String isDownloaded = song.checkIfDownloaded();
+            SharedPreferences pref = getSharedPreferences(songId, MODE_PRIVATE);
+            boolean isDownloaded = pref.getBoolean("downloaded", false);
 
             //Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), songId);
-            //if map size is 0, then song has not yet been downloaded
-            Log.d("isDownloaded", isDownloaded);
-            if(isDownloaded.equals("False"))
+            //if map size is 0, then song has not yet been downloade
+            if(isDownloaded == false)
                 downloadSong(song, position);
             position++;
 
@@ -119,7 +120,7 @@ public class DownloadService extends Service {
         request.setTitle(songId);
         request.setDescription(Integer.toString(position));
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songId+".mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songId);
 
 
         request.allowScanningByMediaScanner();
@@ -129,6 +130,8 @@ public class DownloadService extends Service {
 
 
         //TODO update shared prefs
+        SharedPrefs.updateURL(this,songId,uri.toString());
+
     }
 
     public DownloadManager getDownloadManager() {return downloadManager;}

@@ -143,7 +143,6 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("Google Sign in", "here");
 
                 firebaseAuthWithGoogle(account);
-
                 SharedPrefs.saveServerCode(this.getApplicationContext(),account.getServerAuthCode());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately

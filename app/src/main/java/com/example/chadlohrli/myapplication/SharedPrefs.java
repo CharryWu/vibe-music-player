@@ -54,11 +54,17 @@ public class SharedPrefs {
 
     }
 
-    public static void saveDefault(Context context, String id) {
+    public static void setZero(Context context, String id) {
         SharedPreferences newSong = context.getSharedPreferences(id, MODE_PRIVATE);
         SharedPreferences.Editor songadd = newSong.edit();
         //if you need defaults
+        songadd.putInt("Rating", 0);
+        songadd.putInt("Priority", 0);
+        songadd.putInt("Friend Played", 0);
+        songadd.putInt("Loc Played", 0);
+        songadd.putInt("Played this week", 0);
         songadd.commit();
+        Log.d("SharedPrefs set to zero for song ", id);
 
     }
 

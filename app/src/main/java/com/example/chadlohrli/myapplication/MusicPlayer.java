@@ -200,7 +200,7 @@ public class MusicPlayer extends AppCompatActivity {
                     firstSongDownloaded = true;
 
                 }
-                if(song.getPriority() <= cur_song) {
+                if(song.getPriority() < cur_song) {
                     psong = song.getPriority();
                 }
                 if(d == 1){
@@ -502,6 +502,12 @@ public class MusicPlayer extends AppCompatActivity {
             cur_song = psong;
         }
         psong = -1;
+
+        SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
+        boolean downloaded = pref.getBoolean("downloaded", false);
+        if (downloaded == false){
+            playNextSong();
+        }
         playSong();
 
 

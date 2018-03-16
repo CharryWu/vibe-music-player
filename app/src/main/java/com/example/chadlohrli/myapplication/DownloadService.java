@@ -120,7 +120,7 @@ public class DownloadService extends Service {
         request.setTitle(songId);
         request.setDescription(Integer.toString(position));
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songId+".mp3");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, songId);
 
 
         request.allowScanningByMediaScanner();
@@ -130,6 +130,8 @@ public class DownloadService extends Service {
 
 
         //TODO update shared prefs
+        SharedPrefs.updateURL(this,songId,uri.toString());
+
     }
 
     public DownloadManager getDownloadManager() {return downloadManager;}

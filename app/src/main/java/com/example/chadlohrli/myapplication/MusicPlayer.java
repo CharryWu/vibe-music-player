@@ -316,26 +316,34 @@ public class MusicPlayer extends AppCompatActivity {
                     break;
                 }
 
-                myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                if (user != null) {
+                    myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        for (DataSnapshot names : dataSnapshot.getChildren()) {
-                            //get all id and find matching one
-                            if (names.getKey().equals(user)) {
-                                user = names.child("username").getValue().toString();
-                                Log.d("user name", user);
-                                dpDate = lp + " by " + user;
-                                placeDate.setText(dpDate);
-                                break;
+                            for (DataSnapshot names : dataSnapshot.getChildren()) {
+                                //get all id and find matching one
+                                if (names.getKey().equals(user)) {
+                                    user = names.child("username").getValue().toString();
+                                    Log.d("user name", user);
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
+                else {
+                    user = "No one";
+                }
+                if (lp == null) {
+                    lp = "No where";
+                }
+                dpDate = lp + " by " + user;
+                placeDate.setText(dpDate);
             }
 
             @Override

@@ -70,6 +70,8 @@ public class MusicPlayer extends AppCompatActivity {
     private DateHelper dateHelper;
     private boolean firstSongDownloaded = false;
 
+    private int d = 0;
+    private int psong = -1;
     //public int timesPlayed;
     private ImageView albumCover;
     private TextView locationTitle;
@@ -172,6 +174,8 @@ public class MusicPlayer extends AppCompatActivity {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Cursor cursor = downloadManager.query(query);
 
+            d++;
+
             if(cursor.moveToFirst()); {
                 //get description of download which contains position of downloaded song in song ArrayList passed in
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
@@ -196,7 +200,12 @@ public class MusicPlayer extends AppCompatActivity {
                     firstSongDownloaded = true;
 
                 }
-
+                if(song.getPriority() < cur_song) {
+                    psong = song.getPriority();
+                }
+                if(d == 1){
+                    cur_song = song.getPriority();
+                }
             }
 
         }
@@ -226,7 +235,6 @@ public class MusicPlayer extends AppCompatActivity {
 
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
-
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -301,8 +309,27 @@ public class MusicPlayer extends AppCompatActivity {
             mediaPlayer = musicService.getPlayer();
             isBound = true;
 
-            playSong();
-
+            for(SongData es: songs) {
+                SharedPreferences pref = getSharedPreferences(es.getID(), MODE_PRIVATE);
+                boolean downloaded = pref.getBoolean("downloaded", false);
+                if (downloaded == true) {
+                    d++;
+                }
+            }
+            if(d == 0){
+                Toast toast = Toast.makeText(getApplicationContext(), "Downloads in progress!",
+                        Toast.LENGTH_LONG);
+                toast.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playSong();
+                    }
+                }, 10000);
+            } else {
+                playSong();
+            }
         }
 
         @Override
@@ -411,7 +438,9 @@ public class MusicPlayer extends AppCompatActivity {
         //TODO if current song has not been downloaded skip and play next song
         //Log.d("cur_song", songs.get(cur_song).getAlbum());
 
-
+        /*if(d == 0){
+            return;
+        }*/
 
         SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
         boolean downloaded = pref.getBoolean("downloaded", false);
@@ -466,8 +495,20 @@ public class MusicPlayer extends AppCompatActivity {
             onSupportNavigateUp();
         }
 
+
         Log.d("new index",String.valueOf(cur_song));
 
+        if(psong != -1){
+            cur_song = psong;
+        }
+        psong = -1;
+
+        SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
+        boolean downloaded = pref.getBoolean("downloaded", false);
+        if (downloaded == false){
+            Log.d("PNSWORK", "MEH");
+            playNextSong();
+        }
         playSong();
 
 

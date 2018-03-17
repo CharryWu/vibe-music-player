@@ -239,7 +239,7 @@ public class DownloadActivity extends AppCompatActivity {
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle("zip");
 
-            request.setDescription(url);
+            request.setDescription(id);
 
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, id);
 
@@ -395,9 +395,7 @@ public class DownloadActivity extends AppCompatActivity {
                             fout.close();
                         }
                     }
-                    SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
-                    SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
-                    SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
+
                 }
             }
             finally {
@@ -454,6 +452,9 @@ public class DownloadActivity extends AppCompatActivity {
          Log.e("Unzipping problem", "Unzip exception", e);
          }
          }
+         SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
+         SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
+         SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
          */
 
     }

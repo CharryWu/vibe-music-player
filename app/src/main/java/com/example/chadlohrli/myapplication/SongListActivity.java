@@ -67,6 +67,9 @@ public class SongListActivity extends AppCompatActivity implements AdapterView.O
             String Id = fields[count].getName();
 
             SongData song = SongParser.parseSong(path, Id, getApplicationContext());
+            Map<String, ?> map = SharedPrefs.getSongData(getApplicationContext(), song.getID());
+            String url = map.get("URL").toString();
+            song.setUrl(url);
 
             /*
             Map<String,?> map = SharedPrefs.getSongData(getApplicationContext(),song.getID());

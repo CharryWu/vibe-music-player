@@ -1,4 +1,4 @@
-package Tests;
+/*package Tests;
 
 import android.support.test.rule.ActivityTestRule;
 
@@ -24,9 +24,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by marissahing on 2/16/18.
- */
 
 public class FlashBackActivityTest {
     FlashBackActivity activity;
@@ -69,3 +66,4 @@ public class FlashBackActivityTest {
         assertEquals(0, result, .01);
     }
 }
+*/

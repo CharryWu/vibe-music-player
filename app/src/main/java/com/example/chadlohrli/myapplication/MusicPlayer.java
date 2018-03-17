@@ -31,6 +31,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -44,10 +45,15 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -81,6 +87,8 @@ public class MusicPlayer extends AppCompatActivity {
     private Button favBtn;
     private TextView startTime;
     private TextView endTime;
+    private TextView placeDate;
+
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -137,6 +145,12 @@ public class MusicPlayer extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private DataSnapshot snapshot;
+
+    private String user, lp, dpDate;
+    MockTime mockTime = new MockTime();
+
+
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
@@ -144,8 +158,8 @@ public class MusicPlayer extends AppCompatActivity {
             if(intent.getAction().equals(SONG_FINISHED)) {
 
                 String serviceJsonString = intent.getStringExtra("hi");
-                Log.d("Broadcast", serviceJsonString);
-                Log.d("current index",String.valueOf(cur_song));
+                //Log.d("Broadcast", serviceJsonString);
+                //Log.d("current index",String.valueOf(cur_song));
 
                 playNextSong();
 
@@ -156,6 +170,11 @@ public class MusicPlayer extends AppCompatActivity {
     private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Toast toast = Toast.makeText(MusicPlayer.this,
+                    "Music Download Complete", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 25, 400);
+            toast.show();
+
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             //directory that song has been stored in
             String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
@@ -171,11 +190,11 @@ public class MusicPlayer extends AppCompatActivity {
                 String downloadDescription = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
                 //convert downloadDescription to int
                 int songPosition = Integer.parseInt(downloadDescription);
-                Log.d("songPosition", Integer.toString(songPosition));
+                //Log.d("songPosition", Integer.toString(songPosition));
 
                 //get title of column which is the id of the song
                 String songId = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                Log.d("songId", songId);
+                //Log.d("songId", songId);
 
                 //TODO use songPosition to mark song as playable and remove progress bar in fragment
                 SongData song = songs.get(songPosition);
@@ -211,10 +230,17 @@ public class MusicPlayer extends AppCompatActivity {
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
-        timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        //timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+        timeStamp = mockTime.changeTime();
+        Log.i("timeStamp is:", timeStamp);
+
+
 
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
+
+        placeDate = (TextView) findViewById(R.id.place_date);
 
 
         //display song for aesthetics
@@ -272,6 +298,71 @@ public class MusicPlayer extends AppCompatActivity {
         fragment = new SongProgressFragment();
         fragment.setArguments(bundle);
         fm.beginTransaction().replace(R.id.mainLay, fragment).commit();
+    }
+
+    public void updatePlaceDate() {
+
+        myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    //get all id and find matching one
+                    Log.d("songid", snapshot.getKey());
+                    if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
+
+                        lp = snapshot.child("lastPlayed").getValue(String.class);
+
+                        Log.d("time is ", lp);
+
+                        for (DataSnapshot users : snapshot.child("user").getChildren()) {
+                            user = users.getKey();
+                            Log.d("user", user);
+                        }
+                        break;
+                    }
+
+                }
+
+                if (user != null) {
+                    myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot names : dataSnapshot.getChildren()) {
+                                //get all id and find matching one
+                                if (names.getKey().equals(user)) {
+                                    user = names.child("username").getValue().toString();
+                                    Log.d("user name", user);
+                                    dpDate = lp + " by " + user;
+                                    placeDate.setText(dpDate);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
+                else {
+                    user = "No one";
+                }
+                if (lp == null) {
+                    lp = "Last Played no where";
+                }
+                dpDate = lp + " by " + user;
+                placeDate.setText(dpDate);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+
+
     }
 
     public void setDateHelper(DateHelper dateHelper) {
@@ -398,12 +489,22 @@ public class MusicPlayer extends AppCompatActivity {
     public void playSong() {
 
         //TODO if current song has not been downloaded skip and play next song
-        Log.d("cur_song", songs.get(cur_song).getAlbum());
+
+        Log.d("cur_song", songs.get(cur_song).getID());
+        SharedPreferences pref = getSharedPreferences(songs.get(cur_song).getID(), MODE_PRIVATE);
+        boolean downloaded = pref.getBoolean("downloaded", false);
+        if (downloaded == false) {
+            playNextSong();
+            //TODO return??
+        }
+        /**
 
         if(songs.get(cur_song).checkIfDownloaded().equals("False")) {
             playNextSong();
             return;
         }
+        */
+
 
         checkSongState(songs.get(cur_song));
 
@@ -419,11 +520,12 @@ public class MusicPlayer extends AppCompatActivity {
 
         updateFragment();
         Log.d("Songs size",String.valueOf(songs.size()));
+        updatePlaceDate();
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
         setupPlayer(songs.get(cur_song));
-        SharedPreferences pref = getSharedPreferences("last song", MODE_PRIVATE);
+        pref = getSharedPreferences("last song", MODE_PRIVATE);
         SharedPreferences.Editor edit = pref.edit();
         edit.putString("song", songs.get(cur_song).getTitle());
         edit.putFloat("Latitude", (float)lat);
@@ -775,33 +877,6 @@ public class MusicPlayer extends AppCompatActivity {
         //int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         int day = dateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
         return day;
-        /**
-        switch (day) {
-            case 0: return SUNDAY;
-            case 1: return MONDAY;
-            case 2: return TUESDAY;
-            case 3: return WEDNESDAY;
-            case 4: return THURSDAY;
-            case 5: return FRIDAY;
-            default: return SATURDAY;
-=======
-    protected int getDay() {
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        //Log.i("time of day", String.valueOf(timeofday));
-        //Log.i("dayinfuc", String.valueOf(day));
-        switch (day) {
-            case 2: return MONDAY;
-            case 3: return TUESDAY;
-            case 4: return WEDNESDAY;
-            case 5: return THURSDAY;
-            case 6: return FRIDAY;
-            case 7: return SATURDAY;
-            default: return SUNDAY;
->>>>>>> c61c2149ff710701e18976409192d844493deb3b
-
-        }
-         */
-
     }
 
 }

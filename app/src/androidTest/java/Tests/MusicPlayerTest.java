@@ -58,6 +58,7 @@ public class MusicPlayerTest {
        musicPlayerRule.launchActivity(intent);
     }
 
+
    @Test
     public void testGetTimeOfDay() {
         musicPlayerRule.getActivity().setDateHelper(new MockDateHelper());
@@ -89,4 +90,5 @@ public class MusicPlayerTest {
         day = musicPlayerRule.getActivity().getDay();
         assertEquals(Calendar.SUNDAY, day);
    }
+
 }

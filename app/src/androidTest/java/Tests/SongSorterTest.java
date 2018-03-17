@@ -2,7 +2,7 @@ package Tests;
 
 import android.support.test.rule.ActivityTestRule;
 
-import com.example.chadlohrli.myapplication.FlashBackActivity;
+//import com.example.chadlohrli.myapplication.FlashBackActivity;
 import com.example.chadlohrli.myapplication.SharedPrefs;
 import com.example.chadlohrli.myapplication.SongData;
 import com.example.chadlohrli.myapplication.SongSorter;
@@ -44,7 +44,7 @@ public class SongSorterTest {
     private int rtimesPlayed;
     private String rlastPlayed;
     private int rfave;
-
+/*
     @Rule
     public ActivityTestRule<FlashBackActivity> flashBackActivity = new ActivityTestRule<FlashBackActivity>(FlashBackActivity.class);
 
@@ -85,5 +85,5 @@ public class SongSorterTest {
         assertEquals(flashBackList.get(0), song2);
         assertEquals(flashBackList.get(1), song1);
 
-    }
+    }*/
 }

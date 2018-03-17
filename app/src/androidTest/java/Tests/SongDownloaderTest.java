@@ -1,4 +1,4 @@
-package Tests;
+/*package Tests;
 
 import android.net.Uri;
 import android.support.test.rule.ActivityTestRule;
@@ -10,9 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Created by Kyle on 3/5/2018.
- */
+
 
 public class SongDownloaderTest {
     FlashBackActivity activity;
@@ -26,4 +24,4 @@ public class SongDownloaderTest {
         activity = flashBackActivity.getActivity();
         songDownloader = new SongDownloader(addressArray, flashBackActivity.getActivity().getApplicationContext());
     };
-}
+}*/

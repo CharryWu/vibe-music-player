@@ -83,14 +83,18 @@ public class SongAdapter extends BaseAdapter {
             undislikeBtn.setBackgroundColor(Color.RED);
             undislikeBtn.setText("X");
         }
-        //if the current song as not been downloaded then make progressBar visible
-        if (currSong.checkIfDownloaded() == "False")
-            progressBar.setVisibility(View.VISIBLE);
 
-        //get title and artist strings
-        songView.setText(currSong.getTitle());
-        String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();
-        artistView.setText(songAndAlbum);
+        //if the current song as not been downloaded then make progressBar visible
+        if (currSong.getTitle() == null) {
+            progressBar.setVisibility(View.VISIBLE);
+            songView.setText("Download in Progress");
+        }
+        else {
+            //get title and artist strings
+            songView.setText(currSong.getTitle());
+            String songAndAlbum = currSong.getArtist() + " \u0f36 " + currSong.getAlbum();
+            artistView.setText(songAndAlbum);
+        }
 
         //set position as tag
         songLay.setTag(i);

@@ -144,8 +144,8 @@
 
     <TextView
         android:id="@+id/place_date"
-        android:layout_width="212dp"
-        android:layout_height="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
         android:gravity="center"
         android:text="Last Played at Date/Time by name"

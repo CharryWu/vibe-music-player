@@ -15,14 +15,12 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +31,6 @@ public class AuthHandler implements Runnable {
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
     private DatabaseReference ref;
-    private ArrayList<String> friendKeys;
-    private int queryExecCnt;
     private String currentUserKey;
 
     public AuthHandler(Context context, String code, DatabaseReference myRef, String currentUserKey) {
@@ -45,8 +41,6 @@ public class AuthHandler implements Runnable {
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
         ref = myRef;
-        friendKeys = new ArrayList<>();
-        queryExecCnt = 0;
     }
 
     public List<Person> getFriendList(String code) throws IOException {
@@ -91,23 +85,14 @@ public class AuthHandler implements Runnable {
     }
 
     public void getDBExistEntryFromEmail(List<String> emails) {
-        final int terminateSize = emails.size();
         for (final String email : emails) {
             ref.child("users")
                     .orderByChild("email").equalTo(email)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            queryExecCnt++;
-
-                            for (DataSnapshot entry : dataSnapshot.getChildren()) {
-                                friendKeys.add(entry.getKey());
-
-                                // Similar to executing callback when all queries has been processed
-                                if (queryExecCnt == terminateSize) {
-                                    setFriendListDB(friendKeys);
-                                }
-                            }
+                            for (DataSnapshot entry : dataSnapshot.getChildren())
+                                addSingleFriendToDB(entry.getKey());
                         }
 
                         @Override
@@ -118,10 +103,9 @@ public class AuthHandler implements Runnable {
         }
     }
 
-    public void setFriendListDB(ArrayList<String> keys) {
-        for(String key:keys){
-            ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
-        }
+
+    public void addSingleFriendToDB(String key) {
+        ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
     }
 
     @Override

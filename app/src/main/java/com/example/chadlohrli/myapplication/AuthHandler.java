@@ -36,7 +36,7 @@ public class AuthHandler implements Runnable {
     private int queryExecCnt;
     private String currentUserKey;
 
-    public AuthHandler(Context context, String code, DatabaseReference myRef) {
+    public AuthHandler(Context context, String code, DatabaseReference myRef, String userId) {
         if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
@@ -45,6 +45,7 @@ public class AuthHandler implements Runnable {
         ref = myRef;
         friendKeys = new ArrayList<>();
         queryExecCnt = 0;
+        currentUserKey = userId;
     }
 
     public List<Person> getFriendList(String code) throws IOException {
@@ -118,7 +119,7 @@ public class AuthHandler implements Runnable {
 
     public void setFriendListDB(ArrayList<String> keys) {
         for(String key:keys){
-//            ref.child()
+            ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
         }
     }
 
@@ -127,6 +128,7 @@ public class AuthHandler implements Runnable {
         try {
             List<Person> friendList = getFriendList(code);
             List<String> friendEmails = getFriendEmails(friendList);
+
 
             getDBExistEntryFromEmail(friendEmails);
 

@@ -337,6 +337,7 @@ public class MusicPlayer extends AppCompatActivity {
                         for (DataSnapshot users : snapshot.child("user").getChildren()) {
                             user = users.getKey();
                             Log.d("user", user);
+                            break;
                         }
                         break;
                     }

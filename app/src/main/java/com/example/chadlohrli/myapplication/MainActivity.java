@@ -515,7 +515,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-
     }
 
 
@@ -560,6 +559,7 @@ public class MainActivity extends AppCompatActivity {
             canSend = true;
             return true;
         }
+
     }
 
     @Override

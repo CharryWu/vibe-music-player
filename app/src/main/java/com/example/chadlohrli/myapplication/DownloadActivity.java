@@ -338,15 +338,15 @@ public class DownloadActivity extends AppCompatActivity {
                 });
     }
 
-    public void unzip(String zipFilePath, String oldSongDirectory) throws IOException {
+    public void unzip(String zipFilePath, String songDirectory) throws IOException {
         int size;
         byte[] buffer = new byte[BUFFER_SIZE];
 
         try {
-            if ( !oldSongDirectory.endsWith(File.separator) ) {
-                oldSongDirectory += File.separator;
+            if ( !songDirectory.endsWith(File.separator) ) {
+                songDirectory += File.separator;
             }
-            File f = new File(oldSongDirectory);
+            File f = new File(songDirectory);
             if(!f.isDirectory()) {
                 f.mkdirs();
             }
@@ -355,16 +355,8 @@ public class DownloadActivity extends AppCompatActivity {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
 
-                    String path = oldSongDirectory + ze.getName();
-                    getNewUrlFromFirebase(Uri.parse(path), ze.getName());
-                    while (newIdForCurrentUnzippedSong == null) {
-
-                    }
-                    //the new id that the song will be given
-                    String localNewIdForCurrentUnzippedSong = newIdForCurrentUnzippedSong;
-                    String newPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + '/' + localNewIdForCurrentUnzippedSong;
-                    newIdForCurrentUnzippedSong = null;
-                    File unzipFile = new File(newPath);
+                    String path = songDirectory + ze.getName();
+                    File unzipFile = new File(path);
 
                     if (ze.isDirectory()) {
                         if(!unzipFile.isDirectory()) {
@@ -394,6 +386,16 @@ public class DownloadActivity extends AppCompatActivity {
                             fout.close();
                         }
                     }
+
+                    getNewUrlFromFirebase(Uri.parse(path), ze.getName());
+                    while (newIdForCurrentUnzippedSong == null) {
+
+                    }
+                    //the new id that the song will be given
+                    String localNewIdForCurrentUnzippedSong = newIdForCurrentUnzippedSong;
+                    String newPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + '/' + localNewIdForCurrentUnzippedSong;
+                    renameSongFile(ze.getName(), newIdForCurrentUnzippedSong);
+                    newIdForCurrentUnzippedSong = null;
                 }
             }
             finally {

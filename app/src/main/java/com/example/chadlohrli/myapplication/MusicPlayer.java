@@ -670,6 +670,7 @@ public class MusicPlayer extends AppCompatActivity {
         //save song to user
         if(currentUser!= null) {
             songRef.child("user").child(currentUser.getUid()).setValue(true);
+            songRef.child("lastPlayedUser").setValue(currentUser.getUid());
 
             userRef = myRef.child("users").child(currentUser.getUid());
             userRef.child("songs").child(song.getID()).setValue(true);

@@ -220,10 +220,12 @@ public class MainActivity extends AppCompatActivity {
 
         LocationHelper.getLatLong(context);
 
-        //check permissions
-        checkLocationPermission();
         askForContactPermission();
         askForReadPermission();
+
+        //check permissions
+        checkLocationPermission();
+
 
         songButton = (Button) findViewById(R.id.song_button);
         albumButton = (Button) findViewById(R.id.album_button);
@@ -583,6 +585,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
 
                     // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
                     // functionality that depends on this permission.
                     canSend = false;
 

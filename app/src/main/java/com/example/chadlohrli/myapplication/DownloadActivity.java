@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -55,6 +56,8 @@ public class DownloadActivity extends AppCompatActivity {
     private Button downloadAlbumButton;
     private String id;
     private final int BUFFER_SIZE = 8192;
+
+    private String newIdForCurrentUnzippedSong = null;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -287,6 +290,7 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     public void getNewUrlFromFirebase(Uri file, final String oldId) {
+
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/mpeg").build();
         StorageReference mStorageRef;
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -306,6 +310,8 @@ public class DownloadActivity extends AppCompatActivity {
                         Log.i("Success URL",downloadUrl.toString());
                         //TODO update shared prefs with new url
                         SharedPrefs.updateURL(getApplicationContext(), newId, downloadUrl.toString());
+                        newIdForCurrentUnzippedSong = newId;
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -318,15 +324,15 @@ public class DownloadActivity extends AppCompatActivity {
                 });
     }
 
-    public void unzip(String zipFilePath, String songDirectory) throws IOException {
+    public void unzip(String zipFilePath, String oldSongDirectory) throws IOException {
         int size;
         byte[] buffer = new byte[BUFFER_SIZE];
 
         try {
-            if ( !songDirectory.endsWith(File.separator) ) {
-                songDirectory += File.separator;
+            if ( !oldSongDirectory.endsWith(File.separator) ) {
+                oldSongDirectory += File.separator;
             }
-            File f = new File(songDirectory);
+            File f = new File(oldSongDirectory);
             if(!f.isDirectory()) {
                 f.mkdirs();
             }
@@ -335,8 +341,16 @@ public class DownloadActivity extends AppCompatActivity {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
 
-                    String path = songDirectory + ze.getName();
-                    File unzipFile = new File(path);
+                    String path = oldSongDirectory + ze.getName();
+                    getNewUrlFromFirebase(Uri.parse(path), ze.getName());
+                    while (newIdForCurrentUnzippedSong == null) {
+
+                    }
+                    //the new id that the song will be given
+                    String localNewIdForCurrentUnzippedSong = newIdForCurrentUnzippedSong;
+                    String newPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + '/' + localNewIdForCurrentUnzippedSong;
+                    newIdForCurrentUnzippedSong = null;
+                    File unzipFile = new File(newPath);
 
                     if (ze.isDirectory()) {
                         if(!unzipFile.isDirectory()) {
@@ -423,6 +437,20 @@ public class DownloadActivity extends AppCompatActivity {
          }
          }
          */
+
+    }
+
+    public void getNewSongIds(String zipFilePath) {
+        byte[] buffer = new byte[BUFFER_SIZE];
+
+        try {
+            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFilePath), BUFFER_SIZE));
+
+        }
+        catch (Exception e) {
+
+        }
+
 
     }
 

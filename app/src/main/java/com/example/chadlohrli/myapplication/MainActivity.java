@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
                             MainActivity.this.startActivity(searchIntent);
                         } else {
                             checkLocationPermission();
+                            askForContactPermission();
                             askForReadPermission();
                         }
                         break;
@@ -265,12 +266,13 @@ public class MainActivity extends AppCompatActivity {
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (canSend) {
+                if (canSend && canDownload) {
                     Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();
                     askForContactPermission();
+                    askForReadPermission();
                 }
             }
         });
@@ -279,12 +281,13 @@ public class MainActivity extends AppCompatActivity {
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (canSend) {
+                if (canSend && canDownload) {
                     Intent intent = new Intent(MainActivity.this, VibeActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();
                     askForContactPermission();
+                    askForReadPermission();
                 }
             }
         });

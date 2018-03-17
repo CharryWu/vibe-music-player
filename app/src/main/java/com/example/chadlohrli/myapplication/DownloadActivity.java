@@ -91,7 +91,7 @@ public class DownloadActivity extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 //get description of download which is id if song was zip
                 String id = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
-
+                String url = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
 
                 //get title of column which is "zip" if file was zip file
                 String typeOfDownload = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
@@ -99,7 +99,7 @@ public class DownloadActivity extends AppCompatActivity {
                     try {
                         String musicDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
                         String zipFilePath = path + "/" + id;
-                        unzip(zipFilePath, musicDirectoryPath);
+                        unzip(zipFilePath, musicDirectoryPath, url);
                         toast = Toast.makeText(DownloadActivity.this,
                                 "Album Unzipped", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.TOP, 25, 400);
@@ -239,7 +239,7 @@ public class DownloadActivity extends AppCompatActivity {
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle("zip");
 
-            request.setDescription(id);
+            request.setDescription(url);
 
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, id);
 
@@ -346,7 +346,7 @@ public class DownloadActivity extends AppCompatActivity {
         });
     }
 
-    public void unzip(String zipFilePath, String songDirectory) throws IOException {
+    public void unzip(String zipFilePath, String songDirectory, String id) throws IOException {
         int size;
         byte[] buffer = new byte[BUFFER_SIZE];
 
@@ -365,6 +365,7 @@ public class DownloadActivity extends AppCompatActivity {
 
                     String path = songDirectory + ze.getName();
                     File unzipFile = new File(path);
+
 
                     if (ze.isDirectory()) {
                         if(!unzipFile.isDirectory()) {
@@ -394,16 +395,9 @@ public class DownloadActivity extends AppCompatActivity {
                             fout.close();
                         }
                     }
-
-                    getNewUrlFromFirebase(Uri.parse(path), ze.getName());
-                    while (newIdForCurrentUnzippedSong == null) {
-
-                    }
-                    //the new id that the song will be given
-                    String localNewIdForCurrentUnzippedSong = newIdForCurrentUnzippedSong;
-                    String newPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + '/' + localNewIdForCurrentUnzippedSong;
-                    renameSongFile(ze.getName(), newIdForCurrentUnzippedSong);
-                    newIdForCurrentUnzippedSong = null;
+                    SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
+                    SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
+                    SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
                 }
             }
             finally {
@@ -464,19 +458,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     }
 
-    public void getNewSongIds(String zipFilePath) {
-        byte[] buffer = new byte[BUFFER_SIZE];
 
-        try {
-            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFilePath), BUFFER_SIZE));
-
-        }
-        catch (Exception e) {
-
-        }
-
-
-    }
 
 
 }

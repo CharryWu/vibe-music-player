@@ -109,6 +109,9 @@ public class DownloadService extends Service {
     }
 
     public void downloadSong(SongData song, int position) {
+        Log.d("Logging downloadSong id", song.getID());
+        Log.d("Logging downloadSong path", song.getPath());
+        Log.d("Logging downloadSong title", song.getTitle());
         Uri uri = Uri.parse(song.getUrl());
         //Uri uri = Uri.parse(song.getUrl);
 

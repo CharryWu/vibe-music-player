@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private static String date;
     private static String timeStamp;
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setDate(int day, int month, int year) {
         int currDay = day;
-        int currMonth = month+1;
+        int currMonth = month + 1;
         int currYear = year;
         String zero = Integer.toString(0);
         date = Integer.toString(currYear) + "." + zero + Integer.toString(currMonth) + "." + Integer.toString(currDay);
@@ -175,21 +176,46 @@ public class MainActivity extends AppCompatActivity {
         return timeStamp;
     }
 
+    private String getCode(Task<GoogleSignInAccount> task) {
+        String code = "";
+        try {
+            GoogleSignInAccount signInAccount = task.getResult(ApiException.class);
+            code = signInAccount.getServerAuthCode();
+            Log.i("Signin success", "Server Auth Code:" + code);
+        } catch (ApiException apiException) {
+            // You can get from apiException.getStatusCode() the detailed error code
+            // e.g. GoogleSignInStatusCodes.SIGN_IN_REQUIRED means user needs to take
+            // explicit action to finish sign-in;
+            // Please refer to GoogleSignInStatusCodes Javadoc for details
+
+            Log.e("MainActivity.getCode()", "user silent signin failed. Status code"
+                    + apiException.getStatusCode());
+        }
+        return code;
+    }
+
+    private void updateFriendList(String code){
+        if (code != null && !code.equals(""))
+            new Thread(new AuthHandler(getApplicationContext(), code, myRef, mAuth.getUid())).start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Context context = this.getApplicationContext();
         //Testing Firebase Code
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
-        String code = "";
+
         mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
+                .requestServerAuthCode(getResources().getString(R.string.gapi_client_id), false)
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -198,32 +224,15 @@ public class MainActivity extends AppCompatActivity {
 
         Task<GoogleSignInAccount> task = mGoogleSignInClient.silentSignIn();
         if (task.isSuccessful()) {
-            // There's immediate result available.
-            try{
-                GoogleSignInAccount signInAccount = task.getResult(ApiException.class);
-                code = signInAccount.getServerAuthCode();
-                Log.i("Signin success", "Server Auth Code:" + code);
-            } catch (ApiException apiException) {
-                // You can get from apiException.getStatusCode() the detailed error code
-                // e.g. GoogleSignInStatusCodes.SIGN_IN_REQUIRED means user needs to take
-                // explicit action to finish sign-in;
-                // Please refer to GoogleSignInStatusCodes Javadoc for details
-
-                Log.e("MainActivity.onCreate()", "user silent signin failed. Status code"
-                        + apiException.getStatusCode());
-            }
+            updateFriendList(getCode(task));
         } else {
-            task.addOnCompleteListener(new OnCompleteListener() {
+            task.addOnCompleteListener(new OnCompleteListener<GoogleSignInAccount>() {
                 @Override
                 public void onComplete(Task task) {
-
+                    updateFriendList(getCode(task));
                 }
             });
         }
-
-
-        if (!code.equals(""))
-            new Thread(new AuthHandler(context, code, myRef, mAuth.getUid())).start();
 
 
         //check permissions

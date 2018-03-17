@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -62,22 +63,33 @@ public class AuthHandler implements Runnable {
                         .execute();
         // End of Step 2 <--
 
+//        List<String> scopes = new ArrayList<>();
+//        scopes.add("https://www.googleapis.com/auth/contacts.readonly");
+
         GoogleCredential credential = new GoogleCredential.Builder()
                 .setTransport(httpTransport)
                 .setJsonFactory(jsonFactory)
                 .setClientSecrets(clientId, clientSecret)
+//                .setServiceAccountScopes(scopes)
                 .build()
                 .setFromTokenResponse(tokenResponse);
 
         PeopleService peopleService =
                 new PeopleService.Builder(httpTransport, jsonFactory, credential).build();
 
-        // Set request
-        ListConnectionsResponse response = peopleService.people().connections().list("people/me")
-                .setPersonFields("names,emailAddresses")
-                .execute();
+        ListConnectionsResponse response = null;
 
-        return response.getConnections();
+        // Set request
+        try {
+            response = peopleService.people().connections().list("people/me")
+                    .setPersonFields("names,emailAddresses")
+                    .execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("request friend response not working", e.getMessage());
+        }
+
+        return response == null ? null : response.getConnections();
     }
 
 
@@ -128,9 +140,9 @@ public class AuthHandler implements Runnable {
     @Override
     public void run() {
         try {
-//            List<Person> friendList = getFriendList(code);
-//            List<String> friendEmails = getFriendEmails(friendList);
-//            getDBExistEntryFromEmail(friendEmails);
+            List<Person> friendList = getFriendList(code);
+            List<String> friendEmails = getFriendEmails(friendList);
+            getDBExistEntryFromEmail(friendEmails);
 
         } catch (Exception e) {
             Log.e("getFriendList", "Exception");

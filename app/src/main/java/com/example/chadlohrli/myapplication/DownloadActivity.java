@@ -309,7 +309,10 @@ public class DownloadActivity extends AppCompatActivity {
                         String newId = String.valueOf(urlString.hashCode());
                         Log.i("Success URL",downloadUrl.toString());
                         //TODO update shared prefs with new url
+                        SharedPrefs.updateDownloaded(getApplicationContext(), newId);
                         SharedPrefs.updateURL(getApplicationContext(), newId, downloadUrl.toString());
+
+                        //global variable
                         newIdForCurrentUnzippedSong = newId;
 
                     }

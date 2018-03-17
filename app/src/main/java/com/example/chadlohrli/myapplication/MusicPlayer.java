@@ -331,14 +331,10 @@ public class MusicPlayer extends AppCompatActivity {
                     if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
 
                         lp = snapshot.child("lastPlayed").getValue(String.class);
+                        user = snapshot.child("lastPlayedUser").getValue(String.class);
 
                         Log.d("time is ", lp);
 
-                        for (DataSnapshot users : snapshot.child("user").getChildren()) {
-                            user = users.getKey();
-                            Log.d("user", user);
-                            break;
-                        }
                         break;
                     }
 
@@ -671,6 +667,7 @@ public class MusicPlayer extends AppCompatActivity {
         //save song to user
         if(currentUser!= null) {
             songRef.child("user").child(currentUser.getUid()).setValue(true);
+            songRef.child("lastPlayedUser").setValue(currentUser.getUid());
 
             userRef = myRef.child("users").child(currentUser.getUid());
             userRef.child("songs").child(song.getID()).setValue(true);

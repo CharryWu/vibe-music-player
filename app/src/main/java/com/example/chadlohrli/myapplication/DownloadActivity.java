@@ -70,6 +70,8 @@ public class DownloadActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
+
             Toast toast = Toast.makeText(DownloadActivity.this,
                     "Music Download Complete", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
@@ -128,6 +130,8 @@ public class DownloadActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.download_form);
         downloadButton = (Button) findViewById(R.id.download_button);
         downloadAlbumButton = (Button) findViewById(R.id.download_album_button);
+        findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
+
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -189,8 +193,10 @@ public class DownloadActivity extends AppCompatActivity {
         Uri uri = Uri.parse(url);
         id = String.valueOf(url.hashCode());
 
+
         try {
 
+            findViewById(R.id.loadingPanel2).setVisibility(View.VISIBLE);
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle(id);
 
@@ -215,8 +221,10 @@ public class DownloadActivity extends AppCompatActivity {
                     "Invalid URL", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
 
         }
+
 
     }
 
@@ -225,6 +233,7 @@ public class DownloadActivity extends AppCompatActivity {
         id = String.valueOf(url.hashCode());
 
         try {
+            findViewById(R.id.loadingPanel2).setVisibility(View.VISIBLE);
 
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle("zip");
@@ -249,8 +258,10 @@ public class DownloadActivity extends AppCompatActivity {
                     "Invalid URL", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
 
         }
+
 
     }
 

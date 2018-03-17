@@ -116,7 +116,8 @@ public class DownloadService extends Service {
 
         String songId = song.getID();
 
-        //description will be position of song in list so that broadcast reciever knows which song was downloaded
+        //description will be position of song in list so that broa
+        // dcast reciever knows which song was downloaded
         request.setTitle(songId);
         request.setDescription(Integer.toString(position));
 

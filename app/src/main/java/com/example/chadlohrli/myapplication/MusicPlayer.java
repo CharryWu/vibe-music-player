@@ -209,11 +209,13 @@ public class MusicPlayer extends AppCompatActivity {
                 songs.set(songPosition, song);
 
                 //Update the array list after downloading
+                /*
                 ListView toFill = (ListView) findViewById(R.id.listView);
                 SongAdapter songAdapter = new SongAdapter(getApplicationContext(), songs);
                 toFill.setAdapter(songAdapter);
+                */
 
-                //updateFragment();
+                updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
 
                 if(firstSongDownloaded == false) {

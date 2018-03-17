@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     Button songButton;
     Button albumButton;
     Button refreshButton;
+    ProgressBar refreshLoadSpinner;
     private boolean canSend = false;
     private boolean canDownload = false;
 
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
         bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
         refreshButton = (Button) findViewById(R.id.refresh);
+        refreshLoadSpinner = findViewById(R.id.refreshSpinner);
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -286,10 +289,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                signInIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                overridePendingTransition(0, 0);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 
+        // Hide refresh spinner by default
+        refreshLoadSpinner.setVisibility(View.GONE);
 
         /*
         String id = UUID.randomUUID().toString();
@@ -341,6 +348,10 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Show loading animation
+        refreshButton.setVisibility(View.GONE);
+        refreshLoadSpinner.setVisibility(View.VISIBLE);
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
@@ -351,9 +362,16 @@ public class MainActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d("Google Sign in", "here");
                 serverCode = account.getServerAuthCode();
-                if (serverCode != null && !serverCode.equals(""))
-                    new Thread(new AuthHandler(this.getApplicationContext(), serverCode, myRef,currentUser.getUid())).start();
 
+                // Run all the callback in an independent thread
+                if (serverCode != null && !serverCode.equals(""))
+                    new Thread(new AuthHandler(
+                            refreshLoadSpinner, refreshButton,
+                            this.getApplicationContext(),
+                            serverCode,
+                            myRef,
+                            currentUser.getUid()
+                    )).start();
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately

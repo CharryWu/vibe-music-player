@@ -252,7 +252,7 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
 
-    public void renameSong(String newUrl, String id) {
+    public void renameSongFile(String oldId, String newId) {
 
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 
@@ -270,10 +270,6 @@ public class DownloadActivity extends AppCompatActivity {
 
         Log.i("NEW SONG ID", newId);
         */
-        String newId = String.valueOf(newUrl.hashCode());
-        //TODO save in shared preferences to mark as downloaded
-        //TODO upload new url to firebase
-
 
         File of = new File(song.getPath());
 
@@ -282,19 +278,20 @@ public class DownloadActivity extends AppCompatActivity {
         File nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC
         ).getAbsolutePath() + "/" + newId);
 
-        nf.getAbsolutePath();
-
+        //TODO save in shared preferences to mark as downloaded
+        SharedPrefs.updateDownloaded(getApplicationContext(), newId);
+        //TODO upload new url to firebase
         boolean f = of.renameTo(nf);
 
 
     }
 
-    public void uploadNewUrlToFirebase(Uri file, final String songId) {
+    public void getNewUrlFromFirebase(Uri file, final String oldId) {
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/mpeg").build();
         StorageReference mStorageRef;
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
-        StorageReference riversRef = mStorageRef.child("song" + "/" + songId);
+        StorageReference riversRef = mStorageRef.child("song" + "/" + oldId);
 
         riversRef.putFile(file,metadata)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -302,9 +299,13 @@ public class DownloadActivity extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // Get a URL to the uploaded content
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        String urlString = downloadUrl.toString();
+
+                        //new id of song after hashing the new url
+                        String newId = String.valueOf(urlString.hashCode());
                         Log.i("Success URL",downloadUrl.toString());
                         //TODO update shared prefs with new url
-                        SharedPrefs.updateURL(getApplicationContext(), songId, downloadUrl.toString());
+                        SharedPrefs.updateURL(getApplicationContext(), newId, downloadUrl.toString());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -333,6 +334,7 @@ public class DownloadActivity extends AppCompatActivity {
             try {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
+
                     String path = songDirectory + ze.getName();
                     File unzipFile = new File(path);
 

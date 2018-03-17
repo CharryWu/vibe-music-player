@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -96,9 +97,9 @@ public class DownloadActivity extends AppCompatActivity {
                 String typeOfDownload = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
                 if (typeOfDownload.equals("zip")) {
                     try {
-                        String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+                        String musicDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
                         String zipFilePath = path + "/" + id;
-                        unzip(zipFilePath, downloadDirectoryPath);
+                        unzip(zipFilePath, musicDirectoryPath);
                         toast = Toast.makeText(DownloadActivity.this,
                                 "Album Unzipped", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.TOP, 25, 400);
@@ -335,7 +336,14 @@ public class DownloadActivity extends AppCompatActivity {
                         // ...
                         Log.i("Fail","Failed");
                     }
-                });
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        System.out.println("Upload is " + progress + "% done");
+                        Log.d("Firebase Progress", "Still downloading");
+                    }
+        });
     }
 
     public void unzip(String zipFilePath, String songDirectory) throws IOException {

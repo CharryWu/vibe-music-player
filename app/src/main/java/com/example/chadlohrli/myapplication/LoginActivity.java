@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                SharedPrefs.saveServerCode(this.getApplicationContext(),account.getServerAuthCode());
+//                SharedPrefs.saveServerCode(this.getApplicationContext(),account.getServerAuthCode());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.e("Failed", e.getMessage());

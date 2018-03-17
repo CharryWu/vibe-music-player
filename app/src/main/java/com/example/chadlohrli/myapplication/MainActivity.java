@@ -8,64 +8,44 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.content.pm.PackageManager;
-
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
-
-import android.provider.Contacts;
-import android.support.annotation.NonNull;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -190,11 +170,8 @@ public class MainActivity extends AppCompatActivity {
         //Testing Firebase Code
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
-
-        String code = SharedPrefs.getServerCode(context);
-
-        if (!code.equals(""))
-            new Thread(new AuthHandler(context, code, myRef)).start();
+        String code = "";
+        mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
@@ -202,9 +179,38 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mAuth = FirebaseAuth.getInstance();
-
         LocationHelper.getLatLong(context);
+
+
+        Task<GoogleSignInAccount> task = mGoogleSignInClient.silentSignIn();
+        if (task.isSuccessful()) {
+            // There's immediate result available.
+            try{
+                GoogleSignInAccount signInAccount = task.getResult(ApiException.class);
+                code = signInAccount.getServerAuthCode();
+                Log.i("Signin success", "Server Auth Code:" + code);
+            } catch (ApiException apiException) {
+                // You can get from apiException.getStatusCode() the detailed error code
+                // e.g. GoogleSignInStatusCodes.SIGN_IN_REQUIRED means user needs to take
+                // explicit action to finish sign-in;
+                // Please refer to GoogleSignInStatusCodes Javadoc for details
+
+                Log.e("MainActivity.onCreate()", "user silent signin failed. Status code"
+                        + apiException.getStatusCode());
+            }
+        } else {
+            task.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(Task task) {
+
+                }
+            });
+        }
+
+
+        if (!code.equals(""))
+            new Thread(new AuthHandler(context, code, myRef, mAuth.getUid())).start();
+
 
         //check permissions
         checkLocationPermission();

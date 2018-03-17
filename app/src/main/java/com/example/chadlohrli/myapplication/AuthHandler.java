@@ -15,6 +15,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,10 +37,11 @@ public class AuthHandler implements Runnable {
     private int queryExecCnt;
     private String currentUserKey;
 
-    public AuthHandler(Context context, String code, DatabaseReference myRef) {
+    public AuthHandler(Context context, String code, DatabaseReference myRef, String currentUserKey) {
         if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
+        this.currentUserKey = currentUserKey;
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
         ref = myRef;
@@ -77,6 +79,7 @@ public class AuthHandler implements Runnable {
 
         return response.getConnections();
     }
+
 
     public List<String> getFriendEmails(List<Person> friends) {
         List<String> emails = new ArrayList<>();
@@ -117,21 +120,20 @@ public class AuthHandler implements Runnable {
     }
 
     public void setFriendListDB(ArrayList<String> keys) {
-        for(String key:keys){
-//            ref.child()
+        for (String key : keys) {
+            ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
         }
     }
 
     @Override
     public void run() {
         try {
-            List<Person> friendList = getFriendList(code);
-            List<String> friendEmails = getFriendEmails(friendList);
-
-            getDBExistEntryFromEmail(friendEmails);
+//            List<Person> friendList = getFriendList(code);
+//            List<String> friendEmails = getFriendEmails(friendList);
+//            getDBExistEntryFromEmail(friendEmails);
 
         } catch (Exception e) {
-            Log.e("RequestFriendListRunnable.run()", "Exception");
+            Log.e("getFriendList", "Exception");
         }
     }
 }

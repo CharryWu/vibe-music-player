@@ -32,6 +32,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -45,10 +46,15 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,6 +90,8 @@ public class MusicPlayer extends AppCompatActivity {
     private Button favBtn;
     private TextView startTime;
     private TextView endTime;
+    private TextView placeDate;
+
 
     private MediaPlayer mediaPlayer;
     private boolean isPlayingMusic = true;
@@ -140,6 +148,12 @@ public class MusicPlayer extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private DataSnapshot snapshot;
+
+    private String user, lp, dpDate;
+    MockTime mockTime = new MockTime();
+
+
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
@@ -193,6 +207,14 @@ public class MusicPlayer extends AppCompatActivity {
                 //parse song data into song
                 song = SongParser.parseSong(path, songId, getApplicationContext());
                 songs.set(songPosition, song);
+
+                //Update the array list after downloading
+                /*
+                ListView toFill = (ListView) findViewById(R.id.listView);
+                SongAdapter songAdapter = new SongAdapter(getApplicationContext(), songs);
+                toFill.setAdapter(songAdapter);
+                */
+
                 updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
 
@@ -231,10 +253,17 @@ public class MusicPlayer extends AppCompatActivity {
         //grab data from intent
         songs = (ArrayList<SongData>) getIntent().getSerializableExtra("SONGS");
         cur_song = getIntent().getIntExtra("CUR",0);
-        timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        //timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+        timeStamp = mockTime.changeTime();
+        Log.i("timeStamp is:", timeStamp);
+
+
 
         layout = findViewById(R.id.listView);
         layout.setVisibility(View.GONE);
+
+        placeDate = (TextView) findViewById(R.id.place_date);
 
         //display song for aesthetics
         Toast toast = Toast.makeText(getApplicationContext(), songs.get(cur_song).getTitle(),
@@ -291,6 +320,68 @@ public class MusicPlayer extends AppCompatActivity {
         fragment = new SongProgressFragment();
         fragment.setArguments(bundle);
         fm.beginTransaction().replace(R.id.mainLay, fragment).commit();
+    }
+
+    public void updatePlaceDate() {
+
+        myRef.child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    //get all id and find matching one
+                    Log.d("songid", snapshot.getKey());
+                    if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
+
+                        lp = snapshot.child("lastPlayed").getValue(String.class);
+                        user = snapshot.child("lastPlayedUser").getValue(String.class);
+
+                        Log.d("time is ", lp);
+
+                        break;
+                    }
+
+                }
+
+                if (user != null) {
+                    myRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot names : dataSnapshot.getChildren()) {
+                                //get all id and find matching one
+                                if (names.getKey().equals(user)) {
+                                    user = names.child("username").getValue().toString();
+                                    Log.d("user name", user);
+                                    dpDate = lp + " by " + user;
+                                    placeDate.setText(dpDate);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
+                else {
+                    user = "No one";
+                }
+                if (lp == null) {
+                    lp = "Last Played no where";
+                }
+                dpDate = lp + " by " + user;
+                placeDate.setText(dpDate);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+
+
     }
 
     public void setDateHelper(DateHelper dateHelper) {
@@ -471,6 +562,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         updateFragment();
         Log.d("Songs size",String.valueOf(songs.size()));
+        updatePlaceDate();
 
         musicService.setCurrentSong(cur_song);
         musicService.playSong();
@@ -585,6 +677,7 @@ public class MusicPlayer extends AppCompatActivity {
         //save song to user
         if(currentUser!= null) {
             songRef.child("user").child(currentUser.getUid()).setValue(true);
+            songRef.child("lastPlayedUser").setValue(currentUser.getUid());
 
             userRef = myRef.child("users").child(currentUser.getUid());
             userRef.child("songs").child(song.getID()).setValue(true);

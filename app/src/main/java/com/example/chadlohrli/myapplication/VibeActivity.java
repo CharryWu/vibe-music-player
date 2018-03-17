@@ -153,8 +153,9 @@ public class VibeActivity extends AppCompatActivity {
         });
     }
 
-    protected void vibe(){
+    public void vibe(){
         location = getLoc();
+        Log.d("VIBE", location.toString());
         mAuth = FirebaseAuth.getInstance();
 
         //vibeSongs = createDownloadedSongs();
@@ -351,12 +352,14 @@ public class VibeActivity extends AppCompatActivity {
         }
 
         //sort songs
-        Collections.sort(songs, new Comparator<SongData>() {
-            @Override
-            public int compare(SongData a, SongData b) {
-                return a.getTitle().compareTo(b.getTitle());
-            }
-        });
+        if (fields.length > 1) {
+            Collections.sort(songs, new Comparator<SongData>() {
+                @Override
+                public int compare(SongData a, SongData b) {
+                    return a.getTitle().compareTo(b.getTitle());
+                }
+            });
+        }
         return songs;
     }
 

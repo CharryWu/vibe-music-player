@@ -43,16 +43,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -84,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button songButton;
     Button albumButton;
+    Button refreshButton;
     private boolean canSend = false;
     private boolean canDownload = false;
 
@@ -96,9 +103,12 @@ public class MainActivity extends AppCompatActivity {
     private static String date;
     private static String timeStamp;
 
+    private String serverCode = "";
+
     @Override
     protected void onStart() {
         super.onStart();
+
 
         //update user
         //mAuth = FirebaseAuth.getInstance();
@@ -195,28 +205,28 @@ public class MainActivity extends AppCompatActivity {
         return timeStamp;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Context context = this.getApplicationContext();
         //Testing Firebase Code
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
-
-        String code = SharedPrefs.getServerCode(context);
-
-        if (!code.equals(""))
-            new Thread(new AuthHandler(context, code, myRef)).start();
+        myRef = database.getReference();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
+                .requestServerAuthCode(getResources().getString(R.string.gapi_client_id), false)
+                .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
+
 
         LocationHelper.getLatLong(context);
 
@@ -231,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
         albumButton = (Button) findViewById(R.id.album_button);
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
         bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+        refreshButton = (Button) findViewById(R.id.refresh);
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -301,6 +312,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+
         /*
         String id = UUID.randomUUID().toString();
         String email = "test@ucsd.edu";
@@ -345,6 +365,34 @@ public class MainActivity extends AppCompatActivity {
           */
 
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d("Google Sign in", "here");
+                serverCode = account.getServerAuthCode();
+                if (!serverCode.equals(""))
+                    new Thread(new AuthHandler(this.getApplicationContext(), serverCode, myRef,currentUser.getUid())).start();
+
+
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.e("Failed", e.getMessage());
+                findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+            } catch (Exception e) {
+                Log.e("Login:", "Exception");
+            }
+        }
     }
 
     private void signOut() {

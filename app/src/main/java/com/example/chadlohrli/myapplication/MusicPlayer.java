@@ -209,11 +209,13 @@ public class MusicPlayer extends AppCompatActivity {
                 songs.set(songPosition, song);
 
                 //Update the array list after downloading
+                /*
                 ListView toFill = (ListView) findViewById(R.id.listView);
                 SongAdapter songAdapter = new SongAdapter(getApplicationContext(), songs);
                 toFill.setAdapter(songAdapter);
+                */
 
-                //updateFragment();
+                updateFragment();
                 SharedPrefs.updateDownloaded(getApplicationContext(), songId);
 
                 if(firstSongDownloaded == false) {
@@ -331,13 +333,10 @@ public class MusicPlayer extends AppCompatActivity {
                     if(snapshot.getKey().equals(songs.get(cur_song).getID())) {
 
                         lp = snapshot.child("lastPlayed").getValue(String.class);
+                        user = snapshot.child("lastPlayedUser").getValue(String.class);
 
                         Log.d("time is ", lp);
 
-                        for (DataSnapshot users : snapshot.child("user").getChildren()) {
-                            user = users.getKey();
-                            Log.d("user", user);
-                        }
                         break;
                     }
 
@@ -637,6 +636,14 @@ public class MusicPlayer extends AppCompatActivity {
     public void saveSong(SongData song) {
         Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
 
+        //don't save these songs!
+        if(map.get("isAlbum") != null) {
+            String isAlbum = map.get("isAlbum").toString();
+            if(isAlbum == "true")
+                return;
+        }
+
+
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {
@@ -670,6 +677,7 @@ public class MusicPlayer extends AppCompatActivity {
         //save song to user
         if(currentUser!= null) {
             songRef.child("user").child(currentUser.getUid()).setValue(true);
+            songRef.child("lastPlayedUser").setValue(currentUser.getUid());
 
             userRef = myRef.child("users").child(currentUser.getUid());
             userRef.child("songs").child(song.getID()).setValue(true);

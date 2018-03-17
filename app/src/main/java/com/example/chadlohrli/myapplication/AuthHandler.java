@@ -5,6 +5,9 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -31,9 +34,11 @@ public class AuthHandler implements Runnable {
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
     private DatabaseReference ref;
+    private ProgressBar spinner;
+    private Button refreshBtn;
     private String currentUserKey;
 
-    public AuthHandler(Context context, String code, DatabaseReference myRef, String currentUserKey) {
+    public AuthHandler(ProgressBar pb, Button btn, Context context, String code, DatabaseReference myRef, String currentUserKey) {
         if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
@@ -41,6 +46,8 @@ public class AuthHandler implements Runnable {
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
         ref = myRef;
+        refreshBtn = btn;
+        spinner = pb;
     }
 
     public List<Person> getFriendList(String code) throws IOException {
@@ -114,6 +121,21 @@ public class AuthHandler implements Runnable {
             List<Person> friendList = getFriendList(code);
             List<String> friendEmails = getFriendEmails(friendList);
             getDBExistEntryFromEmail(friendEmails);
+
+            // Hide loading animation
+
+            spinner.post(new Runnable() {
+                public void run() {
+                    spinner.setVisibility(View.GONE);
+                }
+            });
+
+            refreshBtn.post(new Runnable() {
+                @Override
+                public void run() {
+                    refreshBtn.setVisibility(View.VISIBLE);
+                }
+            });
 
         } catch (Exception e) {
             Log.e("getFriendList", "Exception");

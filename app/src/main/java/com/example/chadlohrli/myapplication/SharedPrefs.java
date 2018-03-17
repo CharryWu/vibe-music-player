@@ -154,6 +154,14 @@ public class SharedPrefs {
         songadd.commit();
     }
 
+    public static void updateIfAlbum(Context context, boolean isAlbum, String id) {
+        SharedPreferences newSong = context.getSharedPreferences(id,MODE_PRIVATE);
+        SharedPreferences.Editor songadd = newSong.edit();
+        songadd.putBoolean("isAlbum",isAlbum);
+        songadd.commit();
+
+    }
+
     public static Map<String, ?> getSongData(Context context, String id) {
 
         SharedPreferences songsList = context.getSharedPreferences(id, MODE_PRIVATE);

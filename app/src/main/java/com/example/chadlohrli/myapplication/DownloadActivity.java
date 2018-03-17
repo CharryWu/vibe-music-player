@@ -22,6 +22,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -45,10 +58,20 @@ public class DownloadActivity extends AppCompatActivity {
     private String id;
     private final int BUFFER_SIZE = 8192;
 
+    private String newIdForCurrentUnzippedSong = null;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private String TAG = "Google";
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+
 
     BroadcastReceiver onComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
 
             Toast toast = Toast.makeText(DownloadActivity.this,
                     "Music Download Complete", Toast.LENGTH_LONG);
@@ -68,15 +91,19 @@ public class DownloadActivity extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 //get description of download which is id if song was zip
                 String id = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_DESCRIPTION));
-
+                String url = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
 
                 //get title of column which is "zip" if file was zip file
                 String typeOfDownload = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
                 if (typeOfDownload.equals("zip")) {
                     try {
-                        String downloadDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+                        String musicDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
                         String zipFilePath = path + "/" + id;
-                        unzip(zipFilePath, downloadDirectoryPath);
+                        unzip(zipFilePath, musicDirectoryPath, url);
+                        toast = Toast.makeText(DownloadActivity.this,
+                                "Album Unzipped", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.TOP, 25, 400);
+                        toast.show();
                     }
                     catch (Exception e) {
                         Log.e("zip doesnt work", "zip");
@@ -104,6 +131,8 @@ public class DownloadActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.download_form);
         downloadButton = (Button) findViewById(R.id.download_button);
         downloadAlbumButton = (Button) findViewById(R.id.download_album_button);
+        findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
+
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -151,6 +180,8 @@ public class DownloadActivity extends AppCompatActivity {
 
         //http://soundbible.com/grab.php?id=2200&type=mp3
         //http://soundbible.com/grab.php?id=2190&type=mp3
+        //album
+        //https://www.dropbox.com/s/pd8bcp31w6hjiqj/in-which-we-drift-endlessly.zip?dl=1
         File musicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         Log.v("Files", musicDirectory.exists() + "");
         Log.v("Files", musicDirectory.isDirectory() + "");
@@ -163,8 +194,10 @@ public class DownloadActivity extends AppCompatActivity {
         Uri uri = Uri.parse(url);
         id = String.valueOf(url.hashCode());
 
+
         try {
 
+            findViewById(R.id.loadingPanel2).setVisibility(View.VISIBLE);
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle(id);
 
@@ -189,8 +222,10 @@ public class DownloadActivity extends AppCompatActivity {
                     "Invalid URL", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
 
         }
+
 
     }
 
@@ -199,6 +234,7 @@ public class DownloadActivity extends AppCompatActivity {
         id = String.valueOf(url.hashCode());
 
         try {
+            findViewById(R.id.loadingPanel2).setVisibility(View.VISIBLE);
 
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle("zip");
@@ -223,18 +259,21 @@ public class DownloadActivity extends AppCompatActivity {
                     "Invalid URL", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 25, 400);
             toast.show();
+            findViewById(R.id.loadingPanel2).setVisibility(View.INVISIBLE);
 
         }
+
 
     }
 
 
-    public void renameSong() {
+    public void renameSongFile(String oldId, String newId) {
 
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 
         SongData song = SongParser.parseSong(path, id, this);
 
+        /**
         Log.i("PREV SONG ID", song.getID());
 
 
@@ -245,22 +284,69 @@ public class DownloadActivity extends AppCompatActivity {
         newId = String.valueOf(newId.hashCode());
 
         Log.i("NEW SONG ID", newId);
+        */
 
         File of = new File(song.getPath());
 
 
         //This Saves to internal storage
         File nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC
-        ).getAbsolutePath() + "/" + newId + ".mp3");
+        ).getAbsolutePath() + "/" + newId);
 
-        nf.getAbsolutePath();
-
+        //TODO save in shared preferences to mark as downloaded
+        SharedPrefs.updateDownloaded(getApplicationContext(), newId);
+        //TODO upload new url to firebase
         boolean f = of.renameTo(nf);
 
 
     }
 
-    public void unzip(String zipFilePath, String songDirectory) throws IOException {
+    public void getNewUrlFromFirebase(Uri file, final String oldId) {
+
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/mpeg").build();
+        StorageReference mStorageRef;
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        StorageReference riversRef = mStorageRef.child("song" + "/" + oldId);
+
+        riversRef.putFile(file,metadata)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        String urlString = downloadUrl.toString();
+
+                        //new id of song after hashing the new url
+                        String newId = String.valueOf(urlString.hashCode());
+                        Log.i("Success URL",downloadUrl.toString());
+                        //TODO update shared prefs with new url
+                        SharedPrefs.updateDownloaded(getApplicationContext(), newId);
+                        SharedPrefs.updateURL(getApplicationContext(), newId, downloadUrl.toString());
+
+                        //global variable
+                        newIdForCurrentUnzippedSong = newId;
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
+                        Log.i("Fail","Failed");
+                    }
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        System.out.println("Upload is " + progress + "% done");
+                        Log.d("Firebase Progress", "Still downloading");
+                    }
+        });
+    }
+
+    public void unzip(String zipFilePath, String songDirectory, String id) throws IOException {
         int size;
         byte[] buffer = new byte[BUFFER_SIZE];
 
@@ -276,8 +362,10 @@ public class DownloadActivity extends AppCompatActivity {
             try {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
+
                     String path = songDirectory + ze.getName();
                     File unzipFile = new File(path);
+
 
                     if (ze.isDirectory()) {
                         if(!unzipFile.isDirectory()) {
@@ -307,7 +395,13 @@ public class DownloadActivity extends AppCompatActivity {
                             fout.close();
                         }
                     }
+
+                    SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
+                    SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
+                    SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
+
                 }
+
             }
             finally {
                 zin.close();
@@ -363,9 +457,14 @@ public class DownloadActivity extends AppCompatActivity {
          Log.e("Unzipping problem", "Unzip exception", e);
          }
          }
+         SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
+         SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
+         SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
          */
 
     }
+
+
 
 
 }

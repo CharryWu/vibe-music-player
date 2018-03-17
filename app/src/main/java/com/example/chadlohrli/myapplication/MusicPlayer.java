@@ -544,6 +544,14 @@ public class MusicPlayer extends AppCompatActivity {
     public void saveSong(SongData song) {
         Map<String,?> map = SharedPrefs.getSongData(this.getApplicationContext(),song.getID());
 
+        //don't save these songs!
+        if(map.get("isAlbum") != null) {
+            String isAlbum = map.get("isAlbum").toString();
+            if(isAlbum == "true")
+                return;
+        }
+
+
         if(map.get("Times played") != null){
             timesPlayed = Integer.valueOf(map.get("Times played").toString()) + 1;
         } else {

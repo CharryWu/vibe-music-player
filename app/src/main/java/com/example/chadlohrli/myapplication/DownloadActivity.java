@@ -396,7 +396,12 @@ public class DownloadActivity extends AppCompatActivity {
                         }
                     }
 
+                    SharedPrefs.updateURL(getApplicationContext(), ze.getName(), id);
+                    SharedPrefs.updateDownloaded(getApplicationContext(), ze.getName());
+                    SharedPrefs.updateIfAlbum(getApplicationContext(), true, ze.getName());
+
                 }
+
             }
             finally {
                 zin.close();

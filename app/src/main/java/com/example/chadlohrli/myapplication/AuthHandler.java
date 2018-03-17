@@ -5,6 +5,9 @@ package com.example.chadlohrli.myapplication;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -21,7 +24,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,20 +34,20 @@ public class AuthHandler implements Runnable {
     private HttpTransport httpTransport;
     private JacksonFactory jsonFactory;
     private DatabaseReference ref;
-    private ArrayList<String> friendKeys;
-    private int queryExecCnt;
+    private ProgressBar spinner;
+    private Button refreshBtn;
     private String currentUserKey;
 
-    public AuthHandler(Context context, String code, DatabaseReference myRef, String userId) {
+    public AuthHandler(ProgressBar pb, Button btn, Context context, String code, DatabaseReference myRef, String currentUserKey) {
         if (code == null || context == null) Log.e("RequestFriendListRunnable()", "param is null");
         this.code = code;
         this.context = context;
+        this.currentUserKey = currentUserKey;
         httpTransport = new NetHttpTransport();
         jsonFactory = new JacksonFactory();
         ref = myRef;
-        friendKeys = new ArrayList<>();
-        queryExecCnt = 0;
-        currentUserKey = userId;
+        refreshBtn = btn;
+        spinner = pb;
     }
 
     public List<Person> getFriendList(String code) throws IOException {
@@ -90,23 +92,14 @@ public class AuthHandler implements Runnable {
     }
 
     public void getDBExistEntryFromEmail(List<String> emails) {
-        final int terminateSize = emails.size();
         for (final String email : emails) {
             ref.child("users")
                     .orderByChild("email").equalTo(email)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            queryExecCnt++;
-
-                            for (DataSnapshot entry : dataSnapshot.getChildren()) {
-                                friendKeys.add(entry.getKey());
-
-                                // Similar to executing callback when all queries has been processed
-                                if (queryExecCnt == terminateSize) {
-                                    setFriendListDB(friendKeys);
-                                }
-                            }
+                            for (DataSnapshot entry : dataSnapshot.getChildren())
+                                addSingleFriendToDB(entry.getKey());
                         }
 
                         @Override
@@ -117,10 +110,9 @@ public class AuthHandler implements Runnable {
         }
     }
 
-    public void setFriendListDB(ArrayList<String> keys) {
-        for(String key:keys){
-            ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
-        }
+
+    public void addSingleFriendToDB(String key) {
+        ref.child("users").child(currentUserKey).child("friends").child(key).setValue(true);
     }
 
     @Override
@@ -128,12 +120,25 @@ public class AuthHandler implements Runnable {
         try {
             List<Person> friendList = getFriendList(code);
             List<String> friendEmails = getFriendEmails(friendList);
-
-
             getDBExistEntryFromEmail(friendEmails);
 
+            // Hide loading animation
+
+            spinner.post(new Runnable() {
+                public void run() {
+                    spinner.setVisibility(View.GONE);
+                }
+            });
+
+            refreshBtn.post(new Runnable() {
+                @Override
+                public void run() {
+                    refreshBtn.setVisibility(View.VISIBLE);
+                }
+            });
+
         } catch (Exception e) {
-            Log.e("RequestFriendListRunnable.run()", "Exception");
+            Log.e("getFriendList", "Exception");
         }
     }
 }

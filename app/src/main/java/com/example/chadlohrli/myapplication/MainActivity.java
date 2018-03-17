@@ -34,12 +34,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button songButton;
     Button albumButton;
+    Button refreshButton;
     private boolean canSend = false;
     private boolean canDownload = false;
 
@@ -76,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private static String date;
     private static String timeStamp;
 
+    private String serverCode = "";
 
     @Override
     protected void onStart() {
@@ -176,64 +187,28 @@ public class MainActivity extends AppCompatActivity {
         return timeStamp;
     }
 
-    private String getCode(Task<GoogleSignInAccount> task) {
-        String code = "";
-        try {
-            GoogleSignInAccount signInAccount = task.getResult(ApiException.class);
-            code = signInAccount.getServerAuthCode();
-            Log.i("Signin success", "Server Auth Code:" + code);
-        } catch (ApiException apiException) {
-            // You can get from apiException.getStatusCode() the detailed error code
-            // e.g. GoogleSignInStatusCodes.SIGN_IN_REQUIRED means user needs to take
-            // explicit action to finish sign-in;
-            // Please refer to GoogleSignInStatusCodes Javadoc for details
-
-            Log.e("MainActivity.getCode()", "user silent signin failed. Status code"
-                    + apiException.getStatusCode());
-        }
-        return code;
-    }
-
-    private void updateFriendList(String code){
-        if (code != null && !code.equals(""))
-            new Thread(new AuthHandler(getApplicationContext(), code, myRef, mAuth.getUid())).start();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         Context context = this.getApplicationContext();
         //Testing Firebase Code
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
-
-        mAuth = FirebaseAuth.getInstance();
+        myRef = database.getReference();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.gapi_client_id))
                 .requestEmail()
                 .requestServerAuthCode(getResources().getString(R.string.gapi_client_id), false)
+                .requestScopes(new Scope("https://www.googleapis.com/auth/contacts.readonly"))
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mAuth = FirebaseAuth.getInstance();
+
+
         LocationHelper.getLatLong(context);
-
-
-        Task<GoogleSignInAccount> task = mGoogleSignInClient.silentSignIn();
-        if (task.isSuccessful()) {
-            updateFriendList(getCode(task));
-        } else {
-            task.addOnCompleteListener(new OnCompleteListener<GoogleSignInAccount>() {
-                @Override
-                public void onComplete(Task task) {
-                    updateFriendList(getCode(task));
-                }
-            });
-        }
-
 
         //check permissions
         checkLocationPermission();
@@ -244,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         albumButton = (Button) findViewById(R.id.album_button);
         flashBackButton = (ImageButton) findViewById(R.id.flashback_button);
         bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+        refreshButton = (Button) findViewById(R.id.refresh);
 
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -255,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                             MainActivity.this.startActivity(searchIntent);
                         } else {
                             checkLocationPermission();
+                            askForContactPermission();
                             askForReadPermission();
                         }
                         break;
@@ -280,12 +257,13 @@ public class MainActivity extends AppCompatActivity {
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (canSend) {
+                if (canSend && canDownload) {
                     Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();
                     askForContactPermission();
+                    askForReadPermission();
                 }
             }
         });
@@ -294,12 +272,13 @@ public class MainActivity extends AppCompatActivity {
         flashBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (canSend) {
+                if (canSend && canDownload) {
                     Intent intent = new Intent(MainActivity.this, VibeActivity.class);
                     MainActivity.this.startActivity(intent);
                 } else {
                     checkLocationPermission();
                     askForContactPermission();
+                    askForReadPermission();
                 }
             }
         });
@@ -310,6 +289,15 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
             }
         });
+
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
 
         /*
         String id = UUID.randomUUID().toString();
@@ -355,6 +343,34 @@ public class MainActivity extends AppCompatActivity {
           */
 
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d("Google Sign in", "here");
+                serverCode = account.getServerAuthCode();
+                if (!serverCode.equals(""))
+                    new Thread(new AuthHandler(this.getApplicationContext(), serverCode, myRef,currentUser.getUid())).start();
+
+
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.e("Failed", e.getMessage());
+                findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+            } catch (Exception e) {
+                Log.e("Login:", "Exception");
+            }
+        }
     }
 
     private void signOut() {
